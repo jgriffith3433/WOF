@@ -124,9 +124,83 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     .HasMaxLength(200)
                     .HasColumnType("nvarchar(200)");
 
+                b.Property<string>("UserImport")
+                    .IsRequired()
+                    .HasMaxLength(4000)
+                    .HasColumnType("nvarchar(4000)");
+
+                b.Property<string>("Link")
+                    .IsRequired()
+                    .HasMaxLength(4000)
+                    .HasColumnType("nvarchar(4000)");
+
                 b.HasKey("Id");
 
                 b.ToTable("Recipes");
+            });
+
+            modelBuilder.Entity("WOF.Domain.Entities.Ingredient", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
+
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                b.Property<DateTime>("Created")
+                    .HasColumnType("datetime2");
+
+                b.Property<string>("CreatedBy")
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<DateTime?>("LastModified")
+                    .HasColumnType("datetime2");
+
+                b.Property<string>("LastModifiedBy")
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("nvarchar(200)");
+
+                b.Property<string>("WalmartId")
+                    .IsRequired()
+                    .HasColumnType("int");
+
+                b.HasKey("Id");
+
+                b.ToTable("Ingredients");
+            });
+
+            modelBuilder.Entity("WOF.Domain.Entities.CompletedOrder", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
+
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                b.Property<DateTime>("Created")
+                    .HasColumnType("datetime2");
+
+                b.Property<string>("CreatedBy")
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<DateTime?>("LastModified")
+                    .HasColumnType("datetime2");
+
+                b.Property<string>("LastModifiedBy")
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<string>("UserImport")
+                    .IsRequired()
+                    .HasMaxLength(4000)
+                    .HasColumnType("nvarchar(4000)");
+
+                b.HasKey("Id");
+
+                b.ToTable("CompletedOrders");
             });
 
             modelBuilder.Entity("WOF.Infrastructure.Identity.ApplicationUser", b =>

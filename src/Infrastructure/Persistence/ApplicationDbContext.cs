@@ -33,6 +33,12 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
     public DbSet<Recipe> Recipes => Set<Recipe>();
 
+    public DbSet<Ingredient> Ingredients => Set<Ingredient>();
+
+    public DbSet<CalledIngredient> CalledIngredients => Set<CalledIngredient>();
+
+    public DbSet<CompletedOrder> CompletedOrders => Set<CompletedOrder>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

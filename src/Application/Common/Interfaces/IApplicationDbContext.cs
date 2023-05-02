@@ -11,5 +11,11 @@ public interface IApplicationDbContext
 
     DbSet<Recipe> Recipes { get; }
 
+    DbSet<Ingredient> Ingredients { get; }
+
+    DbSet<CalledIngredient> CalledIngredients { get; }
+
+    DbSet<CompletedOrder> CompletedOrders { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
