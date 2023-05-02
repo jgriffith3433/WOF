@@ -88,6 +88,11 @@ public class ApplicationDbContextInitialiser
                 }
             });
         }
+        var ingredient = new Ingredient
+        {
+            Name = "Pompeian Organic Robust Extra Virgin Olive Oil",
+            WalmartId = 13281639
+        };
 
         if (!_context.Recipes.Any())
         {
@@ -101,11 +106,7 @@ public class ApplicationDbContextInitialiser
                     new CalledIngredient
                     {
                         Name = "Olive Oil",
-                        Ingredient = new Ingredient
-                        {
-                            Name = "Pompeian Organic Robust Extra Virgin Olive Oil",
-                            WalmartId = 13281639
-                        }
+                        Ingredient = ingredient
                     }
                 }
             });
@@ -115,7 +116,11 @@ public class ApplicationDbContextInitialiser
         {
             _context.CompletedOrders.Add(new CompletedOrder
             {
-                UserImport = "Store purchase\r\nApr 29, 2023 purchase\r\n28 items\r\n\r\n\r\nall Liquid Laundry Detergent with Advanced OXI Stain Removers and Whiteners, Free Clear, 184.5 Ounce, 103 Loads\r\nQty 1\r\n$14.97\r\nWrite a review\r\n\r\nBest Foods Gluten-Free Mayonnaise, 48 Fl Oz\r\nQty 1\r\n$7.64\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nCrest Pro Health Advanced Mouthwash, Alcohol Free, Fresh Mint, 33.8 fl oz\r\nQty 1\r\n$10.97\r\nWrite a review\r\n\r\nGreat Value Classic Ranch Dressing & Dip, 36 fl oz\r\nQty 1\r\n$3.34\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGreat Value Dark Red Kidney Beans, 15.5 oz\r\nQty 1\r\n$0.78\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nDel Monte Canned Golden Sweet Whole Kernel Corn, 15.25 oz Can\r\nQty 1\r\n$1.38\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nProgresso Vegetable Classics, Garden Vegetable Canned Soup, 19 oz.\r\nQty 1\r\n$2.18\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGreat Value Canned Black Eyed Peas, 15.5 oz Can\r\nQty 1\r\n$1.18\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nHunt's Tomato Sauce, No Salt Added, 29 oz Can\r\nQty 1\r\n$1.98\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nS&W - Dark Red Kidney Beans - 29 oz. Can\r\nQty 1\r\n$2.42\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nS&W - Black Beans - Low Sodium - 15 oz. Can\r\nQty 1\r\n$1.42\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nS&W - Black Beans - Low Sodium - 15 oz. Can\r\nQty 1\r\n$1.42\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nProgresso Rich & Hearty, New England Clam Chowder Soup, Gluten Free, 18.5 oz.\r\nQty 1\r\n$1.96\r\nWrite a review\r\n\r\nHunt's Tomato Sauce, No Salt Added, 8 oz Can\r\nQty 1\r\n$0.60\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGreat Value Canned Black Eyed Peas, 15.5 oz Can\r\nQty 1\r\n$1.18\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nProgresso Light, Chicken Noodle Soup, 18.5 oz.\r\nQty 1\r\n$2.18\r\nWrite a review\r\n\r\nRosarita Traditional Refried Beans, 16 oz\r\nQty 1\r\n$1.24\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGreat Value Kosher Basil Leaves, 0.8 oz\r\nQty 1\r\n$1.12\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nFresh Red Bell Pepper, 1 Each\r\nQty 3\r\n$4.26\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGarlic Bulb, Each\r\n$4.27/lb\r\nWt 0.42 lb\r\n$1.79\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nMission Super Soft Taco Flour Tortillas, 10 Count\r\nQty 1\r\n$2.78\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGreat Value Steamable Whole Kernel Corn, 12 oz (Frozen)\r\nQty 1\r\n$0.98\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nFamous Dave's Original Cornbread Mix, 15 oz\r\nQty 1\r\n$2.64\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nFresh Zucchini Squash, Each\r\n$1.48/lb\r\nWt 1.24 lb\r\n$1.84\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGreat Value Ground Sage, 1.25 oz\r\nQty 1\r\n$2.00\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nMainstays Solid Bath Sheet, Turquoise\r\nQty 1\r\n$6.94\r\nWrite a review"
+                UserImport = "Store purchase\r\nApr 29, 2023 purchase\r\n28 items\r\n\r\n\r\nall Liquid Laundry Detergent with Advanced OXI Stain Removers and Whiteners, Free Clear, 184.5 Ounce, 103 Loads\r\nQty 1\r\n$14.97\r\nWrite a review\r\n\r\nBest Foods Gluten-Free Mayonnaise, 48 Fl Oz\r\nQty 1\r\n$7.64\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nCrest Pro Health Advanced Mouthwash, Alcohol Free, Fresh Mint, 33.8 fl oz\r\nQty 1\r\n$10.97\r\nWrite a review\r\n\r\nGreat Value Classic Ranch Dressing & Dip, 36 fl oz\r\nQty 1\r\n$3.34\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGreat Value Dark Red Kidney Beans, 15.5 oz\r\nQty 1\r\n$0.78\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nDel Monte Canned Golden Sweet Whole Kernel Corn, 15.25 oz Can\r\nQty 1\r\n$1.38\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nProgresso Vegetable Classics, Garden Vegetable Canned Soup, 19 oz.\r\nQty 1\r\n$2.18\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGreat Value Canned Black Eyed Peas, 15.5 oz Can\r\nQty 1\r\n$1.18\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nHunt's Tomato Sauce, No Salt Added, 29 oz Can\r\nQty 1\r\n$1.98\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nS&W - Dark Red Kidney Beans - 29 oz. Can\r\nQty 1\r\n$2.42\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nS&W - Black Beans - Low Sodium - 15 oz. Can\r\nQty 1\r\n$1.42\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nS&W - Black Beans - Low Sodium - 15 oz. Can\r\nQty 1\r\n$1.42\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nProgresso Rich & Hearty, New England Clam Chowder Soup, Gluten Free, 18.5 oz.\r\nQty 1\r\n$1.96\r\nWrite a review\r\n\r\nHunt's Tomato Sauce, No Salt Added, 8 oz Can\r\nQty 1\r\n$0.60\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGreat Value Canned Black Eyed Peas, 15.5 oz Can\r\nQty 1\r\n$1.18\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nProgresso Light, Chicken Noodle Soup, 18.5 oz.\r\nQty 1\r\n$2.18\r\nWrite a review\r\n\r\nRosarita Traditional Refried Beans, 16 oz\r\nQty 1\r\n$1.24\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGreat Value Kosher Basil Leaves, 0.8 oz\r\nQty 1\r\n$1.12\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nFresh Red Bell Pepper, 1 Each\r\nQty 3\r\n$4.26\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGarlic Bulb, Each\r\n$4.27/lb\r\nWt 0.42 lb\r\n$1.79\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nMission Super Soft Taco Flour Tortillas, 10 Count\r\nQty 1\r\n$2.78\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGreat Value Steamable Whole Kernel Corn, 12 oz (Frozen)\r\nQty 1\r\n$0.98\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nFamous Dave's Original Cornbread Mix, 15 oz\r\nQty 1\r\n$2.64\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nFresh Zucchini Squash, Each\r\n$1.48/lb\r\nWt 1.24 lb\r\n$1.84\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nGreat Value Ground Sage, 1.25 oz\r\nQty 1\r\n$2.00\r\n\r\nAdd to cart\r\nWrite a review\r\n\r\nMainstays Solid Bath Sheet, Turquoise\r\nQty 1\r\n$6.94\r\nWrite a review",
+                Ingredients =
+                {
+                    ingredient
+                }
             });
         }
         await _context.SaveChangesAsync();

@@ -198,7 +198,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.ForeignKey(
-                        name: "FK_CalledIngredientRecipe_IngredientId",
+                        name: "FK_CalledIngredientRecipe_CalledIngredientId",
                         column: x => x.CalledIngredientId,
                         principalTable: "CalledIngredients",
                         principalColumn: "Id");
@@ -224,6 +224,29 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CompletedOrders", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CompletedOrderIngredients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IngredientId = table.Column<int>(type: "int", nullable: false),
+                    CompletedOrderId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.ForeignKey(
+                        name: "FK_CompletedOrderIngredient_IngredientId",
+                        column: x => x.IngredientId,
+                        principalTable: "Ingredients",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CompletedOrderIngredient_CompletedOrderId",
+                        column: x => x.CompletedOrderId,
+                        principalTable: "CompletedOrders",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(

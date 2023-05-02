@@ -20,8 +20,6 @@ public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .HasMaxLength(4000)
             .IsRequired();
 
-        //builder.HasMany(e => e.Ingredients).WithMany(e => e.Recipes);
-
         builder.HasMany(left => left.CalledIngredients).WithMany(right => right.Recipes).UsingEntity("CalledIngredientRecipe", typeof(Dictionary<string, object>),
             right => right.HasOne(typeof(CalledIngredient)).WithMany().HasForeignKey("CalledIngredientId"),
             left => left.HasOne(typeof(Recipe)).WithMany().HasForeignKey("RecipeId"),
