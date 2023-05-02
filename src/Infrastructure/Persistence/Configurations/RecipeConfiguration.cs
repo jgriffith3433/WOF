@@ -13,7 +13,6 @@ public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .IsRequired();
 
         builder.Property(t => t.UserImport)
-            .HasMaxLength(4000)
             .IsRequired();
 
         builder.Property(t => t.Link)

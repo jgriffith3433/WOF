@@ -9,7 +9,6 @@ public class CompletedOrderConfiguration : IEntityTypeConfiguration<CompletedOrd
     public void Configure(EntityTypeBuilder<CompletedOrder> builder)
     {
         builder.Property(t => t.UserImport)
-            .HasMaxLength(4000)
             .IsRequired();
 
         builder.HasMany(left => left.Ingredients).WithMany(right => right.CompletedOrders).UsingEntity("CompletedOrderIngredient", typeof(Dictionary<string, object>),

@@ -126,8 +126,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
                 b.Property<string>("UserImport")
                     .IsRequired()
-                    .HasMaxLength(4000)
-                    .HasColumnType("nvarchar(4000)");
+                    .HasColumnType("varchar(max)");
 
                 b.Property<string>("Link")
                     .IsRequired()
@@ -195,8 +194,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
                 b.Property<string>("UserImport")
                     .IsRequired()
-                    .HasMaxLength(4000)
-                    .HasColumnType("nvarchar(4000)");
+                    .HasColumnType("varchar(max)");
 
                 b.HasKey("Id");
 
