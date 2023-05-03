@@ -7,12 +7,12 @@ public class CompletedOrderDto : IMapFrom<CompletedOrder>
 {
     public CompletedOrderDto()
     {
-        Ingredients = new List<IngredientDto>();
+        Products = new List<ProductDto>();
     }
 
     public int Id { get; set; }
 
     public string? UserImport { get; set; }
 
-    public IList<IngredientDto> Ingredients { get; set; }
+    public IList<ProductDto> Products { get; set; }
 }

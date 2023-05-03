@@ -4,9 +4,9 @@ public class CalledIngredient : BaseAuditableEntity
 {
     public string Name { get; set; }
 
-    public int IngredientId { get; set; }
+    public int ProductId { get; set; }
 
-    public Ingredient Ingredient { get; set; } = null!;
+    public Product Product { get; set; } = null!;
 
     public IList<Recipe> Recipes { get; private set; } = new List<Recipe>();
 }

@@ -1,32 +1,32 @@
 ﻿using WOF.Application.Common.Models;
-using WOF.Application.Ingredients.Commands.CreateIngredient;
-using WOF.Application.Ingredients.Commands.DeleteIngredient;
-using WOF.Application.Ingredients.Commands.UpdateIngredient;
-using WOF.Application.Ingredients.Commands.UpdateIngredientDetail;
+using WOF.Application.Products.Commands.CreateProduct;
+using WOF.Application.Products.Commands.DeleteProduct;
+using WOF.Application.Products.Commands.UpdateProduct;
+using WOF.Application.Products.Commands.UpdateProductDetail;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WOF.Application.Ingredients.Queries;
-using WOF.Application.Ingredients.Queries.GetIngredients;
+using WOF.Application.Products.Queries;
+using WOF.Application.Products.Queries.GetProducts;
 
 namespace WOF.WebUI.Controllers;
 
 [Authorize]
-public class IngredientsController : ApiControllerBase
+public class ProductsController : ApiControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<GetIngredientsVm>> GetIngredients()
+    public async Task<ActionResult<GetProductsVm>> GetProducts()
     {
-        return await Mediator.Send(new GetIngredientsQuery());
+        return await Mediator.Send(new GetProductsQuery());
     }
 
     [HttpPost]
-    public async Task<ActionResult<int>> Create(CreateIngredientCommand command)
+    public async Task<ActionResult<int>> Create(CreateProductCommand command)
     {
         return await Mediator.Send(command);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, UpdateIngredientCommand command)
+    public async Task<ActionResult> Update(int id, UpdateProductCommand command)
     {
         if (id != command.Id)
         {
@@ -39,7 +39,7 @@ public class IngredientsController : ApiControllerBase
     }
 
     [HttpPut("[action]")]
-    public async Task<ActionResult> UpdateIngredientDetails(int id, UpdateIngredientDetailCommand command)
+    public async Task<ActionResult> UpdateProductDetails(int id, UpdateProductDetailCommand command)
     {
         if (id != command.Id)
         {
@@ -54,7 +54,7 @@ public class IngredientsController : ApiControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(int id)
     {
-        await Mediator.Send(new DeleteIngredientCommand(id));
+        await Mediator.Send(new DeleteProductCommand(id));
 
         return NoContent();
     }

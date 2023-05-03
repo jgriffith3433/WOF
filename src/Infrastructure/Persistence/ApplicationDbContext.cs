@@ -33,7 +33,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
     public DbSet<Recipe> Recipes => Set<Recipe>();
 
-    public DbSet<Ingredient> Ingredients => Set<Ingredient>();
+    public DbSet<Product> Products => Set<Product>();
 
     public DbSet<Stock> Stocks => Set<Stock>();
 

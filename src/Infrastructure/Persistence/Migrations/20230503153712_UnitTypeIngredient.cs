@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WOF.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class UnitTypeIngredient : Migration
+    public partial class UnitTypeProduct : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,7 +21,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
             migrationBuilder.AddColumn<int>(
                 name: "UnitType",
-                table: "Ingredients",
+                table: "Products",
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
@@ -41,7 +41,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    IngredientId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -51,21 +51,21 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_CalledIngredients", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CalledIngredients_Ingredients_IngredientId",
-                        column: x => x.IngredientId,
-                        principalTable: "Ingredients",
+                        name: "FK_CalledIngredients_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CompletedOrderIngredient",
+                name: "CompletedOrderProduct",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CompletedOrderId = table.Column<int>(type: "int", nullable: false),
-                    IngredientId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -73,41 +73,41 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CompletedOrderIngredient", x => x.Id);
+                    table.PrimaryKey("PK_CompletedOrderProduct", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CompletedOrderIngredient_CompletedOrders_CompletedOrderId",
+                        name: "FK_CompletedOrderProduct_CompletedOrders_CompletedOrderId",
                         column: x => x.CompletedOrderId,
                         principalTable: "CompletedOrders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CompletedOrderIngredient_Ingredients_IngredientId",
-                        column: x => x.IngredientId,
-                        principalTable: "Ingredients",
+                        name: "FK_CompletedOrderProduct_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CompletedOrderIngredients",
+                name: "CompletedOrderProducts",
                 columns: table => new
                 {
                     CompletedOrderId = table.Column<int>(type: "int", nullable: false),
-                    IngredientId = table.Column<int>(type: "int", nullable: false)
+                    ProductId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CompletedOrderIngredients", x => new { x.CompletedOrderId, x.IngredientId });
+                    table.PrimaryKey("PK_CompletedOrderProducts", x => new { x.CompletedOrderId, x.ProductId });
                     table.ForeignKey(
-                        name: "FK_CompletedOrderIngredients_CompletedOrders_CompletedOrderId",
+                        name: "FK_CompletedOrderProducts_CompletedOrders_CompletedOrderId",
                         column: x => x.CompletedOrderId,
                         principalTable: "CompletedOrders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CompletedOrderIngredients_Ingredients_IngredientId",
-                        column: x => x.IngredientId,
-                        principalTable: "Ingredients",
+                        name: "FK_CompletedOrderProducts_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -182,24 +182,24 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 column: "RecipeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CalledIngredients_IngredientId",
+                name: "IX_CalledIngredients_ProductId",
                 table: "CalledIngredients",
-                column: "IngredientId");
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompletedOrderIngredient_CompletedOrderId",
-                table: "CompletedOrderIngredient",
+                name: "IX_CompletedOrderProduct_CompletedOrderId",
+                table: "CompletedOrderProduct",
                 column: "CompletedOrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompletedOrderIngredient_IngredientId",
-                table: "CompletedOrderIngredient",
-                column: "IngredientId");
+                name: "IX_CompletedOrderProduct_ProductId",
+                table: "CompletedOrderProduct",
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompletedOrderIngredients_IngredientId",
-                table: "CompletedOrderIngredients",
-                column: "IngredientId");
+                name: "IX_CompletedOrderProducts_ProductId",
+                table: "CompletedOrderProducts",
+                column: "ProductId");
         }
 
         /// <inheritdoc />
@@ -212,17 +212,17 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 name: "CalledIngredientRecipes");
 
             migrationBuilder.DropTable(
-                name: "CompletedOrderIngredient");
+                name: "CompletedOrderProduct");
 
             migrationBuilder.DropTable(
-                name: "CompletedOrderIngredients");
+                name: "CompletedOrderProducts");
 
             migrationBuilder.DropTable(
                 name: "CalledIngredients");
 
             migrationBuilder.DropColumn(
                 name: "UnitType",
-                table: "Ingredients");
+                table: "Products");
 
             migrationBuilder.AlterColumn<string>(
                 name: "UserImport",

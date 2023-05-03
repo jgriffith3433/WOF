@@ -11,10 +11,10 @@ public class CompletedOrderConfiguration : IEntityTypeConfiguration<CompletedOrd
         builder.Property(t => t.UserImport)
             .IsRequired();
 
-        builder.HasMany(left => left.Ingredients).WithMany(right => right.CompletedOrders).UsingEntity("CompletedOrderIngredient", typeof(Dictionary<string, object>),
-            right => right.HasOne(typeof(Ingredient)).WithMany().HasForeignKey("IngredientId"),
+        builder.HasMany(left => left.Products).WithMany(right => right.CompletedOrders).UsingEntity("CompletedOrderProduct", typeof(Dictionary<string, object>),
+            right => right.HasOne(typeof(Product)).WithMany().HasForeignKey("ProductId"),
             left => left.HasOne(typeof(CompletedOrder)).WithMany().HasForeignKey("CompletedOrderId"),
-            join => join.ToTable("CompletedOrderIngredients")
+            join => join.ToTable("CompletedOrderProducts")
         );
     }
 }

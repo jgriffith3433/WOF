@@ -188,19 +188,19 @@
         ]
       }
     },
-    "/api/Ingredients": {
+    "/api/Products": {
       "get": {
         "tags": [
-          "Ingredients"
+          "Products"
         ],
-        "operationId": "Ingredients_GetIngredients",
+        "operationId": "Products_GetProducts",
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GetIngredientsVm"
+                  "$ref": "#/components/schemas/GetProductsVm"
                 }
               }
             }
@@ -214,15 +214,15 @@
       },
       "post": {
         "tags": [
-          "Ingredients"
+          "Products"
         ],
-        "operationId": "Ingredients_Create",
+        "operationId": "Products_Create",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateIngredientCommand"
+                "$ref": "#/components/schemas/CreateProductCommand"
               }
             }
           },
@@ -249,12 +249,12 @@
         ]
       }
     },
-    "/api/Ingredients/{id}": {
+    "/api/Products/{id}": {
       "put": {
         "tags": [
-          "Ingredients"
+          "Products"
         ],
-        "operationId": "Ingredients_Update",
+        "operationId": "Products_Update",
         "parameters": [
           {
             "name": "id",
@@ -272,7 +272,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateIngredientCommand"
+                "$ref": "#/components/schemas/UpdateProductCommand"
               }
             }
           },
@@ -300,9 +300,9 @@
       },
       "delete": {
         "tags": [
-          "Ingredients"
+          "Products"
         ],
-        "operationId": "Ingredients_Delete",
+        "operationId": "Products_Delete",
         "parameters": [
           {
             "name": "id",
@@ -335,12 +335,12 @@
         ]
       }
     },
-    "/api/Ingredients/UpdateIngredientDetails": {
+    "/api/Products/UpdateProductDetails": {
       "put": {
         "tags": [
-          "Ingredients"
+          "Products"
         ],
-        "operationId": "Ingredients_UpdateIngredientDetails",
+        "operationId": "Products_UpdateProductDetails",
         "parameters": [
           {
             "name": "id",
@@ -357,7 +357,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateIngredientDetailCommand"
+                "$ref": "#/components/schemas/UpdateProductDetailCommand"
               }
             }
           },
@@ -887,15 +887,15 @@
             "type": "string",
             "nullable": true
           },
-          "ingredients": {
+          "products": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/IngredientDto"
+              "$ref": "#/components/schemas/ProductDto"
             }
           }
         }
       },
-      "IngredientDto": {
+      "ProductDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -939,19 +939,19 @@
           }
         }
       },
-      "GetIngredientsVm": {
+      "GetProductsVm": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "ingredients": {
+          "products": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/IngredientBriefDto"
+              "$ref": "#/components/schemas/ProductBriefDto"
             }
           }
         }
       },
-      "IngredientBriefDto": {
+      "ProductBriefDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -970,7 +970,7 @@
           }
         }
       },
-      "CreateIngredientCommand": {
+      "CreateProductCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -985,7 +985,7 @@
           }
         }
       },
-      "UpdateIngredientCommand": {
+      "UpdateProductCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1004,7 +1004,7 @@
           }
         }
       },
-      "UpdateIngredientDetailCommand": {
+      "UpdateProductDetailCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1046,7 +1046,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "ingredients": {
+          "products": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/StockDto"

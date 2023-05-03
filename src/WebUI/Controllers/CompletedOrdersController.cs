@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WOF.Domain.Entities;
 using WOF.Application.Walmart.Commands;
-using WOF.Application.Ingredients.Queries.GetIngredients;
+using WOF.Application.Products.Queries.GetProducts;
 
 namespace WOF.WebUI.Controllers;
 
@@ -22,7 +22,7 @@ public class CompletedOrdersController : ApiControllerBase
     [HttpGet("{id}")]
     public async Task<CompletedOrderDto> Get(int id)
     {
-        return await Mediator.Send(new CreateIngredientsFromCompletedOrderCommand
+        return await Mediator.Send(new CreateProductsFromCompletedOrderCommand
         {
             CompletedOrderId = id
         });

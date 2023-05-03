@@ -12,7 +12,7 @@ public class CalledIngredientConfiguration : IEntityTypeConfiguration<CalledIngr
             .HasMaxLength(200)
             .IsRequired();
 
-        builder.Property(t => t.IngredientId)
+        builder.Property(t => t.ProductId)
             .IsRequired();
     }
 }

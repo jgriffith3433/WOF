@@ -40,19 +40,19 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.ToTable("CalledIngredientRecipes", (string)null);
                 });
 
-            modelBuilder.Entity("CompletedOrderIngredient", b =>
+            modelBuilder.Entity("CompletedOrderProduct", b =>
                 {
                     b.Property<int>("CompletedOrderId")
                         .HasColumnType("int");
 
-                    b.Property<int>("IngredientId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.HasKey("CompletedOrderId", "IngredientId");
+                    b.HasKey("CompletedOrderId", "ProductId");
 
-                    b.HasIndex("IngredientId");
+                    b.HasIndex("ProductId");
 
-                    b.ToTable("CompletedOrderIngredients", (string)null);
+                    b.ToTable("CompletedOrderProducts", (string)null);
                 });
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.DeviceFlowCodes", b =>
@@ -347,7 +347,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IngredientId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("LastModified")
@@ -363,7 +363,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IngredientId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("CalledIngredients");
                 });
@@ -432,7 +432,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.ToTable("CompletedOrders");
                 });
 
-            modelBuilder.Entity("WOF.Domain.Entities.CompletedOrderIngredient", b =>
+            modelBuilder.Entity("WOF.Domain.Entities.CompletedOrderProduct", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -449,7 +449,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IngredientId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("LastModified")
@@ -462,12 +462,12 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CompletedOrderId");
 
-                    b.HasIndex("IngredientId");
+                    b.HasIndex("ProductId");
 
-                    b.ToTable("CompletedOrderIngredient");
+                    b.ToTable("CompletedOrderProduct");
                 });
 
-            modelBuilder.Entity("WOF.Domain.Entities.Ingredient", b =>
+            modelBuilder.Entity("WOF.Domain.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -501,7 +501,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Ingredients");
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("WOF.Domain.Entities.Recipe", b =>
@@ -557,7 +557,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IngredientId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("LastModified")
@@ -579,7 +579,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IngredientId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Stocks");
                 });
@@ -741,7 +741,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CompletedOrderIngredient", b =>
+            modelBuilder.Entity("CompletedOrderProduct", b =>
                 {
                     b.HasOne("WOF.Domain.Entities.CompletedOrder", null)
                         .WithMany()
@@ -749,9 +749,9 @@ namespace WOF.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WOF.Domain.Entities.Ingredient", null)
+                    b.HasOne("WOF.Domain.Entities.Product", null)
                         .WithMany()
-                        .HasForeignKey("IngredientId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -809,13 +809,13 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("WOF.Domain.Entities.CalledIngredient", b =>
                 {
-                    b.HasOne("WOF.Domain.Entities.Ingredient", "Ingredient")
+                    b.HasOne("WOF.Domain.Entities.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("IngredientId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Ingredient");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("WOF.Domain.Entities.CalledIngredientRecipe", b =>
@@ -837,7 +837,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.Navigation("Recipe");
                 });
 
-            modelBuilder.Entity("WOF.Domain.Entities.CompletedOrderIngredient", b =>
+            modelBuilder.Entity("WOF.Domain.Entities.CompletedOrderProduct", b =>
                 {
                     b.HasOne("WOF.Domain.Entities.CompletedOrder", "CompletedOrder")
                         .WithMany()
@@ -845,26 +845,26 @@ namespace WOF.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WOF.Domain.Entities.Ingredient", "Ingredient")
+                    b.HasOne("WOF.Domain.Entities.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("IngredientId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CompletedOrder");
 
-                    b.Navigation("Ingredient");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("WOF.Domain.Entities.Stock", b =>
                 {
-                    b.HasOne("WOF.Domain.Entities.Ingredient", "Ingredient")
+                    b.HasOne("WOF.Domain.Entities.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("IngredientId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Ingredient");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("WOF.Domain.Entities.TodoItem", b =>

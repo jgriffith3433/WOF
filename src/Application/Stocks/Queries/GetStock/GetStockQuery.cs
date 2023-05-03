@@ -25,7 +25,7 @@ public class GetStockQueryHandler : IRequestHandler<GetStockQuery, GetStockVm>
     {
         return new GetStockVm
         {
-            Ingredients = await _context.Stocks
+            Products = await _context.Stocks
                 .AsNoTracking()
                 .ProjectTo<StockDto>(_mapper.ConfigurationProvider)
                 .OrderBy(t => t.Id)

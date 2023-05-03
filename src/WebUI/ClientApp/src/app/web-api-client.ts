@@ -303,18 +303,18 @@ export class CompletedOrdersClient implements ICompletedOrdersClient {
     }
 }
 
-export interface IIngredientsClient {
-    getIngredients(): Observable<GetIngredientsVm>;
-    create(command: CreateIngredientCommand): Observable<number>;
-    update(id: number, command: UpdateIngredientCommand): Observable<FileResponse>;
+export interface IProductsClient {
+    getProducts(): Observable<GetProductsVm>;
+    create(command: CreateProductCommand): Observable<number>;
+    update(id: number, command: UpdateProductCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
-    updateIngredientDetails(id: number | undefined, command: UpdateIngredientDetailCommand): Observable<FileResponse>;
+    updateProductDetails(id: number | undefined, command: UpdateProductDetailCommand): Observable<FileResponse>;
 }
 
 @Injectable({
     providedIn: 'root'
 })
-export class IngredientsClient implements IIngredientsClient {
+export class ProductsClient implements IProductsClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -324,8 +324,8 @@ export class IngredientsClient implements IIngredientsClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getIngredients(): Observable<GetIngredientsVm> {
-        let url_ = this.baseUrl + "/api/Ingredients";
+    getProducts(): Observable<GetProductsVm> {
+        let url_ = this.baseUrl + "/api/Products";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -337,20 +337,20 @@ export class IngredientsClient implements IIngredientsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetIngredients(response_);
+            return this.processGetProducts(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetIngredients(response_ as any);
+                    return this.processGetProducts(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetIngredientsVm>;
+                    return _observableThrow(e) as any as Observable<GetProductsVm>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<GetIngredientsVm>;
+                return _observableThrow(response_) as any as Observable<GetProductsVm>;
         }));
     }
 
-    protected processGetIngredients(response: HttpResponseBase): Observable<GetIngredientsVm> {
+    protected processGetProducts(response: HttpResponseBase): Observable<GetProductsVm> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -361,7 +361,7 @@ export class IngredientsClient implements IIngredientsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetIngredientsVm.fromJS(resultData200);
+            result200 = GetProductsVm.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -372,8 +372,8 @@ export class IngredientsClient implements IIngredientsClient {
         return _observableOf(null as any);
     }
 
-    create(command: CreateIngredientCommand): Observable<number> {
-        let url_ = this.baseUrl + "/api/Ingredients";
+    create(command: CreateProductCommand): Observable<number> {
+        let url_ = this.baseUrl + "/api/Products";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -425,8 +425,8 @@ export class IngredientsClient implements IIngredientsClient {
         return _observableOf(null as any);
     }
 
-    update(id: number, command: UpdateIngredientCommand): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/Ingredients/{id}";
+    update(id: number, command: UpdateProductCommand): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Products/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -485,7 +485,7 @@ export class IngredientsClient implements IIngredientsClient {
     }
 
     delete(id: number): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/Ingredients/{id}";
+        let url_ = this.baseUrl + "/api/Products/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -539,8 +539,8 @@ export class IngredientsClient implements IIngredientsClient {
         return _observableOf(null as any);
     }
 
-    updateIngredientDetails(id: number | undefined, command: UpdateIngredientDetailCommand): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/Ingredients/UpdateIngredientDetails?";
+    updateProductDetails(id: number | undefined, command: UpdateProductDetailCommand): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Products/UpdateProductDetails?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
         else if (id !== undefined)
@@ -560,11 +560,11 @@ export class IngredientsClient implements IIngredientsClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateIngredientDetails(response_);
+            return this.processUpdateProductDetails(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdateIngredientDetails(response_ as any);
+                    return this.processUpdateProductDetails(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<FileResponse>;
                 }
@@ -573,7 +573,7 @@ export class IngredientsClient implements IIngredientsClient {
         }));
     }
 
-    protected processUpdateIngredientDetails(response: HttpResponseBase): Observable<FileResponse> {
+    protected processUpdateProductDetails(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1439,7 +1439,7 @@ export interface IUnitTypeDto {
 export class CompletedOrderDto implements ICompletedOrderDto {
     id?: number;
     userImport?: string | undefined;
-    ingredients?: IngredientDto[];
+    products?: ProductDto[];
 
     constructor(data?: ICompletedOrderDto) {
         if (data) {
@@ -1454,10 +1454,10 @@ export class CompletedOrderDto implements ICompletedOrderDto {
         if (_data) {
             this.id = _data["id"];
             this.userImport = _data["userImport"];
-            if (Array.isArray(_data["ingredients"])) {
-                this.ingredients = [] as any;
-                for (let item of _data["ingredients"])
-                    this.ingredients!.push(IngredientDto.fromJS(item));
+            if (Array.isArray(_data["products"])) {
+                this.products = [] as any;
+                for (let item of _data["products"])
+                    this.products!.push(ProductDto.fromJS(item));
             }
         }
     }
@@ -1473,10 +1473,10 @@ export class CompletedOrderDto implements ICompletedOrderDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["userImport"] = this.userImport;
-        if (Array.isArray(this.ingredients)) {
-            data["ingredients"] = [];
-            for (let item of this.ingredients)
-                data["ingredients"].push(item.toJSON());
+        if (Array.isArray(this.products)) {
+            data["products"] = [];
+            for (let item of this.products)
+                data["products"].push(item.toJSON());
         }
         return data;
     }
@@ -1485,16 +1485,16 @@ export class CompletedOrderDto implements ICompletedOrderDto {
 export interface ICompletedOrderDto {
     id?: number;
     userImport?: string | undefined;
-    ingredients?: IngredientDto[];
+    products?: ProductDto[];
 }
 
-export class IngredientDto implements IIngredientDto {
+export class ProductDto implements IProductDto {
     id?: number;
     name?: string;
     walmartId?: string;
     unitType?: number;
 
-    constructor(data?: IIngredientDto) {
+    constructor(data?: IProductDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1512,9 +1512,9 @@ export class IngredientDto implements IIngredientDto {
         }
     }
 
-    static fromJS(data: any): IngredientDto {
+    static fromJS(data: any): ProductDto {
         data = typeof data === 'object' ? data : {};
-        let result = new IngredientDto();
+        let result = new ProductDto();
         result.init(data);
         return result;
     }
@@ -1529,7 +1529,7 @@ export class IngredientDto implements IIngredientDto {
     }
 }
 
-export interface IIngredientDto {
+export interface IProductDto {
     id?: number;
     name?: string;
     walmartId?: string;
@@ -1612,10 +1612,10 @@ export interface IUpdateCompletedOrderCommand {
     userImport?: string | undefined;
 }
 
-export class GetIngredientsVm implements IGetIngredientsVm {
-    ingredients?: IngredientBriefDto[];
+export class GetProductsVm implements IGetProductsVm {
+    products?: ProductBriefDto[];
 
-    constructor(data?: IGetIngredientsVm) {
+    constructor(data?: IGetProductsVm) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1626,126 +1626,42 @@ export class GetIngredientsVm implements IGetIngredientsVm {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["ingredients"])) {
-                this.ingredients = [] as any;
-                for (let item of _data["ingredients"])
-                    this.ingredients!.push(IngredientBriefDto.fromJS(item));
+            if (Array.isArray(_data["products"])) {
+                this.products = [] as any;
+                for (let item of _data["products"])
+                    this.products!.push(ProductBriefDto.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): GetIngredientsVm {
+    static fromJS(data: any): GetProductsVm {
         data = typeof data === 'object' ? data : {};
-        let result = new GetIngredientsVm();
+        let result = new GetProductsVm();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.ingredients)) {
-            data["ingredients"] = [];
-            for (let item of this.ingredients)
-                data["ingredients"].push(item.toJSON());
+        if (Array.isArray(this.products)) {
+            data["products"] = [];
+            for (let item of this.products)
+                data["products"].push(item.toJSON());
         }
         return data;
     }
 }
 
-export interface IGetIngredientsVm {
-    ingredients?: IngredientBriefDto[];
+export interface IGetProductsVm {
+    products?: ProductBriefDto[];
 }
 
-export class IngredientBriefDto implements IIngredientBriefDto {
+export class ProductBriefDto implements IProductBriefDto {
     id?: number;
     name?: string | undefined;
     walmartId?: number | undefined;
 
-    constructor(data?: IIngredientBriefDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.walmartId = _data["walmartId"];
-        }
-    }
-
-    static fromJS(data: any): IngredientBriefDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new IngredientBriefDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["walmartId"] = this.walmartId;
-        return data;
-    }
-}
-
-export interface IIngredientBriefDto {
-    id?: number;
-    name?: string | undefined;
-    walmartId?: number | undefined;
-}
-
-export class CreateIngredientCommand implements ICreateIngredientCommand {
-    name?: string | undefined;
-    walmartId?: number | undefined;
-
-    constructor(data?: ICreateIngredientCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            this.walmartId = _data["walmartId"];
-        }
-    }
-
-    static fromJS(data: any): CreateIngredientCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateIngredientCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["walmartId"] = this.walmartId;
-        return data;
-    }
-}
-
-export interface ICreateIngredientCommand {
-    name?: string | undefined;
-    walmartId?: number | undefined;
-}
-
-export class UpdateIngredientCommand implements IUpdateIngredientCommand {
-    id?: number;
-    name?: string | undefined;
-    walmartId?: number | undefined;
-
-    constructor(data?: IUpdateIngredientCommand) {
+    constructor(data?: IProductBriefDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1762,9 +1678,9 @@ export class UpdateIngredientCommand implements IUpdateIngredientCommand {
         }
     }
 
-    static fromJS(data: any): UpdateIngredientCommand {
+    static fromJS(data: any): ProductBriefDto {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateIngredientCommand();
+        let result = new ProductBriefDto();
         result.init(data);
         return result;
     }
@@ -1778,19 +1694,103 @@ export class UpdateIngredientCommand implements IUpdateIngredientCommand {
     }
 }
 
-export interface IUpdateIngredientCommand {
+export interface IProductBriefDto {
     id?: number;
     name?: string | undefined;
     walmartId?: number | undefined;
 }
 
-export class UpdateIngredientDetailCommand implements IUpdateIngredientDetailCommand {
+export class CreateProductCommand implements ICreateProductCommand {
+    name?: string | undefined;
+    walmartId?: number | undefined;
+
+    constructor(data?: ICreateProductCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.walmartId = _data["walmartId"];
+        }
+    }
+
+    static fromJS(data: any): CreateProductCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateProductCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["walmartId"] = this.walmartId;
+        return data;
+    }
+}
+
+export interface ICreateProductCommand {
+    name?: string | undefined;
+    walmartId?: number | undefined;
+}
+
+export class UpdateProductCommand implements IUpdateProductCommand {
+    id?: number;
+    name?: string | undefined;
+    walmartId?: number | undefined;
+
+    constructor(data?: IUpdateProductCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.walmartId = _data["walmartId"];
+        }
+    }
+
+    static fromJS(data: any): UpdateProductCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateProductCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["walmartId"] = this.walmartId;
+        return data;
+    }
+}
+
+export interface IUpdateProductCommand {
+    id?: number;
+    name?: string | undefined;
+    walmartId?: number | undefined;
+}
+
+export class UpdateProductDetailCommand implements IUpdateProductDetailCommand {
     id?: number;
     unitType?: UnitType;
     name?: string | undefined;
     walmartId?: number | undefined;
 
-    constructor(data?: IUpdateIngredientDetailCommand) {
+    constructor(data?: IUpdateProductDetailCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1808,9 +1808,9 @@ export class UpdateIngredientDetailCommand implements IUpdateIngredientDetailCom
         }
     }
 
-    static fromJS(data: any): UpdateIngredientDetailCommand {
+    static fromJS(data: any): UpdateProductDetailCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateIngredientDetailCommand();
+        let result = new UpdateProductDetailCommand();
         result.init(data);
         return result;
     }
@@ -1825,7 +1825,7 @@ export class UpdateIngredientDetailCommand implements IUpdateIngredientDetailCom
     }
 }
 
-export interface IUpdateIngredientDetailCommand {
+export interface IUpdateProductDetailCommand {
     id?: number;
     unitType?: UnitType;
     name?: string | undefined;
@@ -1840,7 +1840,7 @@ export enum UnitType {
 }
 
 export class GetStockVm implements IGetStockVm {
-    ingredients?: StockDto[];
+    products?: StockDto[];
 
     constructor(data?: IGetStockVm) {
         if (data) {
@@ -1853,10 +1853,10 @@ export class GetStockVm implements IGetStockVm {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["ingredients"])) {
-                this.ingredients = [] as any;
-                for (let item of _data["ingredients"])
-                    this.ingredients!.push(StockDto.fromJS(item));
+            if (Array.isArray(_data["products"])) {
+                this.products = [] as any;
+                for (let item of _data["products"])
+                    this.products!.push(StockDto.fromJS(item));
             }
         }
     }
@@ -1870,17 +1870,17 @@ export class GetStockVm implements IGetStockVm {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.ingredients)) {
-            data["ingredients"] = [];
-            for (let item of this.ingredients)
-                data["ingredients"].push(item.toJSON());
+        if (Array.isArray(this.products)) {
+            data["products"] = [];
+            for (let item of this.products)
+                data["products"].push(item.toJSON());
         }
         return data;
     }
 }
 
 export interface IGetStockVm {
-    ingredients?: StockDto[];
+    products?: StockDto[];
 }
 
 export class StockDto implements IStockDto {

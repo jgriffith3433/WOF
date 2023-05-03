@@ -2,5 +2,5 @@
 
 public class GetStockVm
 {
-    public IList<StockDto> Ingredients { get; set; } = new List<StockDto>();
+    public IList<StockDto> Products { get; set; } = new List<StockDto>();
 }

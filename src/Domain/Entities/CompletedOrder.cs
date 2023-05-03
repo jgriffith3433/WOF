@@ -4,5 +4,5 @@ public class CompletedOrder : BaseAuditableEntity
 {
     public string UserImport { get; set; }
 
-    public IList<Ingredient> Ingredients { get; private set; } = new List<Ingredient>();
+    public IList<Product> Products { get; private set; } = new List<Product>();
 }

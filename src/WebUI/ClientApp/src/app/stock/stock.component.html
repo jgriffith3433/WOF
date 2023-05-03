@@ -1,10 +1,10 @@
-<h1 id="tableLabel">Stocked ingredients</h1>
+<h1 id="tableLabel">Stocked products</h1>
 
-<p>List of stocked ingredients</p>
+<p>List of stocked products</p>
 
-<p *ngIf="!ingredients?.length"><em>Loading...</em></p>
+<p *ngIf="!products?.length"><em>Loading...</em></p>
 
-<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="ingredients.length">
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="products.length">
   <thead>
     <tr>
       <th>Id</th>
@@ -13,10 +13,10 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let ingredient of ingredients">
-      <td>{{ ingredient.id }}</td>
-      <td>{{ ingredient.name }}</td>
-      <td>{{ ingredient.units }}</td>
+    <tr *ngFor="let product of products">
+      <td>{{ product.id }}</td>
+      <td>{{ product.name }}</td>
+      <td>{{ product.units }}</td>
     </tr>
   </tbody>
 </table>

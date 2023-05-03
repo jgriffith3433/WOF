@@ -11,7 +11,7 @@ public interface IApplicationDbContext
 
     DbSet<Recipe> Recipes { get; }
 
-    DbSet<Ingredient> Ingredients { get; }
+    DbSet<Product> Products { get; }
 
     DbSet<Stock> Stocks { get; }
 

@@ -144,7 +144,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
 
             migrationBuilder.CreateTable(
-                name: "Ingredients",
+                name: "Products",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -159,7 +159,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Ingredients", x => x.Id);
+                    table.PrimaryKey("PK_Products", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(

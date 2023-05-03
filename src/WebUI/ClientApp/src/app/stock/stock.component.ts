@@ -6,11 +6,11 @@ import { StockClient, StockDto } from '../web-api-client';
   templateUrl: './stock.component.html'
 })
 export class StockComponent {
-  public ingredients: StockDto[];
+  public products: StockDto[];
 
   constructor(private client: StockClient) {
     client.getStock().subscribe(result => {
-      this.ingredients = result.ingredients;
+      this.products = result.products;
     }, error => console.error(error));
   }
 }

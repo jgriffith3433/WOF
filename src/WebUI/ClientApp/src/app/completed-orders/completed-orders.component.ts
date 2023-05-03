@@ -2,14 +2,14 @@ import { Component, TemplateRef, OnInit } from '@angular/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import {
   CompletedOrdersClient,
-  IngredientsClient,
+  ProductsClient,
   CompletedOrderDto,
-  IngredientDto,
+  ProductDto,
   UnitTypeDto,
   CreateCompletedOrderCommand,
   UpdateCompletedOrderCommand,
-  CreateIngredientCommand,
-  UpdateIngredientCommand
+  CreateProductCommand,
+  UpdateProductCommand
 } from '../web-api-client';
 
 @Component({
@@ -22,18 +22,18 @@ export class CompletedOrdersComponent implements OnInit {
   completedOrders: CompletedOrderDto[];
   unitTypes: UnitTypeDto[];
   selectedCompletedOrder: CompletedOrderDto;
-  selectedIngredient: IngredientDto;
+  selectedProduct: ProductDto;
   newCompletedOrderEditor: any = {};
   completedOrderOptionsEditor: any = {};
-  ingredientDetailsEditor: any = {};
+  productDetailsEditor: any = {};
   newCompletedOrderModalRef: BsModalRef;
   completedOrderOptionsModalRef: BsModalRef;
   deleteCompletedOrderModalRef: BsModalRef;
-  ingredientDetailsModalRef: BsModalRef;
+  productDetailsModalRef: BsModalRef;
 
   constructor(
     private completedOrdersClient: CompletedOrdersClient,
-    private ingredientsClient: IngredientsClient,
+    private productsClient: ProductsClient,
     private modalService: BsModalService
   ) { }
 
@@ -51,8 +51,8 @@ export class CompletedOrdersComponent implements OnInit {
   }
 
   // Completed Orders
-  remainingIngredients(completedOrder: CompletedOrderDto): number {
-    return completedOrder.ingredients.filter(t => !t.walmartId).length;
+  remainingProducts(completedOrder: CompletedOrderDto): number {
+    return completedOrder.products.filter(t => !t.walmartId).length;
   }
 
   showNewCompletedOrderModal(template: TemplateRef<any>): void {
@@ -69,7 +69,7 @@ export class CompletedOrdersComponent implements OnInit {
     const completedOrder = {
       id: 0,
       userImport: this.newCompletedOrderEditor.userImport,
-      ingredients: []
+      products: []
     } as CompletedOrderDto;
 
     this.completedOrdersClient.create(completedOrder as CreateCompletedOrderCommand).subscribe(
@@ -139,94 +139,94 @@ export class CompletedOrdersComponent implements OnInit {
     );
   }
 
-  // Ingredients
-  showIngredientDetailsModal(template: TemplateRef<any>, ingredient: IngredientDto): void {
-    this.selectedIngredient = ingredient;
-    this.ingredientDetailsEditor = {
-      ...this.selectedIngredient
+  // Products
+  showProductDetailsModal(template: TemplateRef<any>, product: ProductDto): void {
+    this.selectedProduct = product;
+    this.productDetailsEditor = {
+      ...this.selectedProduct
     };
 
-    this.ingredientDetailsModalRef = this.modalService.show(template);
+    this.productDetailsModalRef = this.modalService.show(template);
   }
 
-  updateIngredientDetails(): void {
-    const ingredient = this.ingredientDetailsEditor as UpdateIngredientCommand;
-    this.ingredientsClient.updateIngredientDetails(this.selectedIngredient.id, ingredient).subscribe(
+  updateProductDetails(): void {
+    const product = this.productDetailsEditor as UpdateProductCommand;
+    this.productsClient.updateProductDetails(this.selectedProduct.id, product).subscribe(
       () => {
-        this.selectedIngredient.unitType = this.ingredientDetailsEditor.unitType;
-        this.selectedIngredient.walmartId = this.ingredientDetailsEditor.walmartId;
-        this.ingredientDetailsModalRef.hide();
-        this.ingredientDetailsEditor = {};
+        this.selectedProduct.unitType = this.productDetailsEditor.unitType;
+        this.selectedProduct.walmartId = this.productDetailsEditor.walmartId;
+        this.productDetailsModalRef.hide();
+        this.productDetailsEditor = {};
       },
       error => console.error(error)
     );
   }
 
-  addIngredient() {
-    const ingredient = {
+  addProduct() {
+    const product = {
       id: 0,
       name: '',
       unitType: this.unitTypes[0].value,
       walmartId: ''
-    } as IngredientDto;
+    } as ProductDto;
 
-    this.selectedCompletedOrder.ingredients.push(ingredient);
-    const index = this.selectedCompletedOrder.ingredients.length - 1;
-    this.editIngredient(ingredient, 'ingredientName' + index);
+    this.selectedCompletedOrder.products.push(product);
+    const index = this.selectedCompletedOrder.products.length - 1;
+    this.editProduct(product, 'productName' + index);
   }
 
-  editIngredient(ingredient: IngredientDto, inputId: string): void {
-    this.selectedIngredient = ingredient;
+  editProduct(product: ProductDto, inputId: string): void {
+    this.selectedProduct = product;
     setTimeout(() => document.getElementById(inputId).focus(), 100);
   }
 
-  updateIngredient(ingredient: IngredientDto, pressedEnter: boolean = false): void {
-    const isNewIngredient = ingredient.id === 0;
+  updateProduct(product: ProductDto, pressedEnter: boolean = false): void {
+    const isNewProduct = product.id === 0;
 
-    if (!ingredient.name.trim()) {
-      this.deleteIngredient(ingredient);
+    if (!product.name.trim()) {
+      this.deleteProduct(product);
       return;
     }
 
     //TODO: need to look at this
-    //if (ingredient.id === 0) {
-    //  this.ingredientsClient
+    //if (product.id === 0) {
+    //  this.productsClient
     //    .create({
-    //      ...ingredient, listId: this.selectedCompletedOrder.id
-    //    } as CreateIngredientCommand)
+    //      ...product, listId: this.selectedCompletedOrder.id
+    //    } as CreateProductCommand)
     //    .subscribe(
     //      result => {
-    //        ingredient.id = result;
+    //        product.id = result;
     //      },
     //      error => console.error(error)
     //    );
     //} else {
-    //  this.ingredientsClient.update(ingredient.id, ingredient).subscribe(
+    //  this.productsClient.update(product.id, product).subscribe(
     //    () => console.log('Update succeeded.'),
     //    error => console.error(error)
     //  );
     //}
 
-    this.selectedIngredient = null;
+    this.selectedProduct = null;
 
-    if (isNewIngredient && pressedEnter) {
-      setTimeout(() => this.addIngredient(), 250);
+    if (isNewProduct && pressedEnter) {
+      setTimeout(() => this.addProduct(), 250);
     }
   }
 
-  deleteIngredient(ingredient: IngredientDto) {
-    if (this.ingredientDetailsModalRef) {
-      this.ingredientDetailsModalRef.hide();
+  deleteProduct(product: ProductDto) {
+    if (this.productDetailsModalRef) {
+      this.productDetailsModalRef.hide();
     }
 
-    if (ingredient.id === 0) {
-      const ingredientIndex = this.selectedCompletedOrder.ingredients.indexOf(this.selectedIngredient);
-      this.selectedCompletedOrder.ingredients.splice(ingredientIndex, 1);
+    if (product.id === 0) {
+      const productIndex = this.selectedCompletedOrder.products.indexOf(this.selectedProduct);
+      this.selectedCompletedOrder.products.splice(productIndex, 1);
     } else {
-      this.ingredientsClient.delete(ingredient.id).subscribe(
+      this.productsClient.delete(product.id).subscribe(
         () =>
-        (this.selectedCompletedOrder.ingredients = this.selectedCompletedOrder.ingredients.filter(
-          t => t.id !== ingredient.id
+        (this.selectedCompletedOrder.products = this.selectedCompletedOrder.products.filter(
+          t => t.id !== product.id
         )),
         error => console.error(error)
       );
