@@ -1,6 +1,6 @@
 ﻿namespace WOF.Domain.Entities;
 
-public class Stock : BaseAuditableEntity
+public class ProductStock : BaseAuditableEntity
 {
     public string Name { get; set; }
     public int Units { get; set; }

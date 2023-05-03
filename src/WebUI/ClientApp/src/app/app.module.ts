@@ -12,6 +12,7 @@ import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { ProductsComponent } from './products/products.component';
+import { ProductStockComponent } from './product-stock/product-stock.component';
 import { TodoComponent } from './todo/todo.component';
 import { CompletedOrdersComponent } from './completed-orders/completed-orders.component';
 import { TokenComponent } from './token/token.component';
@@ -28,6 +29,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     CounterComponent,
     FetchDataComponent,
     ProductsComponent,
+    ProductStockComponent,
     TodoComponent,
     CompletedOrdersComponent,
     TokenComponent

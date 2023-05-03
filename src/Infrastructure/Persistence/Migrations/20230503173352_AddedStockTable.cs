@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WOF.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedStockTable : Migration
+    public partial class AddedProductStockTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Stocks",
+                name: "ProductStocks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -28,9 +28,9 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stocks", x => x.Id);
+                    table.PrimaryKey("PK_ProductStocks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Stocks_Products_ProductId",
+                        name: "FK_ProductStocks_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
@@ -38,8 +38,8 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Stocks_ProductId",
-                table: "Stocks",
+                name: "IX_ProductStocks_ProductId",
+                table: "ProductStocks",
                 column: "ProductId");
         }
 
@@ -47,7 +47,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Stocks");
+                name: "ProductStocks");
         }
     }
 }

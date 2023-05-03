@@ -1,9 +1,9 @@
 ﻿using WOF.Application.Common.Mappings;
 using WOF.Domain.Entities;
 
-namespace WOF.Application.Stocks.Queries;
+namespace WOF.Application.ProductStocks.Queries;
 
-public class StockDto : IMapFrom<Stock>
+public class ProductStockDto : IMapFrom<ProductStock>
 {
     public int Id { get; set; }
 

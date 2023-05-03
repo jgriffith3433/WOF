@@ -600,14 +600,14 @@ export class ProductsClient implements IProductsClient {
     }
 }
 
-export interface IStockClient {
-    getStock(): Observable<GetStockVm>;
+export interface IProductStockClient {
+    getProductStock(): Observable<GetProductStockVm>;
 }
 
 @Injectable({
     providedIn: 'root'
 })
-export class StockClient implements IStockClient {
+export class ProductStockClient implements IProductStockClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -617,8 +617,8 @@ export class StockClient implements IStockClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getStock(): Observable<GetStockVm> {
-        let url_ = this.baseUrl + "/api/Stock";
+    getProductStock(): Observable<GetProductStockVm> {
+        let url_ = this.baseUrl + "/api/ProductStock";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -630,20 +630,20 @@ export class StockClient implements IStockClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetStock(response_);
+            return this.processGetProductStock(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetStock(response_ as any);
+                    return this.processGetProductStock(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetStockVm>;
+                    return _observableThrow(e) as any as Observable<GetProductStockVm>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<GetStockVm>;
+                return _observableThrow(response_) as any as Observable<GetProductStockVm>;
         }));
     }
 
-    protected processGetStock(response: HttpResponseBase): Observable<GetStockVm> {
+    protected processGetProductStock(response: HttpResponseBase): Observable<GetProductStockVm> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -654,7 +654,7 @@ export class StockClient implements IStockClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetStockVm.fromJS(resultData200);
+            result200 = GetProductStockVm.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1839,10 +1839,10 @@ export enum UnitType {
     High = 3,
 }
 
-export class GetStockVm implements IGetStockVm {
-    products?: StockDto[];
+export class GetProductStockVm implements IGetProductStockVm {
+    productStocks?: ProductStockDto[];
 
-    constructor(data?: IGetStockVm) {
+    constructor(data?: IGetProductStockVm) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1853,42 +1853,42 @@ export class GetStockVm implements IGetStockVm {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["products"])) {
-                this.products = [] as any;
-                for (let item of _data["products"])
-                    this.products!.push(StockDto.fromJS(item));
+            if (Array.isArray(_data["productStocks"])) {
+                this.productStocks = [] as any;
+                for (let item of _data["productStocks"])
+                    this.productStocks!.push(ProductStockDto.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): GetStockVm {
+    static fromJS(data: any): GetProductStockVm {
         data = typeof data === 'object' ? data : {};
-        let result = new GetStockVm();
+        let result = new GetProductStockVm();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.products)) {
-            data["products"] = [];
-            for (let item of this.products)
-                data["products"].push(item.toJSON());
+        if (Array.isArray(this.productStocks)) {
+            data["productStocks"] = [];
+            for (let item of this.productStocks)
+                data["productStocks"].push(item.toJSON());
         }
         return data;
     }
 }
 
-export interface IGetStockVm {
-    products?: StockDto[];
+export interface IGetProductStockVm {
+    productStocks?: ProductStockDto[];
 }
 
-export class StockDto implements IStockDto {
+export class ProductStockDto implements IProductStockDto {
     id?: number;
     name?: string;
     units?: number;
 
-    constructor(data?: IStockDto) {
+    constructor(data?: IProductStockDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1905,9 +1905,9 @@ export class StockDto implements IStockDto {
         }
     }
 
-    static fromJS(data: any): StockDto {
+    static fromJS(data: any): ProductStockDto {
         data = typeof data === 'object' ? data : {};
-        let result = new StockDto();
+        let result = new ProductStockDto();
         result.init(data);
         return result;
     }
@@ -1921,7 +1921,7 @@ export class StockDto implements IStockDto {
     }
 }
 
-export interface IStockDto {
+export interface IProductStockDto {
     id?: number;
     name?: string;
     units?: number;

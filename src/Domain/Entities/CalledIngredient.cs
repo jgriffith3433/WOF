@@ -6,7 +6,7 @@ public class CalledIngredient : BaseAuditableEntity
 
     public int ProductId { get; set; }
 
-    public Product Product { get; set; } = null!;
+    public ProductStock ProductStock { get; set; } = null!;
 
     public IList<Recipe> Recipes { get; private set; } = new List<Recipe>();
 }

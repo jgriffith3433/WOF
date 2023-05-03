@@ -540,7 +540,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.ToTable("Recipes");
                 });
 
-            modelBuilder.Entity("WOF.Domain.Entities.Stock", b =>
+            modelBuilder.Entity("WOF.Domain.Entities.ProductStock", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -578,7 +578,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Stocks");
+                    b.ToTable("ProductStocks");
                 });
 
             modelBuilder.Entity("WOF.Domain.Entities.TodoItem", b =>
@@ -853,7 +853,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("WOF.Domain.Entities.Stock", b =>
+            modelBuilder.Entity("WOF.Domain.Entities.ProductStock", b =>
                 {
                     b.HasOne("WOF.Domain.Entities.Product", "Product")
                         .WithMany()

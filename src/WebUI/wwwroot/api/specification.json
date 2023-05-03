@@ -384,19 +384,19 @@
         ]
       }
     },
-    "/api/Stock": {
+    "/api/ProductStock": {
       "get": {
         "tags": [
-          "Stock"
+          "ProductStock"
         ],
-        "operationId": "Stock_GetStock",
+        "operationId": "ProductStock_GetProductStock",
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GetStockVm"
+                  "$ref": "#/components/schemas/GetProductStockVm"
                 }
               }
             }
@@ -1042,19 +1042,19 @@
           3
         ]
       },
-      "GetStockVm": {
+      "GetProductStockVm": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "products": {
+          "productStocks": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/StockDto"
+              "$ref": "#/components/schemas/ProductStockDto"
             }
           }
         }
       },
-      "StockDto": {
+      "ProductStockDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {

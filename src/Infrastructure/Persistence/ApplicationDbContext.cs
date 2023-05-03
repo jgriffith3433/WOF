@@ -35,7 +35,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
     public DbSet<Product> Products => Set<Product>();
 
-    public DbSet<Stock> Stocks => Set<Stock>();
+    public DbSet<ProductStock> ProductStocks => Set<ProductStock>();
 
     public DbSet<CalledIngredient> CalledIngredients => Set<CalledIngredient>();
 
