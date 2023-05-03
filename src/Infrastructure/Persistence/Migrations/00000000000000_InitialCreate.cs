@@ -163,53 +163,6 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CalledIngredients",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IngredientId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CalledIngredients", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CalledIngredients_Ingredients_IngredientId",
-                        column: x => x.IngredientId,
-                        principalTable: "Ingredients",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CalledIngredientRecipes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CalledIngredientId = table.Column<int>(type: "int", nullable: false),
-                    RecipeId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.ForeignKey(
-                        name: "FK_CalledIngredientRecipe_CalledIngredientId",
-                        column: x => x.CalledIngredientId,
-                        principalTable: "CalledIngredients",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_CalledIngredientRecipe_RecipeId",
-                        column: x => x.RecipeId,
-                        principalTable: "Recipes",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CompletedOrders",
                 columns: table => new
                 {
@@ -224,29 +177,6 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CompletedOrders", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CompletedOrderIngredients",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IngredientId = table.Column<int>(type: "int", nullable: false),
-                    CompletedOrderId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.ForeignKey(
-                        name: "FK_CompletedOrderIngredient_IngredientId",
-                        column: x => x.IngredientId,
-                        principalTable: "Ingredients",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_CompletedOrderIngredient_CompletedOrderId",
-                        column: x => x.CompletedOrderId,
-                        principalTable: "CompletedOrders",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(

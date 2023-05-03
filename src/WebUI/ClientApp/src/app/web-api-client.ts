@@ -1287,6 +1287,7 @@ export class WeatherForecastClient implements IWeatherForecastClient {
 }
 
 export class CompletedOrdersVm implements ICompletedOrdersVm {
+    unitTypes?: UnitTypeDto[];
     completedOrders?: CompletedOrderDto[];
 
     constructor(data?: ICompletedOrdersVm) {
@@ -1300,6 +1301,11 @@ export class CompletedOrdersVm implements ICompletedOrdersVm {
 
     init(_data?: any) {
         if (_data) {
+            if (Array.isArray(_data["unitTypes"])) {
+                this.unitTypes = [] as any;
+                for (let item of _data["unitTypes"])
+                    this.unitTypes!.push(UnitTypeDto.fromJS(item));
+            }
             if (Array.isArray(_data["completedOrders"])) {
                 this.completedOrders = [] as any;
                 for (let item of _data["completedOrders"])
@@ -1317,6 +1323,11 @@ export class CompletedOrdersVm implements ICompletedOrdersVm {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.unitTypes)) {
+            data["unitTypes"] = [];
+            for (let item of this.unitTypes)
+                data["unitTypes"].push(item.toJSON());
+        }
         if (Array.isArray(this.completedOrders)) {
             data["completedOrders"] = [];
             for (let item of this.completedOrders)
@@ -1327,7 +1338,48 @@ export class CompletedOrdersVm implements ICompletedOrdersVm {
 }
 
 export interface ICompletedOrdersVm {
+    unitTypes?: UnitTypeDto[];
     completedOrders?: CompletedOrderDto[];
+}
+
+export class UnitTypeDto implements IUnitTypeDto {
+    value?: number;
+    name?: string | undefined;
+
+    constructor(data?: IUnitTypeDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.value = _data["value"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): UnitTypeDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UnitTypeDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["value"] = this.value;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface IUnitTypeDto {
+    value?: number;
+    name?: string | undefined;
 }
 
 export class CompletedOrderDto implements ICompletedOrderDto {
@@ -1386,6 +1438,7 @@ export class IngredientDto implements IIngredientDto {
     id?: number;
     name?: string;
     walmartId?: string;
+    unitType?: number;
 
     constructor(data?: IIngredientDto) {
         if (data) {
@@ -1401,6 +1454,7 @@ export class IngredientDto implements IIngredientDto {
             this.id = _data["id"];
             this.name = _data["name"];
             this.walmartId = _data["walmartId"];
+            this.unitType = _data["unitType"];
         }
     }
 
@@ -1416,6 +1470,7 @@ export class IngredientDto implements IIngredientDto {
         data["id"] = this.id;
         data["name"] = this.name;
         data["walmartId"] = this.walmartId;
+        data["unitType"] = this.unitType;
         return data;
     }
 }
@@ -1424,6 +1479,7 @@ export interface IIngredientDto {
     id?: number;
     name?: string;
     walmartId?: string;
+    unitType?: number;
 }
 
 export class CreateCompletedOrderCommand implements ICreateCompletedOrderCommand {
@@ -1696,6 +1752,7 @@ export interface IUpdateIngredientCommand {
 
 export class UpdateIngredientDetailCommand implements IUpdateIngredientDetailCommand {
     id?: number;
+    unitType?: UnitType;
     name?: string | undefined;
     walmartId?: number | undefined;
 
@@ -1711,6 +1768,7 @@ export class UpdateIngredientDetailCommand implements IUpdateIngredientDetailCom
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.unitType = _data["unitType"];
             this.name = _data["name"];
             this.walmartId = _data["walmartId"];
         }
@@ -1726,6 +1784,7 @@ export class UpdateIngredientDetailCommand implements IUpdateIngredientDetailCom
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["unitType"] = this.unitType;
         data["name"] = this.name;
         data["walmartId"] = this.walmartId;
         return data;
@@ -1734,8 +1793,16 @@ export class UpdateIngredientDetailCommand implements IUpdateIngredientDetailCom
 
 export interface IUpdateIngredientDetailCommand {
     id?: number;
+    unitType?: UnitType;
     name?: string | undefined;
     walmartId?: number | undefined;
+}
+
+export enum UnitType {
+    None = 0,
+    Low = 1,
+    Medium = 2,
+    High = 3,
 }
 
 export class PaginatedListOfTodoItemBriefDto implements IPaginatedListOfTodoItemBriefDto {

@@ -851,11 +851,31 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "unitTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UnitTypeDto"
+            }
+          },
           "completedOrders": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CompletedOrderDto"
             }
+          }
+        }
+      },
+      "UnitTypeDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -892,6 +912,10 @@
           },
           "walmartId": {
             "type": "string"
+          },
+          "unitType": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -1010,6 +1034,9 @@
             "type": "integer",
             "format": "int32"
           },
+          "unitType": {
+            "$ref": "#/components/schemas/UnitType"
+          },
           "name": {
             "type": "string",
             "nullable": true
@@ -1020,6 +1047,22 @@
             "nullable": true
           }
         }
+      },
+      "UnitType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "None",
+          "Low",
+          "Medium",
+          "High"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ]
       },
       "PaginatedListOfTodoItemBriefDto": {
         "type": "object",
