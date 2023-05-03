@@ -5,6 +5,7 @@ using WOF.Application.Common.Security;
 using WOF.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+
 namespace WOF.Application.CompletedOrders.Queries.GetCompletedOrders;
 
 [Authorize]
@@ -25,6 +26,11 @@ public class GetCompletedOrdersQueryHandler : IRequestHandler<GetCompletedOrders
     {
         return new CompletedOrdersVm
         {
+            UnitTypes = Enum.GetValues(typeof(UnitType))
+                .Cast<UnitType>()
+                .Select(p => new UnitTypeDto { Value = (int)p, Name = p.ToString() })
+                .ToList(),
+
             CompletedOrders = await _context.CompletedOrders
                 .AsNoTracking()
                 .ProjectTo<CompletedOrderDto>(_mapper.ConfigurationProvider)

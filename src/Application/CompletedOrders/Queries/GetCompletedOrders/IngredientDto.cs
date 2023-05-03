@@ -11,4 +11,12 @@ public class IngredientDto : IMapFrom<Ingredient>
     public string Name { get; set; }
 
     public string WalmartId { get; set; }
+
+    public int UnitType { get; set; }
+
+    public void Mapping(Profile profile)
+    {
+        profile.CreateMap<Ingredient, IngredientDto>()
+            .ForMember(d => d.UnitType, opt => opt.MapFrom(s => (int)s.UnitType));
+    }
 }

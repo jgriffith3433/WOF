@@ -5,6 +5,7 @@ import {
   IngredientsClient,
   CompletedOrderDto,
   IngredientDto,
+  UnitTypeDto,
   CreateCompletedOrderCommand,
   UpdateCompletedOrderCommand,
   CreateIngredientCommand,
@@ -19,6 +20,7 @@ import {
 export class CompletedOrdersComponent implements OnInit {
   debug = false;
   completedOrders: CompletedOrderDto[];
+  unitTypes: UnitTypeDto[];
   selectedCompletedOrder: CompletedOrderDto;
   selectedIngredient: IngredientDto;
   newCompletedOrderEditor: any = {};
@@ -39,6 +41,7 @@ export class CompletedOrdersComponent implements OnInit {
     this.completedOrdersClient.get().subscribe(
       result => {
         this.completedOrders = result.completedOrders;
+        this.unitTypes = result.unitTypes;
         if (this.completedOrders.length) {
           this.selectedCompletedOrder = this.completedOrders[0];
         }
@@ -150,21 +153,10 @@ export class CompletedOrdersComponent implements OnInit {
     const ingredient = this.ingredientDetailsEditor as UpdateIngredientCommand;
     this.ingredientsClient.updateIngredientDetails(this.selectedIngredient.id, ingredient).subscribe(
       () => {
-        //TODO: Need to look at this
-        //if (this.selectedIngredient.completedOrderId !== this.ingredientDetailsEditor.completedOrderId) {
-        //  this.selectedCompletedOrder.ingredients = this.selectedCompletedOrder.ingredients.filter(
-        //    i => i.id !== this.selectedIngredient.id
-        //  );
-        //  const completedOrderIndex = this.completedOrders.findIndex(
-        //    c => c.id === this.ingredientDetailsEditor.completedOrderId
-        //  );
-        //  this.selectedIngredient.listId = this.ingredientDetailsEditor.listId;
-        //  this.completedOrders[completedOrderIndex].ingredients.push(this.selectedIngredient);
-        //}
-
-        //this.selectedIngredient.walmartId = this.ingredientDetailsEditor.walmartId;
-        //this.ingredientDetailsModalRef.hide();
-        //this.ingredientDetailsEditor = {};
+        this.selectedIngredient.unitType = this.ingredientDetailsEditor.unitType;
+        this.selectedIngredient.walmartId = this.ingredientDetailsEditor.walmartId;
+        this.ingredientDetailsModalRef.hide();
+        this.ingredientDetailsEditor = {};
       },
       error => console.error(error)
     );
@@ -174,6 +166,7 @@ export class CompletedOrdersComponent implements OnInit {
     const ingredient = {
       id: 0,
       name: '',
+      unitType: this.unitTypes[0].value,
       walmartId: ''
     } as IngredientDto;
 

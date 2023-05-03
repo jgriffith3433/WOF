@@ -9,8 +9,8 @@ namespace WOF.Application.Ingredients.Commands.UpdateIngredientDetail;
 public record UpdateIngredientDetailCommand : IRequest
 {
     public int Id { get; init; }
-    //TODO: Look into this
-    //public int ListId { get; init; }
+
+    public UnitType UnitType { get; init; }
 
     public string? Name { get; init; }
 
@@ -36,10 +36,9 @@ public class UpdateIngredientDetailCommandHandler : IRequestHandler<UpdateIngred
             throw new NotFoundException(nameof(Ingredient), request.Id);
         }
 
-        //TODO: look into this
-        //entity.ListId = request.ListId;
         entity.Name = request.Name;
         entity.WalmartId = request.WalmartId;
+        entity.UnitType = request.UnitType;
 
         await _context.SaveChangesAsync(cancellationToken);
 
