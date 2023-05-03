@@ -11,6 +11,7 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
+import { IngredientsComponent } from './ingredients/ingredients.component';
 import { TodoComponent } from './todo/todo.component';
 import { CompletedOrdersComponent } from './completed-orders/completed-orders.component';
 import { TokenComponent } from './token/token.component';
@@ -26,6 +27,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     HomeComponent,
     CounterComponent,
     FetchDataComponent,
+    IngredientsComponent,
     TodoComponent,
     CompletedOrdersComponent,
     TokenComponent

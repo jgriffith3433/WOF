@@ -3,9 +3,10 @@ using WOF.Application.Ingredients.Commands.CreateIngredient;
 using WOF.Application.Ingredients.Commands.DeleteIngredient;
 using WOF.Application.Ingredients.Commands.UpdateIngredient;
 using WOF.Application.Ingredients.Commands.UpdateIngredientDetail;
-using WOF.Application.Ingredients.Queries.GetIngredientsWithPagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WOF.Application.Ingredients.Queries;
+using WOF.Application.Ingredients.Queries.GetIngredients;
 
 namespace WOF.WebUI.Controllers;
 
@@ -13,9 +14,9 @@ namespace WOF.WebUI.Controllers;
 public class IngredientsController : ApiControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<IngredientBriefDto>>> GetIngredientsWithPagination([FromQuery] GetIngredientsWithPaginationQuery query)
+    public async Task<ActionResult<GetIngredientsVm>> GetIngredients()
     {
-        return await Mediator.Send(query);
+        return await Mediator.Send(new GetIngredientsQuery());
     }
 
     [HttpPost]

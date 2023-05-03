@@ -1,0 +1,22 @@
+<h1 id="tableLabel">Ingredients</h1>
+
+<p>List of ingredients</p>
+
+<p *ngIf="!ingredients?.length"><em>Loading...</em></p>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="ingredients.length">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Walmart Id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let ingredient of ingredients">
+      <td>{{ ingredient.id }}</td>
+      <td>{{ ingredient.name }}</td>
+      <td>{{ ingredient.walmartId }}</td>
+    </tr>
+  </tbody>
+</table>

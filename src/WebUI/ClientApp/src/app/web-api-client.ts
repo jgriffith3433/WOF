@@ -304,7 +304,7 @@ export class CompletedOrdersClient implements ICompletedOrdersClient {
 }
 
 export interface IIngredientsClient {
-    getIngredientsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfIngredientBriefDto>;
+    getIngredients(): Observable<GetIngredientsVm>;
     create(command: CreateIngredientCommand): Observable<number>;
     update(id: number, command: UpdateIngredientCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
@@ -324,20 +324,8 @@ export class IngredientsClient implements IIngredientsClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getIngredientsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfIngredientBriefDto> {
-        let url_ = this.baseUrl + "/api/Ingredients?";
-        if (listId === null)
-            throw new Error("The parameter 'listId' cannot be null.");
-        else if (listId !== undefined)
-            url_ += "ListId=" + encodeURIComponent("" + listId) + "&";
-        if (pageNumber === null)
-            throw new Error("The parameter 'pageNumber' cannot be null.");
-        else if (pageNumber !== undefined)
-            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
-        if (pageSize === null)
-            throw new Error("The parameter 'pageSize' cannot be null.");
-        else if (pageSize !== undefined)
-            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+    getIngredients(): Observable<GetIngredientsVm> {
+        let url_ = this.baseUrl + "/api/Ingredients";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -349,20 +337,20 @@ export class IngredientsClient implements IIngredientsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetIngredientsWithPagination(response_);
+            return this.processGetIngredients(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetIngredientsWithPagination(response_ as any);
+                    return this.processGetIngredients(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<PaginatedListOfIngredientBriefDto>;
+                    return _observableThrow(e) as any as Observable<GetIngredientsVm>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<PaginatedListOfIngredientBriefDto>;
+                return _observableThrow(response_) as any as Observable<GetIngredientsVm>;
         }));
     }
 
-    protected processGetIngredientsWithPagination(response: HttpResponseBase): Observable<PaginatedListOfIngredientBriefDto> {
+    protected processGetIngredients(response: HttpResponseBase): Observable<GetIngredientsVm> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -373,7 +361,7 @@ export class IngredientsClient implements IIngredientsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PaginatedListOfIngredientBriefDto.fromJS(resultData200);
+            result200 = GetIngredientsVm.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1558,15 +1546,10 @@ export interface IUpdateCompletedOrderCommand {
     userImport?: string | undefined;
 }
 
-export class PaginatedListOfIngredientBriefDto implements IPaginatedListOfIngredientBriefDto {
-    items?: IngredientBriefDto[];
-    pageNumber?: number;
-    totalPages?: number;
-    totalCount?: number;
-    hasPreviousPage?: boolean;
-    hasNextPage?: boolean;
+export class GetIngredientsVm implements IGetIngredientsVm {
+    ingredients?: IngredientBriefDto[];
 
-    constructor(data?: IPaginatedListOfIngredientBriefDto) {
+    constructor(data?: IGetIngredientsVm) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1577,49 +1560,34 @@ export class PaginatedListOfIngredientBriefDto implements IPaginatedListOfIngred
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(IngredientBriefDto.fromJS(item));
+            if (Array.isArray(_data["ingredients"])) {
+                this.ingredients = [] as any;
+                for (let item of _data["ingredients"])
+                    this.ingredients!.push(IngredientBriefDto.fromJS(item));
             }
-            this.pageNumber = _data["pageNumber"];
-            this.totalPages = _data["totalPages"];
-            this.totalCount = _data["totalCount"];
-            this.hasPreviousPage = _data["hasPreviousPage"];
-            this.hasNextPage = _data["hasNextPage"];
         }
     }
 
-    static fromJS(data: any): PaginatedListOfIngredientBriefDto {
+    static fromJS(data: any): GetIngredientsVm {
         data = typeof data === 'object' ? data : {};
-        let result = new PaginatedListOfIngredientBriefDto();
+        let result = new GetIngredientsVm();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
+        if (Array.isArray(this.ingredients)) {
+            data["ingredients"] = [];
+            for (let item of this.ingredients)
+                data["ingredients"].push(item.toJSON());
         }
-        data["pageNumber"] = this.pageNumber;
-        data["totalPages"] = this.totalPages;
-        data["totalCount"] = this.totalCount;
-        data["hasPreviousPage"] = this.hasPreviousPage;
-        data["hasNextPage"] = this.hasNextPage;
         return data;
     }
 }
 
-export interface IPaginatedListOfIngredientBriefDto {
-    items?: IngredientBriefDto[];
-    pageNumber?: number;
-    totalPages?: number;
-    totalCount?: number;
-    hasPreviousPage?: boolean;
-    hasNextPage?: boolean;
+export interface IGetIngredientsVm {
+    ingredients?: IngredientBriefDto[];
 }
 
 export class IngredientBriefDto implements IIngredientBriefDto {

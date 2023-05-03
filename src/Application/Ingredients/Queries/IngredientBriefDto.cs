@@ -1,7 +1,7 @@
 ﻿using WOF.Application.Common.Mappings;
 using WOF.Domain.Entities;
 
-namespace WOF.Application.Ingredients.Queries.GetIngredientsWithPagination;
+namespace WOF.Application.Ingredients.Queries;
 
 public class IngredientBriefDto : IMapFrom<Ingredient>
 {

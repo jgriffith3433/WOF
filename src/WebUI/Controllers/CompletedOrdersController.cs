@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WOF.Domain.Entities;
 using WOF.Application.Walmart.Commands;
+using WOF.Application.Ingredients.Queries.GetIngredients;
 
 namespace WOF.WebUI.Controllers;
 

@@ -193,43 +193,14 @@
         "tags": [
           "Ingredients"
         ],
-        "operationId": "Ingredients_GetIngredientsWithPagination",
-        "parameters": [
-          {
-            "name": "ListId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "PageNumber",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 2
-          },
-          {
-            "name": "PageSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 3
-          }
-        ],
+        "operationId": "Ingredients_GetIngredients",
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginatedListOfIngredientBriefDto"
+                  "$ref": "#/components/schemas/GetIngredientsVm"
                 }
               }
             }
@@ -943,33 +914,15 @@
           }
         }
       },
-      "PaginatedListOfIngredientBriefDto": {
+      "GetIngredientsVm": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "items": {
+          "ingredients": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/IngredientBriefDto"
             }
-          },
-          "pageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "hasPreviousPage": {
-            "type": "boolean"
-          },
-          "hasNextPage": {
-            "type": "boolean"
           }
         }
       },
