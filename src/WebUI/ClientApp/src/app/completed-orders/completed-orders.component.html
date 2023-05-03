@@ -46,28 +46,26 @@
               <!--<input type="checkbox" [(ngModel)]="ingredient.walmartId" (change)="updateIngredient(ingredient)" />-->
             </div>
             <div class="flex-fill">
-              <span>{{ ingredient.name }}</span>
               <input id="{{ 'ingredientName' + i }}" *ngIf="ingredient == selectedIngredient" type="text"
-                  class="form-control item-input-control" [(ngModel)]="ingredient.name" (keyup.enter)="updateIngredient(ingredient, true)"
-                  (blur)="updateIngredient(ingredient)" autofocus="autofocus" />
-                <div *ngIf="ingredient != selectedIngredient" (click)="editIngredient(ingredient, 'ingredientName' + i)" class="item-name form-control item-input-control">
+                     class="form-control item-input-control" [(ngModel)]="ingredient.name" (keyup.enter)="updateIngredient(ingredient, true)"
+                     (blur)="updateIngredient(ingredient)" autofocus="autofocus" />
+              <div *ngIf="ingredient != selectedIngredient" (click)="editIngredient(ingredient, 'ingredientName' + i)" class="item-name form-control item-input-control">
                 <span>{{ ingredient.name }}</span>
+              </div>
+            </div>
+            <div class="item-commands d-flex">
+              <button *ngIf="ingredient.id != 0" (click)="showIngredientDetailsModal(ingredientDetailsModalTemplate, ingredient)" class="my-auto btn btn-default btn-xs" role="button">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
             </div>
           </div>
-          <div class="item-commands">
-            <button *ngIf="ingredient.id != 0" (click)="showIngredientDetailsModal(ingredientDetailsModalTemplate, ingredient)"
-                    class="btn btn-default btn-xs" role="button">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
-          </div>
+        </li>
+        <li class="list-group-item" (click)="addIngredient()">
+          <button class="btn btn-default">Add Ingredient...</button>
+        </li>
+      </ul>
     </div>
-    </li>
-    <li class="list-group-item" (click)="addIngredient()">
-      <button class="btn btn-default">Add Ingredient...</button>
-    </li>
-    </ul>
   </div>
-</div>
 </div>
 
 <div *ngIf="debug">
