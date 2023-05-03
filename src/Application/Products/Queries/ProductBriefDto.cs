@@ -10,4 +10,8 @@ public class ProductBriefDto : IMapFrom<Product>
     public string? Name { get; set; }
 
     public int? WalmartId { get; set; }
+
+    public float Size { get; set; }
+
+    public float Price { get; set; }
 }

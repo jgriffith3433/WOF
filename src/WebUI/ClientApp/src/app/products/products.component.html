@@ -4,19 +4,27 @@
 
 <p *ngIf="!products?.length"><em>Loading...</em></p>
 
-<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="products.length">
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="products?.length">
   <thead>
     <tr>
       <th>Id</th>
       <th>Name</th>
-      <th>Walmart Id</th>
+      <th>Walmart Link</th>
+      <th>Size</th>
+      <th>Size Type</th>
+      <th>Price</th>
+      <th>Walmart Size</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let product of products">
       <td>{{ product.id }}</td>
       <td>{{ product.name }}</td>
-      <td>{{ product.walmartId }}</td>
+      <td><a href="{{ product.walmartLink }}">{{ product.walmartId }}</a></td>
+      <td>{{ product.size }}</td>
+      <td>{{ product.sizeType }}</td>
+      <td>{{ product.price }}</td>
+      <td>{{ product.walmartSize }}</td>
     </tr>
   </tbody>
 </table>

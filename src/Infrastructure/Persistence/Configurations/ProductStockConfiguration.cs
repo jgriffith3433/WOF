@@ -14,8 +14,5 @@ public class ProductStockConfiguration : IEntityTypeConfiguration<ProductStock>
 
         builder.Property(t => t.Units)
             .IsRequired();
-
-        builder.Property(t => t.UnitType)
-            .IsRequired();
     }
 }

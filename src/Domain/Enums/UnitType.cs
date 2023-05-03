@@ -1,9 +1,8 @@
 ﻿namespace WOF.Domain.Enums;
 
-public enum UnitType
+public enum SizeType
 {
     None = 0,
-    Low = 1,
-    Medium = 2,
-    High = 3
+    Bulk = 1,
+    Ounces = 2,
 }

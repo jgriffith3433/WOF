@@ -1,6 +1,6 @@
 ﻿namespace WOF.Application.CompletedOrders.Queries.GetCompletedOrders;
 
-public class UnitTypeDto
+public class SizeTypeDto
 {
     public int Value { get; set; }
 

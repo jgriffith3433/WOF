@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { ProductsClient, ProductBriefDto } from '../web-api-client';
+import { ProductsClient, ProductDto } from '../web-api-client';
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html'
 })
 export class ProductsComponent {
-  public products: ProductBriefDto[];
+  public products: ProductDto[];
 
   constructor(private client: ProductsClient) {
     client.getProducts().subscribe(result => {

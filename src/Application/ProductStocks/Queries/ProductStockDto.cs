@@ -9,5 +9,5 @@ public class ProductStockDto : IMapFrom<ProductStock>
 
     public string Name { get; set; }
 
-    public int Units { get; set; }
+    public float Units { get; set; }
 }

@@ -5,7 +5,7 @@ import {
   ProductsClient,
   CompletedOrderDto,
   ProductDto,
-  UnitTypeDto,
+  SizeTypeDto,
   CreateCompletedOrderCommand,
   UpdateCompletedOrderCommand,
   CreateProductCommand,
@@ -20,7 +20,7 @@ import {
 export class CompletedOrdersComponent implements OnInit {
   debug = false;
   completedOrders: CompletedOrderDto[];
-  unitTypes: UnitTypeDto[];
+  sizeTypes: SizeTypeDto[];
   selectedCompletedOrder: CompletedOrderDto;
   selectedProduct: ProductDto;
   newCompletedOrderEditor: any = {};
@@ -41,7 +41,7 @@ export class CompletedOrdersComponent implements OnInit {
     this.completedOrdersClient.get().subscribe(
       result => {
         this.completedOrders = result.completedOrders;
-        this.unitTypes = result.unitTypes;
+        this.sizeTypes = result.sizeTypes;
         if (this.completedOrders.length) {
           this.selectedCompletedOrder = this.completedOrders[0];
         }
@@ -83,9 +83,6 @@ export class CompletedOrdersComponent implements OnInit {
         this.completedOrdersClient.get2(completedOrder.id).subscribe(
           result => {
             this.selectedCompletedOrder = result;
-            //if (this.completedOrders.length) {
-            //  this.selectedCompletedOrder = this.completedOrders[0];
-            //}
           },
           error => console.error(error)
         );
@@ -115,8 +112,14 @@ export class CompletedOrdersComponent implements OnInit {
     const updateCompletedOrderCommand = this.completedOrderOptionsEditor as UpdateCompletedOrderCommand;
     this.completedOrdersClient.update(this.selectedCompletedOrder.id, updateCompletedOrderCommand).subscribe(
       () => {
-        (this.selectedCompletedOrder.userImport = this.completedOrderOptionsEditor.userImport),
-          this.completedOrderOptionsModalRef.hide();
+        this.selectedCompletedOrder.userImport = this.completedOrderOptionsEditor.userImport;
+        this.completedOrderOptionsModalRef.hide();
+        this.completedOrdersClient.get2(this.selectedCompletedOrder.id).subscribe(
+          result => {
+            this.selectedCompletedOrder = result;
+          },
+          error => console.error(error)
+        );
         this.completedOrderOptionsEditor = {};
       },
       error => console.error(error)
@@ -153,7 +156,7 @@ export class CompletedOrdersComponent implements OnInit {
     const product = this.productDetailsEditor as UpdateProductCommand;
     this.productsClient.updateProductDetails(this.selectedProduct.id, product).subscribe(
       () => {
-        this.selectedProduct.unitType = this.productDetailsEditor.unitType;
+        this.selectedProduct.sizeType = this.productDetailsEditor.sizeType;
         this.selectedProduct.walmartId = this.productDetailsEditor.walmartId;
         this.productDetailsModalRef.hide();
         this.productDetailsEditor = {};
@@ -166,8 +169,7 @@ export class CompletedOrdersComponent implements OnInit {
     const product = {
       id: 0,
       name: '',
-      unitType: this.unitTypes[0].value,
-      walmartId: ''
+      sizeType: this.sizeTypes[0].value
     } as ProductDto;
 
     this.selectedCompletedOrder.products.push(product);

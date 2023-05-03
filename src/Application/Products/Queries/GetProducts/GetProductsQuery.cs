@@ -4,6 +4,7 @@ using WOF.Application.Common.Interfaces;
 using WOF.Application.Common.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using WOF.Application.CompletedOrders.Queries.GetCompletedOrders;
 
 namespace WOF.Application.Products.Queries.GetProducts;
 
@@ -27,7 +28,7 @@ public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, GetProd
         {
             Products = await _context.Products
                 .AsNoTracking()
-                .ProjectTo<ProductBriefDto>(_mapper.ConfigurationProvider)
+                .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
                 .OrderBy(t => t.Id)
                 .ToListAsync(cancellationToken)
         };

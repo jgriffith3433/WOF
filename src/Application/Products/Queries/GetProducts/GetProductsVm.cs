@@ -1,6 +1,8 @@
-﻿namespace WOF.Application.Products.Queries.GetProducts;
+﻿using WOF.Application.CompletedOrders.Queries.GetCompletedOrders;
+
+namespace WOF.Application.Products.Queries.GetProducts;
 
 public class GetProductsVm
 {
-    public IList<ProductBriefDto> Products { get; set; } = new List<ProductBriefDto>();
+    public IList<ProductDto> Products { get; set; } = new List<ProductDto>();
 }

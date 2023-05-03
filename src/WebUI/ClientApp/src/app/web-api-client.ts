@@ -1341,7 +1341,7 @@ export class WeatherForecastClient implements IWeatherForecastClient {
 }
 
 export class CompletedOrdersVm implements ICompletedOrdersVm {
-    unitTypes?: UnitTypeDto[];
+    sizeTypes?: SizeTypeDto[];
     completedOrders?: CompletedOrderDto[];
 
     constructor(data?: ICompletedOrdersVm) {
@@ -1355,10 +1355,10 @@ export class CompletedOrdersVm implements ICompletedOrdersVm {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["unitTypes"])) {
-                this.unitTypes = [] as any;
-                for (let item of _data["unitTypes"])
-                    this.unitTypes!.push(UnitTypeDto.fromJS(item));
+            if (Array.isArray(_data["sizeTypes"])) {
+                this.sizeTypes = [] as any;
+                for (let item of _data["sizeTypes"])
+                    this.sizeTypes!.push(SizeTypeDto.fromJS(item));
             }
             if (Array.isArray(_data["completedOrders"])) {
                 this.completedOrders = [] as any;
@@ -1377,10 +1377,10 @@ export class CompletedOrdersVm implements ICompletedOrdersVm {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.unitTypes)) {
-            data["unitTypes"] = [];
-            for (let item of this.unitTypes)
-                data["unitTypes"].push(item.toJSON());
+        if (Array.isArray(this.sizeTypes)) {
+            data["sizeTypes"] = [];
+            for (let item of this.sizeTypes)
+                data["sizeTypes"].push(item.toJSON());
         }
         if (Array.isArray(this.completedOrders)) {
             data["completedOrders"] = [];
@@ -1392,15 +1392,15 @@ export class CompletedOrdersVm implements ICompletedOrdersVm {
 }
 
 export interface ICompletedOrdersVm {
-    unitTypes?: UnitTypeDto[];
+    sizeTypes?: SizeTypeDto[];
     completedOrders?: CompletedOrderDto[];
 }
 
-export class UnitTypeDto implements IUnitTypeDto {
+export class SizeTypeDto implements ISizeTypeDto {
     value?: number;
     name?: string | undefined;
 
-    constructor(data?: IUnitTypeDto) {
+    constructor(data?: ISizeTypeDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1416,9 +1416,9 @@ export class UnitTypeDto implements IUnitTypeDto {
         }
     }
 
-    static fromJS(data: any): UnitTypeDto {
+    static fromJS(data: any): SizeTypeDto {
         data = typeof data === 'object' ? data : {};
-        let result = new UnitTypeDto();
+        let result = new SizeTypeDto();
         result.init(data);
         return result;
     }
@@ -1431,7 +1431,7 @@ export class UnitTypeDto implements IUnitTypeDto {
     }
 }
 
-export interface IUnitTypeDto {
+export interface ISizeTypeDto {
     value?: number;
     name?: string | undefined;
 }
@@ -1491,8 +1491,16 @@ export interface ICompletedOrderDto {
 export class ProductDto implements IProductDto {
     id?: number;
     name?: string;
-    walmartId?: string;
-    unitType?: number;
+    walmartId?: string | undefined;
+    walmartLink?: string | undefined;
+    walmartSize?: string | undefined;
+    walmartItemResponse?: string | undefined;
+    error?: string | undefined;
+    size?: number;
+    price?: number;
+    verified?: boolean;
+    sizeType?: number;
+    completedOrders?: CompletedOrder[];
 
     constructor(data?: IProductDto) {
         if (data) {
@@ -1508,7 +1516,19 @@ export class ProductDto implements IProductDto {
             this.id = _data["id"];
             this.name = _data["name"];
             this.walmartId = _data["walmartId"];
-            this.unitType = _data["unitType"];
+            this.walmartLink = _data["walmartLink"];
+            this.walmartSize = _data["walmartSize"];
+            this.walmartItemResponse = _data["walmartItemResponse"];
+            this.error = _data["error"];
+            this.size = _data["size"];
+            this.price = _data["price"];
+            this.verified = _data["verified"];
+            this.sizeType = _data["sizeType"];
+            if (Array.isArray(_data["completedOrders"])) {
+                this.completedOrders = [] as any;
+                for (let item of _data["completedOrders"])
+                    this.completedOrders!.push(CompletedOrder.fromJS(item));
+            }
         }
     }
 
@@ -1524,7 +1544,19 @@ export class ProductDto implements IProductDto {
         data["id"] = this.id;
         data["name"] = this.name;
         data["walmartId"] = this.walmartId;
-        data["unitType"] = this.unitType;
+        data["walmartLink"] = this.walmartLink;
+        data["walmartSize"] = this.walmartSize;
+        data["walmartItemResponse"] = this.walmartItemResponse;
+        data["error"] = this.error;
+        data["size"] = this.size;
+        data["price"] = this.price;
+        data["verified"] = this.verified;
+        data["sizeType"] = this.sizeType;
+        if (Array.isArray(this.completedOrders)) {
+            data["completedOrders"] = [];
+            for (let item of this.completedOrders)
+                data["completedOrders"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -1532,8 +1564,265 @@ export class ProductDto implements IProductDto {
 export interface IProductDto {
     id?: number;
     name?: string;
-    walmartId?: string;
-    unitType?: number;
+    walmartId?: string | undefined;
+    walmartLink?: string | undefined;
+    walmartSize?: string | undefined;
+    walmartItemResponse?: string | undefined;
+    error?: string | undefined;
+    size?: number;
+    price?: number;
+    verified?: boolean;
+    sizeType?: number;
+    completedOrders?: CompletedOrder[];
+}
+
+export abstract class BaseEntity implements IBaseEntity {
+    id?: number;
+    domainEvents?: BaseEvent[];
+
+    constructor(data?: IBaseEntity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            if (Array.isArray(_data["domainEvents"])) {
+                this.domainEvents = [] as any;
+                for (let item of _data["domainEvents"])
+                    this.domainEvents!.push(BaseEvent.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): BaseEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseEntity' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        if (Array.isArray(this.domainEvents)) {
+            data["domainEvents"] = [];
+            for (let item of this.domainEvents)
+                data["domainEvents"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IBaseEntity {
+    id?: number;
+    domainEvents?: BaseEvent[];
+}
+
+export abstract class BaseAuditableEntity extends BaseEntity implements IBaseAuditableEntity {
+    created?: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
+
+    constructor(data?: IBaseAuditableEntity) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.createdBy = _data["createdBy"];
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
+            this.lastModifiedBy = _data["lastModifiedBy"];
+        }
+    }
+
+    static override fromJS(data: any): BaseAuditableEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseAuditableEntity' cannot be instantiated.");
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["createdBy"] = this.createdBy;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IBaseAuditableEntity extends IBaseEntity {
+    created?: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
+}
+
+export class CompletedOrder extends BaseAuditableEntity implements ICompletedOrder {
+    userImport?: string;
+    products?: Product[];
+
+    constructor(data?: ICompletedOrder) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.userImport = _data["userImport"];
+            if (Array.isArray(_data["products"])) {
+                this.products = [] as any;
+                for (let item of _data["products"])
+                    this.products!.push(Product.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): CompletedOrder {
+        data = typeof data === 'object' ? data : {};
+        let result = new CompletedOrder();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userImport"] = this.userImport;
+        if (Array.isArray(this.products)) {
+            data["products"] = [];
+            for (let item of this.products)
+                data["products"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ICompletedOrder extends IBaseAuditableEntity {
+    userImport?: string;
+    products?: Product[];
+}
+
+export class Product extends BaseAuditableEntity implements IProduct {
+    name?: string;
+    walmartId?: number | undefined;
+    walmartLink?: string | undefined;
+    walmartSize?: string | undefined;
+    walmartItemResponse?: string | undefined;
+    error?: string | undefined;
+    size?: number;
+    price?: number;
+    verified?: boolean;
+    sizeType?: SizeType;
+    completedOrders?: CompletedOrder[];
+
+    constructor(data?: IProduct) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.name = _data["name"];
+            this.walmartId = _data["walmartId"];
+            this.walmartLink = _data["walmartLink"];
+            this.walmartSize = _data["walmartSize"];
+            this.walmartItemResponse = _data["walmartItemResponse"];
+            this.error = _data["error"];
+            this.size = _data["size"];
+            this.price = _data["price"];
+            this.verified = _data["verified"];
+            this.sizeType = _data["sizeType"];
+            if (Array.isArray(_data["completedOrders"])) {
+                this.completedOrders = [] as any;
+                for (let item of _data["completedOrders"])
+                    this.completedOrders!.push(CompletedOrder.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): Product {
+        data = typeof data === 'object' ? data : {};
+        let result = new Product();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["walmartId"] = this.walmartId;
+        data["walmartLink"] = this.walmartLink;
+        data["walmartSize"] = this.walmartSize;
+        data["walmartItemResponse"] = this.walmartItemResponse;
+        data["error"] = this.error;
+        data["size"] = this.size;
+        data["price"] = this.price;
+        data["verified"] = this.verified;
+        data["sizeType"] = this.sizeType;
+        if (Array.isArray(this.completedOrders)) {
+            data["completedOrders"] = [];
+            for (let item of this.completedOrders)
+                data["completedOrders"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IProduct extends IBaseAuditableEntity {
+    name?: string;
+    walmartId?: number | undefined;
+    walmartLink?: string | undefined;
+    walmartSize?: string | undefined;
+    walmartItemResponse?: string | undefined;
+    error?: string | undefined;
+    size?: number;
+    price?: number;
+    verified?: boolean;
+    sizeType?: SizeType;
+    completedOrders?: CompletedOrder[];
+}
+
+export enum SizeType {
+    None = 0,
+    Bulk = 1,
+    Ounces = 2,
+}
+
+export abstract class BaseEvent implements IBaseEvent {
+
+    constructor(data?: IBaseEvent) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): BaseEvent {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseEvent' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IBaseEvent {
 }
 
 export class CreateCompletedOrderCommand implements ICreateCompletedOrderCommand {
@@ -1613,7 +1902,7 @@ export interface IUpdateCompletedOrderCommand {
 }
 
 export class GetProductsVm implements IGetProductsVm {
-    products?: ProductBriefDto[];
+    products?: ProductDto[];
 
     constructor(data?: IGetProductsVm) {
         if (data) {
@@ -1629,7 +1918,7 @@ export class GetProductsVm implements IGetProductsVm {
             if (Array.isArray(_data["products"])) {
                 this.products = [] as any;
                 for (let item of _data["products"])
-                    this.products!.push(ProductBriefDto.fromJS(item));
+                    this.products!.push(ProductDto.fromJS(item));
             }
         }
     }
@@ -1653,51 +1942,7 @@ export class GetProductsVm implements IGetProductsVm {
 }
 
 export interface IGetProductsVm {
-    products?: ProductBriefDto[];
-}
-
-export class ProductBriefDto implements IProductBriefDto {
-    id?: number;
-    name?: string | undefined;
-    walmartId?: number | undefined;
-
-    constructor(data?: IProductBriefDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.walmartId = _data["walmartId"];
-        }
-    }
-
-    static fromJS(data: any): ProductBriefDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProductBriefDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["walmartId"] = this.walmartId;
-        return data;
-    }
-}
-
-export interface IProductBriefDto {
-    id?: number;
-    name?: string | undefined;
-    walmartId?: number | undefined;
+    products?: ProductDto[];
 }
 
 export class CreateProductCommand implements ICreateProductCommand {
@@ -1786,7 +2031,7 @@ export interface IUpdateProductCommand {
 
 export class UpdateProductDetailCommand implements IUpdateProductDetailCommand {
     id?: number;
-    unitType?: UnitType;
+    sizeType?: SizeType;
     name?: string | undefined;
     walmartId?: number | undefined;
 
@@ -1802,7 +2047,7 @@ export class UpdateProductDetailCommand implements IUpdateProductDetailCommand {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.unitType = _data["unitType"];
+            this.sizeType = _data["sizeType"];
             this.name = _data["name"];
             this.walmartId = _data["walmartId"];
         }
@@ -1818,7 +2063,7 @@ export class UpdateProductDetailCommand implements IUpdateProductDetailCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["unitType"] = this.unitType;
+        data["sizeType"] = this.sizeType;
         data["name"] = this.name;
         data["walmartId"] = this.walmartId;
         return data;
@@ -1827,16 +2072,9 @@ export class UpdateProductDetailCommand implements IUpdateProductDetailCommand {
 
 export interface IUpdateProductDetailCommand {
     id?: number;
-    unitType?: UnitType;
+    sizeType?: SizeType;
     name?: string | undefined;
     walmartId?: number | undefined;
-}
-
-export enum UnitType {
-    None = 0,
-    Low = 1,
-    Medium = 2,
-    High = 3,
 }
 
 export class GetProductStockVm implements IGetProductStockVm {

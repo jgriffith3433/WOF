@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WOF.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using WOF.Infrastructure.Persistence;
 namespace WOF.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230503204935_AddedPriceAndUnitsToProduct")]
+    partial class AddedPriceAndUnitsToProduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -481,9 +484,6 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Error")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
@@ -498,27 +498,15 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
-                    b.Property<float>("Size")
-                        .HasColumnType("real");
-
-                    b.Property<int>("SizeType")
+                    b.Property<int>("UnitType")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Verified")
-                        .HasColumnType("bit");
+                    b.Property<float>("Units")
+                        .HasColumnType("real");
 
                     b.Property<int?>("WalmartId")
                         .IsRequired()
                         .HasColumnType("int");
-
-                    b.Property<string>("WalmartItemResponse")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WalmartLink")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WalmartSize")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

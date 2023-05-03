@@ -847,10 +847,10 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "unitTypes": {
+          "sizeTypes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UnitTypeDto"
+              "$ref": "#/components/schemas/SizeTypeDto"
             }
           },
           "completedOrders": {
@@ -861,7 +861,7 @@
           }
         }
       },
-      "UnitTypeDto": {
+      "SizeTypeDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -907,13 +907,193 @@
             "type": "string"
           },
           "walmartId": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
-          "unitType": {
+          "walmartLink": {
+            "type": "string",
+            "nullable": true
+          },
+          "walmartSize": {
+            "type": "string",
+            "nullable": true
+          },
+          "walmartItemResponse": {
+            "type": "string",
+            "nullable": true
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "size": {
+            "type": "number",
+            "format": "float"
+          },
+          "price": {
+            "type": "number",
+            "format": "float"
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "sizeType": {
             "type": "integer",
             "format": "int32"
+          },
+          "completedOrders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompletedOrder"
+            }
           }
         }
+      },
+      "CompletedOrder": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "userImport": {
+                "type": "string"
+              },
+              "products": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Product": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "walmartId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "walmartLink": {
+                "type": "string",
+                "nullable": true
+              },
+              "walmartSize": {
+                "type": "string",
+                "nullable": true
+              },
+              "walmartItemResponse": {
+                "type": "string",
+                "nullable": true
+              },
+              "error": {
+                "type": "string",
+                "nullable": true
+              },
+              "size": {
+                "type": "number",
+                "format": "float"
+              },
+              "price": {
+                "type": "number",
+                "format": "float"
+              },
+              "verified": {
+                "type": "boolean"
+              },
+              "sizeType": {
+                "$ref": "#/components/schemas/SizeType"
+              },
+              "completedOrders": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CompletedOrder"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "SizeType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "None",
+          "Bulk",
+          "Ounces"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
+      "BaseAuditableEntity": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "x-abstract": true,
+            "additionalProperties": false,
+            "properties": {
+              "created": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "createdBy": {
+                "type": "string",
+                "nullable": true
+              },
+              "lastModified": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              },
+              "lastModifiedBy": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "BaseEntity": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "domainEvents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaseEvent"
+            }
+          }
+        }
+      },
+      "BaseEvent": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false
       },
       "CreateCompletedOrderCommand": {
         "type": "object",
@@ -946,27 +1126,8 @@
           "products": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ProductBriefDto"
+              "$ref": "#/components/schemas/ProductDto"
             }
-          }
-        }
-      },
-      "ProductBriefDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "walmartId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
           }
         }
       },
@@ -1012,8 +1173,8 @@
             "type": "integer",
             "format": "int32"
           },
-          "unitType": {
-            "$ref": "#/components/schemas/UnitType"
+          "sizeType": {
+            "$ref": "#/components/schemas/SizeType"
           },
           "name": {
             "type": "string",
@@ -1025,22 +1186,6 @@
             "nullable": true
           }
         }
-      },
-      "UnitType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "None",
-          "Low",
-          "Medium",
-          "High"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3
-        ]
       },
       "GetProductStockVm": {
         "type": "object",
@@ -1066,8 +1211,8 @@
             "type": "string"
           },
           "units": {
-            "type": "integer",
-            "format": "int32"
+            "type": "number",
+            "format": "float"
           }
         }
       },

@@ -1,5 +1,6 @@
 ﻿namespace WOF.Application.Walmart.Responses;
 
+
 public class ItemResponse
 {
     public long itemId { get; set; }

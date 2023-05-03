@@ -29,7 +29,7 @@ public class ProductLookupQueryHandler : IRequestHandler<ProductLookupQuery, Ite
     {
         var itemRequest = new ItemRequest
         {
-            ids = productLookupQuery.Id
+            id = productLookupQuery.Id.ToString()
         };
         return await itemRequest.GetResponse<ItemResponse>();
     }

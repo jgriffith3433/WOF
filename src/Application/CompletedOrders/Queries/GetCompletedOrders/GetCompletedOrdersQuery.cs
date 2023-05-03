@@ -26,9 +26,9 @@ public class GetCompletedOrdersQueryHandler : IRequestHandler<GetCompletedOrders
     {
         return new CompletedOrdersVm
         {
-            UnitTypes = Enum.GetValues(typeof(UnitType))
-                .Cast<UnitType>()
-                .Select(p => new UnitTypeDto { Value = (int)p, Name = p.ToString() })
+            SizeTypes = Enum.GetValues(typeof(SizeType))
+                .Cast<SizeType>()
+                .Select(p => new SizeTypeDto { Value = (int)p, Name = p.ToString() })
                 .ToList(),
 
             CompletedOrders = await _context.CompletedOrders

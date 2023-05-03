@@ -10,7 +10,7 @@ public record UpdateProductDetailCommand : IRequest
 {
     public int Id { get; init; }
 
-    public UnitType UnitType { get; init; }
+    public SizeType SizeType { get; init; }
 
     public string? Name { get; init; }
 
@@ -38,7 +38,7 @@ public class UpdateProductDetailCommandHandler : IRequestHandler<UpdateProductDe
 
         entity.Name = request.Name;
         entity.WalmartId = request.WalmartId;
-        entity.UnitType = request.UnitType;
+        entity.SizeType = request.SizeType;
 
         await _context.SaveChangesAsync(cancellationToken);
 
