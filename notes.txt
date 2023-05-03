@@ -1,5 +1,23 @@
-//get all product links
+https://github.com/jasontaylordev/CleanArchitecture
 
+
+
+//how to create a database migration
+//install dotnet-ef globally if you don't have it
+dotnet tool install --global dotnet-ef
+//then run migration everytime you change entities
+dotnet ef migrations add "SampleMigration" --project src\Infrastructure --startup-project src\WebUI --output-dir Persistence\Migrations
+
+
+
+
+
+
+
+
+
+
+//get all product links
 var elements = document.querySelectorAll('[link-identifier="itemClick"]');
 var c = [];
 for(var i = 0; i < elements.length; i++) {
