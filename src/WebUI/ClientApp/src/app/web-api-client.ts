@@ -600,6 +600,72 @@ export class IngredientsClient implements IIngredientsClient {
     }
 }
 
+export interface IStockClient {
+    getStock(): Observable<GetStockVm>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class StockClient implements IStockClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getStock(): Observable<GetStockVm> {
+        let url_ = this.baseUrl + "/api/Stock";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStock(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStock(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetStockVm>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetStockVm>;
+        }));
+    }
+
+    protected processGetStock(response: HttpResponseBase): Observable<GetStockVm> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetStockVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
 export interface ITodoItemsClient {
     getTodoItemsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfTodoItemBriefDto>;
     create(command: CreateTodoItemCommand): Observable<number>;
@@ -1771,6 +1837,94 @@ export enum UnitType {
     Low = 1,
     Medium = 2,
     High = 3,
+}
+
+export class GetStockVm implements IGetStockVm {
+    ingredients?: StockDto[];
+
+    constructor(data?: IGetStockVm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["ingredients"])) {
+                this.ingredients = [] as any;
+                for (let item of _data["ingredients"])
+                    this.ingredients!.push(StockDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): GetStockVm {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetStockVm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.ingredients)) {
+            data["ingredients"] = [];
+            for (let item of this.ingredients)
+                data["ingredients"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IGetStockVm {
+    ingredients?: StockDto[];
+}
+
+export class StockDto implements IStockDto {
+    id?: number;
+    name?: string;
+    units?: number;
+
+    constructor(data?: IStockDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.units = _data["units"];
+        }
+    }
+
+    static fromJS(data: any): StockDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new StockDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["units"] = this.units;
+        return data;
+    }
+}
+
+export interface IStockDto {
+    id?: number;
+    name?: string;
+    units?: number;
 }
 
 export class PaginatedListOfTodoItemBriefDto implements IPaginatedListOfTodoItemBriefDto {

@@ -13,6 +13,8 @@ public interface IApplicationDbContext
 
     DbSet<Ingredient> Ingredients { get; }
 
+    DbSet<Stock> Stocks { get; }
+
     DbSet<CalledIngredient> CalledIngredients { get; }
 
     DbSet<CompletedOrder> CompletedOrders { get; }
