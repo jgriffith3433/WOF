@@ -1,10 +1,12 @@
 ﻿using WOF.Application.CompletedOrders.Commands.CreateCompletedOrders;
 using WOF.Application.CompletedOrders.Commands.DeleteCompletedOrders;
 using WOF.Application.CompletedOrders.Commands.UpdateCompletedOrders;
-//using WOF.Application.CompletedOrders.Queries.ExportCompletedOrders;
 using WOF.Application.CompletedOrders.Queries.GetCompletedOrders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WOF.Domain.Entities;
+using WOF.Application.Walmart.Commands;
+
 namespace WOF.WebUI.Controllers;
 
 [Authorize]
@@ -16,13 +18,14 @@ public class CompletedOrdersController : ApiControllerBase
         return await Mediator.Send(new GetCompletedOrdersQuery());
     }
 
-    //[HttpGet("{id}")]
-    //public async Task<FileResult> Get(int id)
-    //{
-    //    var vm = await Mediator.Send(new ExportTodosQuery { ListId = id });
-
-    //    return File(vm.Content, vm.ContentType, vm.FileName);
-    //}
+    [HttpGet("{id}")]
+    public async Task<CompletedOrderDto> Get(int id)
+    {
+        return await Mediator.Send(new CreateIngredientsFromCompletedOrderCommand
+        {
+            CompletedOrderId = id
+        });
+    }
 
     [HttpPost]
     public async Task<ActionResult<int>> Create(CreateCompletedOrderCommand command)

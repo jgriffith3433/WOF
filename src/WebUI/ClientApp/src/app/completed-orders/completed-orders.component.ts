@@ -2,12 +2,13 @@ import { Component, TemplateRef, OnInit } from '@angular/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import {
   CompletedOrdersClient,
-  //TodoItemsClient,
+  IngredientsClient,
   CompletedOrderDto,
-  //TodoItemDto,
+  IngredientDto,
   CreateCompletedOrderCommand,
   UpdateCompletedOrderCommand,
-  //CreateTodoItemCommand, UpdateTodoItemCommand
+  CreateIngredientCommand,
+  UpdateIngredientCommand
 } from '../web-api-client';
 
 @Component({
@@ -19,18 +20,18 @@ export class CompletedOrdersComponent implements OnInit {
   debug = false;
   completedOrders: CompletedOrderDto[];
   selectedCompletedOrder: CompletedOrderDto;
-  //selectedItem: TodoItemDto;
+  selectedIngredient: IngredientDto;
   newCompletedOrderEditor: any = {};
   completedOrderOptionsEditor: any = {};
-  //itemDetailsEditor: any = {};
+  ingredientDetailsEditor: any = {};
   newCompletedOrderModalRef: BsModalRef;
   completedOrderOptionsModalRef: BsModalRef;
   deleteCompletedOrderModalRef: BsModalRef;
-  //itemDetailsModalRef: BsModalRef;
+  ingredientDetailsModalRef: BsModalRef;
 
   constructor(
     private completedOrdersClient: CompletedOrdersClient,
-    //private itemsClient: TodoItemsClient,
+    private ingredientsClient: IngredientsClient,
     private modalService: BsModalService
   ) { }
 
@@ -46,10 +47,10 @@ export class CompletedOrdersComponent implements OnInit {
     );
   }
 
-  // Lists
-  //remainingItems(list: CompletedOrderDto): number {
-  //  return completedOrders.items.filter(t => !t.done).length;
-  //}
+  // Completed Orders
+  remainingIngredients(completedOrder: CompletedOrderDto): number {
+    return completedOrder.ingredients.filter(t => !t.walmartId).length;
+  }
 
   showNewCompletedOrderModal(template: TemplateRef<any>): void {
     this.newCompletedOrderModalRef = this.modalService.show(template);
@@ -65,7 +66,7 @@ export class CompletedOrdersComponent implements OnInit {
     const completedOrder = {
       id: 0,
       userImport: this.newCompletedOrderEditor.userImport,
-      //items: []
+      ingredients: []
     } as CompletedOrderDto;
 
     this.completedOrdersClient.create(completedOrder as CreateCompletedOrderCommand).subscribe(
@@ -75,6 +76,16 @@ export class CompletedOrdersComponent implements OnInit {
         this.selectedCompletedOrder = completedOrder;
         this.newCompletedOrderModalRef.hide();
         this.newCompletedOrderEditor = {};
+
+        this.completedOrdersClient.get2(completedOrder.id).subscribe(
+          result => {
+            this.selectedCompletedOrder = result;
+            //if (this.completedOrders.length) {
+            //  this.selectedCompletedOrder = this.completedOrders[0];
+            //}
+          },
+          error => console.error(error)
+        );
       },
       error => {
         const errors = JSON.parse(error.response);
@@ -125,109 +136,107 @@ export class CompletedOrdersComponent implements OnInit {
     );
   }
 
-  // Items
-  //showItemDetailsModal(template: TemplateRef<any>, item: TodoItemDto): void {
-  //  this.selectedItem = item;
-  //  this.itemDetailsEditor = {
-  //    ...this.selectedItem
-  //  };
+  // Ingredients
+  showIngredientDetailsModal(template: TemplateRef<any>, ingredient: IngredientDto): void {
+    this.selectedIngredient = ingredient;
+    this.ingredientDetailsEditor = {
+      ...this.selectedIngredient
+    };
 
-  //  this.itemDetailsModalRef = this.modalService.show(template);
-  //}
+    this.ingredientDetailsModalRef = this.modalService.show(template);
+  }
 
-  //updateItemDetails(): void {
-  //  const item = this.itemDetailsEditor as UpdateTodoItemCommand;
-  //  this.itemsClient.updateItemDetails(this.selectedItem.id, item).subscribe(
-  //    () => {
-  //      if (this.selectedItem.listId !== this.itemDetailsEditor.listId) {
-  //        this.selectedList.items = this.selectedList.items.filter(
-  //          i => i.id !== this.selectedItem.id
-  //        );
-  //        const listIndex = this.lists.findIndex(
-  //          l => l.id === this.itemDetailsEditor.listId
-  //        );
-  //        this.selectedItem.listId = this.itemDetailsEditor.listId;
-  //        this.lists[listIndex].items.push(this.selectedItem);
-  //      }
+  updateIngredientDetails(): void {
+    const ingredient = this.ingredientDetailsEditor as UpdateIngredientCommand;
+    this.ingredientsClient.updateIngredientDetails(this.selectedIngredient.id, ingredient).subscribe(
+      () => {
+        //TODO: Need to look at this
+        //if (this.selectedIngredient.completedOrderId !== this.ingredientDetailsEditor.completedOrderId) {
+        //  this.selectedCompletedOrder.ingredients = this.selectedCompletedOrder.ingredients.filter(
+        //    i => i.id !== this.selectedIngredient.id
+        //  );
+        //  const completedOrderIndex = this.completedOrders.findIndex(
+        //    c => c.id === this.ingredientDetailsEditor.completedOrderId
+        //  );
+        //  this.selectedIngredient.listId = this.ingredientDetailsEditor.listId;
+        //  this.completedOrders[completedOrderIndex].ingredients.push(this.selectedIngredient);
+        //}
 
-  //      this.selectedItem.priority = this.itemDetailsEditor.priority;
-  //      this.selectedItem.note = this.itemDetailsEditor.note;
-  //      this.itemDetailsModalRef.hide();
-  //      this.itemDetailsEditor = {};
-  //    },
-  //    error => console.error(error)
-  //  );
-  //}
+        //this.selectedIngredient.walmartId = this.ingredientDetailsEditor.walmartId;
+        //this.ingredientDetailsModalRef.hide();
+        //this.ingredientDetailsEditor = {};
+      },
+      error => console.error(error)
+    );
+  }
 
-  //addItem() {
-  //  const item = {
-  //    id: 0,
-  //    listId: this.selectedList.id,
-  //    priority: this.priorityLevels[0].value,
-  //    title: '',
-  //    done: false
-  //  } as TodoItemDto;
+  addIngredient() {
+    const ingredient = {
+      id: 0,
+      name: '',
+      walmartId: ''
+    } as IngredientDto;
 
-  //  this.selectedList.items.push(item);
-  //  const index = this.selectedList.items.length - 1;
-  //  this.editItem(item, 'itemTitle' + index);
-  //}
+    this.selectedCompletedOrder.ingredients.push(ingredient);
+    const index = this.selectedCompletedOrder.ingredients.length - 1;
+    this.editIngredient(ingredient, 'ingredientName' + index);
+  }
 
-  //editItem(item: TodoItemDto, inputId: string): void {
-  //  this.selectedItem = item;
-  //  setTimeout(() => document.getElementById(inputId).focus(), 100);
-  //}
+  editIngredient(ingredient: IngredientDto, inputId: string): void {
+    this.selectedIngredient = ingredient;
+    setTimeout(() => document.getElementById(inputId).focus(), 100);
+  }
 
-  //updateItem(item: TodoItemDto, pressedEnter: boolean = false): void {
-  //  const isNewItem = item.id === 0;
+  updateIngredient(ingredient: IngredientDto, pressedEnter: boolean = false): void {
+    const isNewIngredient = ingredient.id === 0;
 
-  //  if (!item.title.trim()) {
-  //    this.deleteItem(item);
-  //    return;
-  //  }
+    if (!ingredient.name.trim()) {
+      this.deleteIngredient(ingredient);
+      return;
+    }
 
-  //  if (item.id === 0) {
-  //    this.itemsClient
-  //      .create({
-  //        ...item, listId: this.selectedList.id
-  //      } as CreateTodoItemCommand)
-  //      .subscribe(
-  //        result => {
-  //          item.id = result;
-  //        },
-  //        error => console.error(error)
-  //      );
-  //  } else {
-  //    this.itemsClient.update(item.id, item).subscribe(
-  //      () => console.log('Update succeeded.'),
-  //      error => console.error(error)
-  //    );
-  //  }
+    //TODO: need to look at this
+    //if (ingredient.id === 0) {
+    //  this.ingredientsClient
+    //    .create({
+    //      ...ingredient, listId: this.selectedCompletedOrder.id
+    //    } as CreateIngredientCommand)
+    //    .subscribe(
+    //      result => {
+    //        ingredient.id = result;
+    //      },
+    //      error => console.error(error)
+    //    );
+    //} else {
+    //  this.ingredientsClient.update(ingredient.id, ingredient).subscribe(
+    //    () => console.log('Update succeeded.'),
+    //    error => console.error(error)
+    //  );
+    //}
 
-  //  this.selectedItem = null;
+    this.selectedIngredient = null;
 
-  //  if (isNewItem && pressedEnter) {
-  //    setTimeout(() => this.addItem(), 250);
-  //  }
-  //}
+    if (isNewIngredient && pressedEnter) {
+      setTimeout(() => this.addIngredient(), 250);
+    }
+  }
 
-  //deleteItem(item: TodoItemDto) {
-  //  if (this.itemDetailsModalRef) {
-  //    this.itemDetailsModalRef.hide();
-  //  }
+  deleteIngredient(ingredient: IngredientDto) {
+    if (this.ingredientDetailsModalRef) {
+      this.ingredientDetailsModalRef.hide();
+    }
 
-  //  if (item.id === 0) {
-  //    const itemIndex = this.selectedList.items.indexOf(this.selectedItem);
-  //    this.selectedList.items.splice(itemIndex, 1);
-  //  } else {
-  //    this.itemsClient.delete(item.id).subscribe(
-  //      () =>
-  //      (this.selectedList.items = this.selectedList.items.filter(
-  //        t => t.id !== item.id
-  //      )),
-  //      error => console.error(error)
-  //    );
-  //  }
-  //}
-
+    if (ingredient.id === 0) {
+      const ingredientIndex = this.selectedCompletedOrder.ingredients.indexOf(this.selectedIngredient);
+      this.selectedCompletedOrder.ingredients.splice(ingredientIndex, 1);
+    } else {
+      this.ingredientsClient.delete(ingredient.id).subscribe(
+        () =>
+        (this.selectedCompletedOrder.ingredients = this.selectedCompletedOrder.ingredients.filter(
+          t => t.id !== ingredient.id
+        )),
+        error => console.error(error)
+      );
+    }
+  }
 }
