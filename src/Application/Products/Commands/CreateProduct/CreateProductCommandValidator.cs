@@ -2,7 +2,7 @@
 
 namespace WOF.Application.Products.Commands.CreateProduct;
 
-public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
+public class CreateProductCommandValidator : AbstractValidator<CreateCompletedOrderProductCommand>
 {
     public CreateProductCommandValidator()
     {

@@ -12,6 +12,8 @@ public class CompletedOrderDto : IMapFrom<CompletedOrder>
 
     public int Id { get; set; }
 
+    public string Name { get; set; }
+
     public string? UserImport { get; set; }
 
     public IList<ProductDto> Products { get; set; }

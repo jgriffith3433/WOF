@@ -8,13 +8,8 @@ public class CompletedOrderConfiguration : IEntityTypeConfiguration<CompletedOrd
 {
     public void Configure(EntityTypeBuilder<CompletedOrder> builder)
     {
-        builder.Property(t => t.UserImport)
+        builder.Property(t => t.Name)
+            .HasMaxLength(200)
             .IsRequired();
-
-        builder.HasMany(left => left.Products).WithMany(right => right.CompletedOrders).UsingEntity("CompletedOrderProduct", typeof(Dictionary<string, object>),
-            right => right.HasOne(typeof(Product)).WithMany().HasForeignKey("ProductId"),
-            left => left.HasOne(typeof(CompletedOrder)).WithMany().HasForeignKey("CompletedOrderId"),
-            join => join.ToTable("CompletedOrderProducts")
-        );
     }
 }

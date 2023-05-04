@@ -7,12 +7,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WOF.Application.Products.Queries;
 using WOF.Application.Products.Queries.GetProducts;
+using WOF.Application.CompletedOrders.Queries.GetCompletedOrders;
 
 namespace WOF.WebUI.Controllers;
 
 [Authorize]
 public class ProductsController : ApiControllerBase
 {
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ProductDto>> GetProduct(int id)
+    {
+        return await Mediator.Send(new GetProductQuery
+        {
+            Id = id
+        });
+    }
+
     [HttpGet]
     public async Task<ActionResult<GetProductsVm>> GetProducts()
     {

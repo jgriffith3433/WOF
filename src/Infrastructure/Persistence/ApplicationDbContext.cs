@@ -41,6 +41,8 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
     public DbSet<CompletedOrder> CompletedOrders => Set<CompletedOrder>();
 
+    public DbSet<CompletedOrderProduct> CompletedOrderProducts => Set<CompletedOrderProduct>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

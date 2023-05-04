@@ -2,7 +2,8 @@
 
 public class CompletedOrder : BaseAuditableEntity
 {
-    public string UserImport { get; set; }
+    public string Name { get; set; }
+    public string? UserImport { get; set; }
 
-    public IList<Product> Products { get; private set; } = new List<Product>();
+    public IList<CompletedOrderProduct> Products { get; private set; } = new List<CompletedOrderProduct>();
 }

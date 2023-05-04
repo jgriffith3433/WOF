@@ -12,7 +12,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasMaxLength(200)
             .IsRequired();
 
-        builder.Property(t => t.WalmartId)
-            .IsRequired();
+        builder.Property(t => t.WalmartId);
     }
 }

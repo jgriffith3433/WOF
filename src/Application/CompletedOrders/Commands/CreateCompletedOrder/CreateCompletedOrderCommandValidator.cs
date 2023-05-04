@@ -12,15 +12,11 @@ public class CreateCompletedOrderCommandValidator : AbstractValidator<CreateComp
     {
         _context = context;
 
-        RuleFor(v => v.UserImport)
-            .NotEmpty().WithMessage("UserImport is required.")
-            .MaximumLength(40000).WithMessage("UserImport must not exceed 40000 characters.")
-            .MustAsync(BeUniqueUserImport).WithMessage("The specified UserImport already exists.");
-    }
+        RuleFor(v => v.Name)
+            .NotEmpty().WithMessage("Name is required")
+            .MaximumLength(200).WithMessage("Name must not exceed 200 characters.");
 
-    public async Task<bool> BeUniqueUserImport(string userImport, CancellationToken cancellationToken)
-    {
-        return await _context.CompletedOrders
-            .AllAsync(l => l.UserImport != userImport, cancellationToken);
+        RuleFor(v => v.UserImport)
+            .MaximumLength(40000).WithMessage("UserImport must not exceed 40000 characters.");
     }
 }

@@ -601,10 +601,11 @@ export class CompletedOrdersClient implements ICompletedOrdersClient {
 }
 
 export interface IProductsClient {
-    getProducts(): Observable<GetProductsVm>;
-    create(command: CreateProductCommand): Observable<number>;
+    getProduct(id: number): Observable<ProductDto>;
     update(id: number, command: UpdateProductCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
+    getProducts(): Observable<GetProductsVm>;
+    create(command: CreateProductCommand): Observable<number>;
     updateProductDetails(id: number | undefined, command: UpdateProductDetailCommand): Observable<FileResponse>;
 }
 
@@ -621,8 +622,11 @@ export class ProductsClient implements IProductsClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getProducts(): Observable<GetProductsVm> {
-        let url_ = this.baseUrl + "/api/Products";
+    getProduct(id: number): Observable<ProductDto> {
+        let url_ = this.baseUrl + "/api/Products/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -634,20 +638,20 @@ export class ProductsClient implements IProductsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetProducts(response_);
+            return this.processGetProduct(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetProducts(response_ as any);
+                    return this.processGetProduct(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetProductsVm>;
+                    return _observableThrow(e) as any as Observable<ProductDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<GetProductsVm>;
+                return _observableThrow(response_) as any as Observable<ProductDto>;
         }));
     }
 
-    protected processGetProducts(response: HttpResponseBase): Observable<GetProductsVm> {
+    protected processGetProduct(response: HttpResponseBase): Observable<ProductDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -658,60 +662,7 @@ export class ProductsClient implements IProductsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetProductsVm.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    create(command: CreateProductCommand): Observable<number> {
-        let url_ = this.baseUrl + "/api/Products";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreate(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processCreate(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<number>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<number>;
-        }));
-    }
-
-    protected processCreate(response: HttpResponseBase): Observable<number> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
+            result200 = ProductDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -828,6 +779,107 @@ export class ProductsClient implements IProductsClient {
                 fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
             }
             return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getProducts(): Observable<GetProductsVm> {
+        let url_ = this.baseUrl + "/api/Products";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetProducts(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetProducts(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetProductsVm>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetProductsVm>;
+        }));
+    }
+
+    protected processGetProducts(response: HttpResponseBase): Observable<GetProductsVm> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetProductsVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    create(command: CreateProductCommand): Observable<number> {
+        let url_ = this.baseUrl + "/api/Products";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<number>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<number>;
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return _observableOf(result200);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -2169,6 +2221,7 @@ export class Product extends BaseAuditableEntity implements IProduct {
     walmartLink?: string | undefined;
     walmartSize?: string | undefined;
     walmartItemResponse?: string | undefined;
+    walmartSearchResponse?: string | undefined;
     error?: string | undefined;
     size?: number;
     price?: number;
@@ -2188,6 +2241,7 @@ export class Product extends BaseAuditableEntity implements IProduct {
             this.walmartLink = _data["walmartLink"];
             this.walmartSize = _data["walmartSize"];
             this.walmartItemResponse = _data["walmartItemResponse"];
+            this.walmartSearchResponse = _data["walmartSearchResponse"];
             this.error = _data["error"];
             this.size = _data["size"];
             this.price = _data["price"];
@@ -2215,6 +2269,7 @@ export class Product extends BaseAuditableEntity implements IProduct {
         data["walmartLink"] = this.walmartLink;
         data["walmartSize"] = this.walmartSize;
         data["walmartItemResponse"] = this.walmartItemResponse;
+        data["walmartSearchResponse"] = this.walmartSearchResponse;
         data["error"] = this.error;
         data["size"] = this.size;
         data["price"] = this.price;
@@ -2236,6 +2291,7 @@ export interface IProduct extends IBaseAuditableEntity {
     walmartLink?: string | undefined;
     walmartSize?: string | undefined;
     walmartItemResponse?: string | undefined;
+    walmartSearchResponse?: string | undefined;
     error?: string | undefined;
     size?: number;
     price?: number;
@@ -2251,7 +2307,8 @@ export enum SizeType {
 }
 
 export class CompletedOrder extends BaseAuditableEntity implements ICompletedOrder {
-    userImport?: string;
+    name?: string;
+    userImport?: string | undefined;
     products?: Product[];
 
     constructor(data?: ICompletedOrder) {
@@ -2261,6 +2318,7 @@ export class CompletedOrder extends BaseAuditableEntity implements ICompletedOrd
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
+            this.name = _data["name"];
             this.userImport = _data["userImport"];
             if (Array.isArray(_data["products"])) {
                 this.products = [] as any;
@@ -2279,6 +2337,7 @@ export class CompletedOrder extends BaseAuditableEntity implements ICompletedOrd
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
         data["userImport"] = this.userImport;
         if (Array.isArray(this.products)) {
             data["products"] = [];
@@ -2291,7 +2350,8 @@ export class CompletedOrder extends BaseAuditableEntity implements ICompletedOrd
 }
 
 export interface ICompletedOrder extends IBaseAuditableEntity {
-    userImport?: string;
+    name?: string;
+    userImport?: string | undefined;
     products?: Product[];
 }
 
@@ -2659,6 +2719,7 @@ export interface ISizeTypeDto {
 
 export class CompletedOrderDto implements ICompletedOrderDto {
     id?: number;
+    name?: string;
     userImport?: string | undefined;
     products?: ProductDto[];
 
@@ -2674,6 +2735,7 @@ export class CompletedOrderDto implements ICompletedOrderDto {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.name = _data["name"];
             this.userImport = _data["userImport"];
             if (Array.isArray(_data["products"])) {
                 this.products = [] as any;
@@ -2693,6 +2755,7 @@ export class CompletedOrderDto implements ICompletedOrderDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["name"] = this.name;
         data["userImport"] = this.userImport;
         if (Array.isArray(this.products)) {
             data["products"] = [];
@@ -2705,6 +2768,7 @@ export class CompletedOrderDto implements ICompletedOrderDto {
 
 export interface ICompletedOrderDto {
     id?: number;
+    name?: string;
     userImport?: string | undefined;
     products?: ProductDto[];
 }
@@ -2712,16 +2776,17 @@ export interface ICompletedOrderDto {
 export class ProductDto implements IProductDto {
     id?: number;
     name?: string;
-    walmartId?: string | undefined;
+    walmartId?: number | undefined;
     walmartLink?: string | undefined;
     walmartSize?: string | undefined;
     walmartItemResponse?: string | undefined;
+    walmartSearchResponse?: string | undefined;
     error?: string | undefined;
     size?: number;
     price?: number;
     verified?: boolean;
     sizeType?: number;
-    completedOrders?: CompletedOrder[];
+    completedOrderId?: number;
 
     constructor(data?: IProductDto) {
         if (data) {
@@ -2740,16 +2805,13 @@ export class ProductDto implements IProductDto {
             this.walmartLink = _data["walmartLink"];
             this.walmartSize = _data["walmartSize"];
             this.walmartItemResponse = _data["walmartItemResponse"];
+            this.walmartSearchResponse = _data["walmartSearchResponse"];
             this.error = _data["error"];
             this.size = _data["size"];
             this.price = _data["price"];
             this.verified = _data["verified"];
             this.sizeType = _data["sizeType"];
-            if (Array.isArray(_data["completedOrders"])) {
-                this.completedOrders = [] as any;
-                for (let item of _data["completedOrders"])
-                    this.completedOrders!.push(CompletedOrder.fromJS(item));
-            }
+            this.completedOrderId = _data["completedOrderId"];
         }
     }
 
@@ -2768,16 +2830,13 @@ export class ProductDto implements IProductDto {
         data["walmartLink"] = this.walmartLink;
         data["walmartSize"] = this.walmartSize;
         data["walmartItemResponse"] = this.walmartItemResponse;
+        data["walmartSearchResponse"] = this.walmartSearchResponse;
         data["error"] = this.error;
         data["size"] = this.size;
         data["price"] = this.price;
         data["verified"] = this.verified;
         data["sizeType"] = this.sizeType;
-        if (Array.isArray(this.completedOrders)) {
-            data["completedOrders"] = [];
-            for (let item of this.completedOrders)
-                data["completedOrders"].push(item.toJSON());
-        }
+        data["completedOrderId"] = this.completedOrderId;
         return data;
     }
 }
@@ -2785,19 +2844,21 @@ export class ProductDto implements IProductDto {
 export interface IProductDto {
     id?: number;
     name?: string;
-    walmartId?: string | undefined;
+    walmartId?: number | undefined;
     walmartLink?: string | undefined;
     walmartSize?: string | undefined;
     walmartItemResponse?: string | undefined;
+    walmartSearchResponse?: string | undefined;
     error?: string | undefined;
     size?: number;
     price?: number;
     verified?: boolean;
     sizeType?: number;
-    completedOrders?: CompletedOrder[];
+    completedOrderId?: number;
 }
 
 export class CreateCompletedOrderCommand implements ICreateCompletedOrderCommand {
+    name?: string;
     userImport?: string | undefined;
 
     constructor(data?: ICreateCompletedOrderCommand) {
@@ -2811,6 +2872,7 @@ export class CreateCompletedOrderCommand implements ICreateCompletedOrderCommand
 
     init(_data?: any) {
         if (_data) {
+            this.name = _data["name"];
             this.userImport = _data["userImport"];
         }
     }
@@ -2824,17 +2886,20 @@ export class CreateCompletedOrderCommand implements ICreateCompletedOrderCommand
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
         data["userImport"] = this.userImport;
         return data;
     }
 }
 
 export interface ICreateCompletedOrderCommand {
+    name?: string;
     userImport?: string | undefined;
 }
 
 export class UpdateCompletedOrderCommand implements IUpdateCompletedOrderCommand {
     id?: number;
+    name?: string;
     userImport?: string | undefined;
 
     constructor(data?: IUpdateCompletedOrderCommand) {
@@ -2849,6 +2914,7 @@ export class UpdateCompletedOrderCommand implements IUpdateCompletedOrderCommand
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.name = _data["name"];
             this.userImport = _data["userImport"];
         }
     }
@@ -2863,6 +2929,7 @@ export class UpdateCompletedOrderCommand implements IUpdateCompletedOrderCommand
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["name"] = this.name;
         data["userImport"] = this.userImport;
         return data;
     }
@@ -2870,6 +2937,7 @@ export class UpdateCompletedOrderCommand implements IUpdateCompletedOrderCommand
 
 export interface IUpdateCompletedOrderCommand {
     id?: number;
+    name?: string;
     userImport?: string | undefined;
 }
 
@@ -2920,6 +2988,7 @@ export interface IGetProductsVm {
 export class CreateProductCommand implements ICreateProductCommand {
     name?: string | undefined;
     walmartId?: number | undefined;
+    completedOrderId?: number;
 
     constructor(data?: ICreateProductCommand) {
         if (data) {
@@ -2934,6 +3003,7 @@ export class CreateProductCommand implements ICreateProductCommand {
         if (_data) {
             this.name = _data["name"];
             this.walmartId = _data["walmartId"];
+            this.completedOrderId = _data["completedOrderId"];
         }
     }
 
@@ -2948,6 +3018,7 @@ export class CreateProductCommand implements ICreateProductCommand {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
         data["walmartId"] = this.walmartId;
+        data["completedOrderId"] = this.completedOrderId;
         return data;
     }
 }
@@ -2955,6 +3026,7 @@ export class CreateProductCommand implements ICreateProductCommand {
 export interface ICreateProductCommand {
     name?: string | undefined;
     walmartId?: number | undefined;
+    completedOrderId?: number;
 }
 
 export class UpdateProductCommand implements IUpdateProductCommand {
@@ -3006,6 +3078,7 @@ export class UpdateProductDetailCommand implements IUpdateProductDetailCommand {
     sizeType?: SizeType;
     name?: string | undefined;
     walmartId?: number | undefined;
+    verified?: boolean;
 
     constructor(data?: IUpdateProductDetailCommand) {
         if (data) {
@@ -3022,6 +3095,7 @@ export class UpdateProductDetailCommand implements IUpdateProductDetailCommand {
             this.sizeType = _data["sizeType"];
             this.name = _data["name"];
             this.walmartId = _data["walmartId"];
+            this.verified = _data["verified"];
         }
     }
 
@@ -3038,6 +3112,7 @@ export class UpdateProductDetailCommand implements IUpdateProductDetailCommand {
         data["sizeType"] = this.sizeType;
         data["name"] = this.name;
         data["walmartId"] = this.walmartId;
+        data["verified"] = this.verified;
         return data;
     }
 }
@@ -3047,6 +3122,7 @@ export interface IUpdateProductDetailCommand {
     sizeType?: SizeType;
     name?: string | undefined;
     walmartId?: number | undefined;
+    verified?: boolean;
 }
 
 export class GetProductStockVm implements IGetProductStockVm {

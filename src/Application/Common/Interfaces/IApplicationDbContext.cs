@@ -19,5 +19,7 @@ public interface IApplicationDbContext
 
     DbSet<CompletedOrder> CompletedOrders { get; }
 
+    DbSet<CompletedOrderProduct> CompletedOrderProducts { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

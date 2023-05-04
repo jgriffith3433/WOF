@@ -19,11 +19,11 @@ public class CompletedOrdersController : ApiControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<CompletedOrderDto> Get(int id)
+    public async Task<ActionResult<CompletedOrderDto>> Get(int id)
     {
-        return await Mediator.Send(new CreateProductsFromCompletedOrderCommand
+        return await Mediator.Send(new GetCompletedOrderQuery
         {
-            CompletedOrderId = id
+            Id = id
         });
     }
 

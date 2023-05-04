@@ -20,7 +20,7 @@
             [ngClass]="{ 'active': selectedCompletedOrder == completedOrder }" (click)="selectedCompletedOrder = completedOrder">
           <div class="clearfix">
             <div class="float-start">
-              {{ completedOrder.userImport | slice:0:14 }}
+              {{ completedOrder.name | slice:0:25 }}
             </div>
             <div class="float-end text-right">
               <!--<span class="badge badge-light">{{ remainingProducts(completedOrder) }}</span>-->
@@ -40,11 +40,8 @@
       </div>
 
       <ul id="products" class="list-group mb-2">
-        <li class="list-group-item" *ngFor="let product of selectedCompletedOrder.products; index as i">
+        <li class="list-group-item" *ngFor="let product of selectedCompletedOrder.products; index as i" [ngClass]="{'list-group-item-danger': !product.verified}">
           <div class="d-flex">
-            <div class="item-checkbox">
-              <!--<input type="checkbox" [(ngModel)]="product.walmartId" (change)="updateProduct(product)" />-->
-            </div>
             <div class="flex-fill">
               <input id="{{ 'productName' + i }}" *ngIf="product == selectedProduct" type="text"
                      class="form-control item-input-control" [(ngModel)]="product.name" (keyup.enter)="updateProduct(product, true)"
@@ -81,6 +78,11 @@
   </div>
   <div class="modal-body">
     <div class="form-group">
+      <label for="inputCompletedOrderName">Name</label>
+      <input type="text" class="form-control" id="inputCompletedOrderName" placeholder="Name..."
+                [(ngModel)]="completedOrderOptionsEditor.name" (keyup.enter)="updateCompletedOrderOptions()" />
+    </div>
+    <div class="form-group">
       <label for="inputCompletedOrderUserImport">User Import</label>
       <textarea type="text" class="form-control" id="inputCompletedOrderUserImport" placeholder="User Import..."
                 [(ngModel)]="completedOrderOptionsEditor.userImport" (keyup.enter)="updateCompletedOrderOptions()"></textarea>
@@ -112,14 +114,27 @@
   <div class="modal-body">
     <div class="form">
       <div class="form-group">
+        <label for="walmartId">Walmart Id</label>
+        <div *ngIf="!productDetailsEditor.walmartId && productDetailsEditor.walmartSearchItems">
+          <select class="form-control" [(ngModel)]="productDetailsEditor.walmartId">
+            <option [ngValue]="walmartSearchItem.itemId" *ngFor="let walmartSearchItem of productDetailsEditor.walmartSearchItems">{{ walmartSearchItem.name }}</option>
+          </select>
+        </div>
+        <div *ngIf="productDetailsEditor.walmartId && !productDetailsEditor.verified">
+          <select *ngIf="productDetailsEditor.walmartSearchItems" class="form-control" [(ngModel)]="productDetailsEditor.walmartId">
+            <option [ngValue]="walmartSearchItem.itemId" *ngFor="let walmartSearchItem of productDetailsEditor.walmartSearchItems">{{ walmartSearchItem.name }}</option>
+          </select>
+          <div class="float-end">
+            <a href="{{ productDetailsEditor.walmartLink || getWalmartLinkFromProductDetailsEditor() }}">{{ productDetailsEditor.walmartId }}</a>
+            <button class="btn btn-primary" (click)="verifyProductDetails()">Verify</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
         <label for="sizeType">Size Type</label>
         <select class="form-control" [(ngModel)]="productDetailsEditor.sizeType">
           <option [ngValue]="sizeType.value" *ngFor="let sizeType of sizeTypes">{{ sizeType.name }}</option>
         </select>
-      </div>
-      <div class="form-group">
-        <label for="walmartId">Walmart Id</label>
-        <textarea id="walmartId" class="form-control" rows="3" [(ngModel)]="productDetailsEditor.walmartId"></textarea>
       </div>
     </div>
     <div *ngIf="debug">
@@ -169,6 +184,14 @@
     </button>
   </div>
   <div class="modal-body">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" placeholder="Name..." [(ngModel)]="newCompletedOrderEditor.name"
+             [ngClass]="{ 'is-invalid': newCompletedOrderEditor.error }" (keyup.enter)="addCompletedOrder()" />
+      <div *ngIf="newCompletedOrderEditor.error" class="invalid-feedback">
+        {{ newCompletedOrderEditor.error }}
+      </div>
+    </div>
     <div class="form-group">
       <label for="userImport">User Import</label>
       <input type="text" class="form-control" id="userImport" placeholder="User Import..." [(ngModel)]="newCompletedOrderEditor.userImport"

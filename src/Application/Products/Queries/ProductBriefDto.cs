@@ -14,4 +14,6 @@ public class ProductBriefDto : IMapFrom<Product>
     public float Size { get; set; }
 
     public float Price { get; set; }
+
+    public bool Verified { get; set; }
 }

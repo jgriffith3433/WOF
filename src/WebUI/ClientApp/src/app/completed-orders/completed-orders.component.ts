@@ -57,7 +57,7 @@ export class CompletedOrdersComponent implements OnInit {
 
   showNewCompletedOrderModal(template: TemplateRef<any>): void {
     this.newCompletedOrderModalRef = this.modalService.show(template);
-    setTimeout(() => document.getElementById('userImport').focus(), 250);
+    setTimeout(() => document.getElementById('name').focus(), 250);
   }
 
   newCompletedOrderCancelled(): void {
@@ -68,21 +68,19 @@ export class CompletedOrdersComponent implements OnInit {
   addCompletedOrder(): void {
     const completedOrder = {
       id: 0,
+      name: this.newCompletedOrderEditor.name,
       userImport: this.newCompletedOrderEditor.userImport,
       products: []
     } as CompletedOrderDto;
 
     this.completedOrdersClient.create(completedOrder as CreateCompletedOrderCommand).subscribe(
       result => {
-        completedOrder.id = result;
-        this.completedOrders.push(completedOrder);
-        this.selectedCompletedOrder = completedOrder;
-        this.newCompletedOrderModalRef.hide();
-        this.newCompletedOrderEditor = {};
-
-        this.completedOrdersClient.get2(completedOrder.id).subscribe(
+        this.completedOrdersClient.get2(result).subscribe(
           result => {
+            this.completedOrders.push(result);
             this.selectedCompletedOrder = result;
+            this.newCompletedOrderModalRef.hide();
+            this.newCompletedOrderEditor = {};
           },
           error => console.error(error)
         );
@@ -94,7 +92,7 @@ export class CompletedOrdersComponent implements OnInit {
           this.newCompletedOrderEditor.error = errors.Title[0];
         }
 
-        setTimeout(() => document.getElementById('userImport').focus(), 250);
+        setTimeout(() => document.getElementById('name').focus(), 250);
       }
     );
   }
@@ -102,6 +100,7 @@ export class CompletedOrdersComponent implements OnInit {
   showCompletedOrderOptionsModal(template: TemplateRef<any>) {
     this.completedOrderOptionsEditor = {
       id: this.selectedCompletedOrder.id,
+      name: this.selectedCompletedOrder.name,
       userImport: this.selectedCompletedOrder.userImport
     };
 
@@ -112,14 +111,9 @@ export class CompletedOrdersComponent implements OnInit {
     const updateCompletedOrderCommand = this.completedOrderOptionsEditor as UpdateCompletedOrderCommand;
     this.completedOrdersClient.update(this.selectedCompletedOrder.id, updateCompletedOrderCommand).subscribe(
       () => {
+        this.selectedCompletedOrder.name = this.completedOrderOptionsEditor.name;
         this.selectedCompletedOrder.userImport = this.completedOrderOptionsEditor.userImport;
         this.completedOrderOptionsModalRef.hide();
-        this.completedOrdersClient.get2(this.selectedCompletedOrder.id).subscribe(
-          result => {
-            this.selectedCompletedOrder = result;
-          },
-          error => console.error(error)
-        );
         this.completedOrderOptionsEditor = {};
       },
       error => console.error(error)
@@ -144,12 +138,43 @@ export class CompletedOrdersComponent implements OnInit {
 
   // Products
   showProductDetailsModal(template: TemplateRef<any>, product: ProductDto): void {
-    this.selectedProduct = product;
-    this.productDetailsEditor = {
-      ...this.selectedProduct
-    };
+    this.productsClient.getProduct(product.id).subscribe(
+      result => {
+        this.selectedProduct = result;
+        for (var i = this.selectedCompletedOrder.products.length - 1; i >= 0; i--) {
+          if (this.selectedCompletedOrder.products[i].id == this.selectedProduct.id) {
+            this.selectedCompletedOrder.products[i] = this.selectedProduct;
+            break;
+          }
+        }
+        this.productDetailsEditor = {
+          ...this.selectedProduct
+        };
+        if (this.selectedProduct.walmartSearchResponse) {
+          this.productDetailsEditor.walmartSearchItems = JSON.parse(this.selectedProduct.walmartSearchResponse).items;
+        }
 
-    this.productDetailsModalRef = this.modalService.show(template);
+        this.productDetailsModalRef = this.modalService.show(template);
+      },
+      error => console.error(error)
+    );
+    
+  }
+
+  verifyProductDetails(): void {
+    this.productDetailsEditor.verified = true;
+    this.updateProductDetails();
+  }
+
+  getWalmartLinkFromProductDetailsEditor(): string {
+    if (this.productDetailsEditor.walmartSearchItems) {
+      for (var walmartSearchItem of this.productDetailsEditor.walmartSearchItems) {
+        if (walmartSearchItem.itemId == this.productDetailsEditor.walmartId) {
+          return "https://www.walmart.com/ip/" + walmartSearchItem.name +"/" + walmartSearchItem.itemId;
+        }
+      }
+    }
+    return "#";
   }
 
   updateProductDetails(): void {
@@ -158,6 +183,7 @@ export class CompletedOrdersComponent implements OnInit {
       () => {
         this.selectedProduct.sizeType = this.productDetailsEditor.sizeType;
         this.selectedProduct.walmartId = this.productDetailsEditor.walmartId;
+        this.selectedProduct.verified = this.productDetailsEditor.verified;
         this.productDetailsModalRef.hide();
         this.productDetailsEditor = {};
       },
@@ -190,24 +216,23 @@ export class CompletedOrdersComponent implements OnInit {
       return;
     }
 
-    //TODO: need to look at this
-    //if (product.id === 0) {
-    //  this.productsClient
-    //    .create({
-    //      ...product, listId: this.selectedCompletedOrder.id
-    //    } as CreateProductCommand)
-    //    .subscribe(
-    //      result => {
-    //        product.id = result;
-    //      },
-    //      error => console.error(error)
-    //    );
-    //} else {
-    //  this.productsClient.update(product.id, product).subscribe(
-    //    () => console.log('Update succeeded.'),
-    //    error => console.error(error)
-    //  );
-    //}
+    if (product.id === 0) {
+      this.productsClient
+        .create({
+          ...product, completedOrderId: this.selectedCompletedOrder.id
+        } as CreateProductCommand)
+        .subscribe(
+          result => {
+            product.id = result;
+          },
+          error => console.error(error)
+        );
+    } else {
+      this.productsClient.update(product.id, product).subscribe(
+        () => console.log('Update succeeded.'),
+        error => console.error(error)
+      );
+    }
 
     this.selectedProduct = null;
 
