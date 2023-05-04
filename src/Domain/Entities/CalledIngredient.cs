@@ -4,9 +4,13 @@ public class CalledIngredient : BaseAuditableEntity
 {
     public string Name { get; set; }
 
-    public int ProductId { get; set; }
+    public float Units { get; set; }
 
-    public ProductStock ProductStock { get; set; } = null!;
+    public bool Verified { get; set; }
 
-    public IList<Recipe> Recipes { get; private set; } = new List<Recipe>();
+    public SizeType SizeType { get; set; }
+
+    public ProductStock? ProductStock { get; set; } = null!;
+
+    public Recipe Recipe { get; set; } = null!;
 }

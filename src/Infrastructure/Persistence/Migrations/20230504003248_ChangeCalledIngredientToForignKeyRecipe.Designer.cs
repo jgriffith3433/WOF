@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WOF.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using WOF.Infrastructure.Persistence;
 namespace WOF.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230504003248_ChangeCalledIngredientToForignKeyRecipe")]
+    partial class ChangeCalledIngredientToForignKeyRecipe
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -340,7 +343,10 @@ namespace WOF.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int?>("ProductStockId")
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductStockId")
                         .HasColumnType("int");
 
                     b.Property<int>("RecipeId")
@@ -352,9 +358,6 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.Property<float>("Units")
                         .HasColumnType("real");
 
-                    b.Property<bool>("Verified")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ProductStockId");
@@ -362,6 +365,41 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.HasIndex("RecipeId");
 
                     b.ToTable("CalledIngredients");
+                });
+
+            modelBuilder.Entity("WOF.Domain.Entities.CalledIngredientRecipe", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CalledIngredientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CalledIngredientId");
+
+                    b.HasIndex("RecipeId");
+
+                    b.ToTable("CalledIngredientRecipe");
                 });
 
             modelBuilder.Entity("WOF.Domain.Entities.CompletedOrder", b =>
@@ -545,6 +583,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Link")
+                        .IsRequired()
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
 
@@ -774,7 +813,9 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("WOF.Domain.Entities.ProductStock", "ProductStock")
                         .WithMany()
-                        .HasForeignKey("ProductStockId");
+                        .HasForeignKey("ProductStockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("WOF.Domain.Entities.Recipe", "Recipe")
                         .WithMany("CalledIngredients")
@@ -783,6 +824,25 @@ namespace WOF.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("ProductStock");
+
+                    b.Navigation("Recipe");
+                });
+
+            modelBuilder.Entity("WOF.Domain.Entities.CalledIngredientRecipe", b =>
+                {
+                    b.HasOne("WOF.Domain.Entities.CalledIngredient", "CalledIngredient")
+                        .WithMany()
+                        .HasForeignKey("CalledIngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WOF.Domain.Entities.Recipe", "Recipe")
+                        .WithMany()
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CalledIngredient");
 
                     b.Navigation("Recipe");
                 });

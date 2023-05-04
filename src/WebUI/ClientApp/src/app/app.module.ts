@@ -20,6 +20,8 @@ import { TokenComponent } from './token/token.component';
 import { ApiAuthorizationModule } from 'src/api-authorization/api-authorization.module';
 import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CalledIngredientsComponent } from './called-ingredients/called-ingredients.component';
+import { RecipesComponent } from './recipes/recipes.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +34,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ProductStockComponent,
     TodoComponent,
     CompletedOrdersComponent,
+    RecipesComponent,
+    CalledIngredientsComponent,
     TokenComponent
   ],
   imports: [

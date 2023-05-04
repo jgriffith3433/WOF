@@ -1,0 +1,49 @@
+#listOptions {
+  margin-right: 8px;
+}
+
+#calledIngredients .item-input-control {
+  border: 0;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+#calledIngredients .done-todo {
+  text-decoration: line-through;
+}
+
+#calledIngredients .calledIngredient-name {
+  padding-top: 8px;
+}
+
+#calledIngredients .list-group-item {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+#calledIngredients .list-group-item .btn-xs {
+  padding: 0;
+}
+
+#calledIngredients .item-checkbox {
+  padding-top: 8px;
+}
+
+#calledIngredients .item-commands {
+  padding-top: 4px;
+}
+
+.modal-footer {
+  display: block;
+}
+
+textarea {
+  width: 100%;
+  height: 250px;
+  font-size: x-small;
+  resize: none;
+}
+
+textarea::-webkit-scrollbar {
+  width: 1em;
+}

@@ -16,13 +16,12 @@ public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .IsRequired();
 
         builder.Property(t => t.Link)
-            .HasMaxLength(4000)
-            .IsRequired();
+            .HasMaxLength(4000);
 
-        builder.HasMany(left => left.CalledIngredients).WithMany(right => right.Recipes).UsingEntity("CalledIngredientRecipe", typeof(Dictionary<string, object>),
-            right => right.HasOne(typeof(CalledIngredient)).WithMany().HasForeignKey("CalledIngredientId"),
-            left => left.HasOne(typeof(Recipe)).WithMany().HasForeignKey("RecipeId"),
-            join => join.ToTable("CalledIngredientRecipes")
-        );
+        //builder.HasMany(left => left.CalledIngredients).WithMany(right => right.Recipe).UsingEntity("CalledIngredientRecipe", typeof(Dictionary<string, object>),
+        //    right => right.HasOne(typeof(CalledIngredient)).WithMany().HasForeignKey("CalledIngredientId"),
+        //    left => left.HasOne(typeof(Recipe)).WithMany().HasForeignKey("RecipeId"),
+        //    join => join.ToTable("CalledIngredientRecipes")
+        //);
     }
 }

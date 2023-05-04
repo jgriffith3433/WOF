@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WOF.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using WOF.Infrastructure.Persistence;
 namespace WOF.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230504011804_NullableLinkRecipeColumn")]
+    partial class NullableLinkRecipeColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -340,7 +343,10 @@ namespace WOF.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int?>("ProductStockId")
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductStockId")
                         .HasColumnType("int");
 
                     b.Property<int>("RecipeId")
@@ -351,9 +357,6 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
                     b.Property<float>("Units")
                         .HasColumnType("real");
-
-                    b.Property<bool>("Verified")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -774,7 +777,9 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("WOF.Domain.Entities.ProductStock", "ProductStock")
                         .WithMany()
-                        .HasForeignKey("ProductStockId");
+                        .HasForeignKey("ProductStockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("WOF.Domain.Entities.Recipe", "Recipe")
                         .WithMany("CalledIngredients")

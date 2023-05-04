@@ -8,6 +8,8 @@ import { ProductsComponent } from './products/products.component';
 import { ProductStockComponent } from './product-stock/product-stock.component';
 import { TodoComponent } from './todo/todo.component';
 import { CompletedOrdersComponent } from './completed-orders/completed-orders.component';
+import { RecipesComponent } from './recipes/recipes.component';
+import { CalledIngredientsComponent } from './called-ingredients/called-ingredients.component';
 import { TokenComponent } from './token/token.component';
 
 export const routes: Routes = [
@@ -18,6 +20,8 @@ export const routes: Routes = [
   { path: 'product-stock', component: ProductStockComponent, canActivate: [AuthorizeGuard] },
   { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
   { path: 'completed-orders', component: CompletedOrdersComponent, canActivate: [AuthorizeGuard] },
+  { path: 'recipes', component: RecipesComponent, canActivate: [AuthorizeGuard] },
+  { path: 'called-ingredients', component: CalledIngredientsComponent, canActivate: [AuthorizeGuard] },
   { path: 'token', component: TokenComponent, canActivate: [AuthorizeGuard] }
 ];
 

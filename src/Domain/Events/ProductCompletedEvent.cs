@@ -2,10 +2,10 @@
 
 public class ProductCompletedEvent : BaseEvent
 {
-    public ProductCompletedEvent(Product product)
+    public ProductCompletedEvent(Product calledIngredient)
     {
-        Product = product;
+        CalledIngredient = calledIngredient;
     }
 
-    public Product Product { get; }
+    public Product CalledIngredient { get; }
 }
