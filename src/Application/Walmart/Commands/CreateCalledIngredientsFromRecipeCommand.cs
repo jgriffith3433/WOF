@@ -67,7 +67,7 @@ public class CreateCalledIngredientsFromCompletedOrderCommandHandler : IRequestH
 
                         if (productStock != null)
                         {
-                            foundProductStock = productStock;
+                            //foundProductStock = productStock;
                             break;
                         }
                         else

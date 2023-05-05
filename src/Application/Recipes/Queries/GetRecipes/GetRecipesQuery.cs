@@ -5,7 +5,7 @@ using WOF.Application.Common.Security;
 using WOF.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using WOF.Application.CompletedOrders.Queries.GetCompletedOrders;
+using WOF.Application.Products;
 
 namespace WOF.Application.Recipes.Queries.GetRecipes;
 

@@ -23,7 +23,7 @@
               {{ completedOrder.name | slice:0:25 }}
             </div>
             <div class="float-end text-right">
-              <!--<span class="badge badge-light">{{ remainingProducts(completedOrder) }}</span>-->
+              <!--<span class="badge badge-light">{{ remainingCompletedOrderProducts(completedOrder) }}</span>-->
             </div>
           </div>
         </li>
@@ -39,26 +39,29 @@
         </button>
       </div>
 
-      <ul id="products" class="list-group mb-2">
-        <li class="list-group-item" *ngFor="let product of selectedCompletedOrder.products; index as i" [ngClass]="{'list-group-item-danger': !product.verified}">
+      <ul id="completedOrderProducts" class="list-group mb-2 list-group-flush">
+        <li class="list-group-item" *ngFor="let completedOrderProduct of selectedCompletedOrder.completedOrderProducts; index as i" [ngClass]="{'disabled': completedOrderProduct.product, 'list-group-item-warning': !completedOrderProduct.product, 'list-group-item-danger': completedOrderProduct.walmartError}">
           <div class="d-flex">
             <div class="flex-fill">
-              <input id="{{ 'productName' + i }}" *ngIf="product == selectedProduct" type="text"
-                     class="form-control item-input-control" [(ngModel)]="product.name" (keyup.enter)="updateProduct(product, true)"
-                     (blur)="updateProduct(product)" autofocus="autofocus" />
-              <div *ngIf="product != selectedProduct" (click)="editProduct(product, 'productName' + i)" class="item-name form-control item-input-control">
-                <span>{{ product.name }}</span>
+              <input id="{{ 'completedOrderProductName' + i }}" *ngIf="completedOrderProduct == selectedCompletedOrderProduct" type="text"
+                     class="form-control item-input-control" [(ngModel)]="completedOrderProduct.name" (keyup.enter)="updateCompletedOrderProduct(completedOrderProduct, true)"
+                     (blur)="updateCompletedOrderProduct(completedOrderProduct)" autofocus="autofocus" />
+              <div *ngIf="completedOrderProduct.product" class="item-name form-control form-control-plaintext">
+                <input type="text" readonly class="form-control-plaintext" value="{{ completedOrderProduct.name }}">
+              </div>
+              <div *ngIf="!completedOrderProduct.product && completedOrderProduct != selectedCompletedOrderProduct" (click)="editCompletedOrderProduct(completedOrderProduct, 'completedOrderProductName' + i)" class="item-name form-control item-input-control">
+                <span>{{ completedOrderProduct.name }}</span>
               </div>
             </div>
-            <div class="item-commands d-flex">
-              <button *ngIf="product.id != 0" (click)="showProductDetailsModal(productDetailsModalTemplate, product)" class="my-auto btn btn-default btn-xs" role="button">
+            <div *ngIf="!completedOrderProduct.product" class="item-commands d-flex">
+              <button *ngIf="completedOrderProduct.id != 0" (click)="showCompletedOrderProductDetailsModal(completedOrderProductDetailsModalTemplate, completedOrderProduct)" class="my-auto btn btn-default btn-xs" role="button">
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
             </div>
           </div>
         </li>
-        <li class="list-group-item" (click)="addProduct()">
-          <button class="btn btn-default">Add Product...</button>
+        <li class="list-group-item" (click)="addCompletedOrderProduct()">
+          <button class="btn btn-default">Add Completed Order Product...</button>
         </li>
       </ul>
     </div>
@@ -104,51 +107,49 @@
   </div>
 </ng-template>
 
-<ng-template #productDetailsModalTemplate>
+<ng-template #completedOrderProductDetailsModalTemplate>
   <div class="modal-header">
-    <h4 class="modal-title pull-left">Product Details</h4>
-    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="productDetailsModalRef.hide()">
+    <h4 class="modal-title pull-left">Completed Order Product Details</h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="completedOrderProductDetailsModalRef.hide()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
   <div class="modal-body">
     <div class="form">
       <div class="form-group">
-        <label for="walmartId">Walmart Id</label>
-        <div *ngIf="!productDetailsEditor.walmartId && productDetailsEditor.walmartSearchItems">
-          <select class="form-control" [(ngModel)]="productDetailsEditor.walmartId">
-            <option [ngValue]="walmartSearchItem.itemId" *ngFor="let walmartSearchItem of productDetailsEditor.walmartSearchItems">{{ walmartSearchItem.name }}</option>
+        <label for="search">Search by Name</label>
+        <div *ngIf="!completedOrderProductDetailsEditor.product && completedOrderProductDetailsEditor.walmartSearchItems">
+          <input type="text" class="form-control" id="search" placeholder="Name..." [(ngModel)]="completedOrderProductDetailsEditor.search"
+                 [ngClass]="{ 'is-invalid': completedOrderProductDetailsEditor.error }" (keyup.enter)="searchCompletedOrderProductName()" />
+          <div class="float-end">
+            <button class="btn btn-primary" (click)="searchCompletedOrderProductName()">Search</button>
+          </div>
+          <select class="form-control" [(ngModel)]="completedOrderProductDetailsEditor.walmartId">
+            <option [ngValue]="walmartSearchItem.itemId" *ngFor="let walmartSearchItem of completedOrderProductDetailsEditor.walmartSearchItems">{{ walmartSearchItem.name }}</option>
           </select>
         </div>
-        <div *ngIf="productDetailsEditor.walmartId && !productDetailsEditor.verified">
-          <select *ngIf="productDetailsEditor.walmartSearchItems" class="form-control" [(ngModel)]="productDetailsEditor.walmartId">
-            <option [ngValue]="walmartSearchItem.itemId" *ngFor="let walmartSearchItem of productDetailsEditor.walmartSearchItems">{{ walmartSearchItem.name }}</option>
-          </select>
+        <div *ngIf="!completedOrderProductDetailsEditor.product && !completedOrderProductDetailsEditor.walmartSearchItems">
+          <input type="text" class="form-control" id="search" placeholder="Name..." [(ngModel)]="completedOrderProductDetailsEditor.search"
+                 [ngClass]="{ 'is-invalid': completedOrderProductDetailsEditor.error }" (keyup.enter)="searchCompletedOrderProductName()" />
           <div class="float-end">
-            <a href="{{ productDetailsEditor.walmartLink || getWalmartLinkFromProductDetailsEditor() }}">{{ productDetailsEditor.walmartId }}</a>
-            <button class="btn btn-primary" (click)="verifyProductDetails()">Verify</button>
+            <button class="btn btn-primary" (click)="searchCompletedOrderProductName()">Search</button>
           </div>
         </div>
-      </div>
-      <div class="form-group">
-        <label for="sizeType">Size Type</label>
-        <select class="form-control" [(ngModel)]="productDetailsEditor.sizeType">
-          <option [ngValue]="sizeType.value" *ngFor="let sizeType of sizeTypes">{{ sizeType.name }}</option>
-        </select>
+        <!--<a href="{{ completedOrderProductDetailsEditor.walmartLink || getWalmartLinkFromProductDetailsEditor() }}">{{ completedOrderProductDetailsEditor.walmartId }}</a>-->
       </div>
     </div>
     <div *ngIf="debug">
-      <pre>{{ productDetailsEditor | json }}</pre>
+      <pre>{{ completedOrderProductDetailsEditor | json }}</pre>
     </div>
   </div>
   <div class="modal-footer">
     <div class="clearfix">
       <div class="float-start">
-        <button class="btn btn-default text-danger" (click)="deleteProduct(selectedProduct)">Delete</button>
+        <button class="btn btn-default text-danger" (click)="deleteCompletedOrderProduct(selectedCompletedOrderProduct)">Delete</button>
       </div>
       <div class="float-end">
-        <button class="btn btn-default" (click)="productDetailsModalRef.hide()">Cancel</button>
-        <button class="btn btn-primary" (click)="updateProductDetails()">Update</button>
+        <button class="btn btn-default" (click)="completedOrderProductDetailsModalRef.hide()">Cancel</button>
+        <button class="btn btn-primary" (click)="updateCompletedOrderProductDetails()">Update</button>
       </div>
     </div>
   </div>

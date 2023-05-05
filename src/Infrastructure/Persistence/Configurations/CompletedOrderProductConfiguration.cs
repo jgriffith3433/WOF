@@ -8,10 +8,6 @@ public class CompletedOrderProductConfiguration : IEntityTypeConfiguration<Compl
 {
     public void Configure(EntityTypeBuilder<CompletedOrderProduct> builder)
     {
-        builder.Property(t => t.CompletedOrderId)
-            .IsRequired();
 
-        builder.Property(t => t.ProductId)
-            .IsRequired();
     }
 }

@@ -2,8 +2,11 @@
 
 public class CompletedOrderProduct : BaseAuditableEntity
 {
-    public int CompletedOrderId { get; set; }
+    public string Name { get; set; }
+    public long? WalmartId { get; set; }
+    public string? WalmartItemResponse { get; set; }
+    public string? WalmartSearchResponse { get; set; }
+    public string? WalmartError { get; set; }
     public CompletedOrder CompletedOrder { get; set; }
-    public int ProductId { get; set; }
-    public Product Product { get; set; }
+    public Product? Product { get; set; }
 }

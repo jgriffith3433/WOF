@@ -2,7 +2,6 @@
 using AutoMapper.QueryableExtensions;
 using WOF.Application.Common.Interfaces;
 using WOF.Application.Common.Security;
-using WOF.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,11 +25,6 @@ public class GetCompletedOrdersQueryHandler : IRequestHandler<GetCompletedOrders
     {
         return new CompletedOrdersVm
         {
-            SizeTypes = Enum.GetValues(typeof(SizeType))
-                .Cast<SizeType>()
-                .Select(p => new SizeTypeDto { Value = (int)p, Name = p.ToString() })
-                .ToList(),
-
             CompletedOrders = await _context.CompletedOrders
                 .AsNoTracking()
                 .ProjectTo<CompletedOrderDto>(_mapper.ConfigurationProvider)

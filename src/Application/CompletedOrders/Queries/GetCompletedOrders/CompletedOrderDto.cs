@@ -7,7 +7,7 @@ public class CompletedOrderDto : IMapFrom<CompletedOrder>
 {
     public CompletedOrderDto()
     {
-        Products = new List<ProductDto>();
+        CompletedOrderProducts = new List<CompletedOrderProductDto>();
     }
 
     public int Id { get; set; }
@@ -16,5 +16,5 @@ public class CompletedOrderDto : IMapFrom<CompletedOrder>
 
     public string? UserImport { get; set; }
 
-    public IList<ProductDto> Products { get; set; }
+    public IList<CompletedOrderProductDto> CompletedOrderProducts { get; set; }
 }

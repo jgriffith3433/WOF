@@ -2,14 +2,13 @@ import { Component, TemplateRef, OnInit } from '@angular/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import {
   CompletedOrdersClient,
-  ProductsClient,
   CompletedOrderDto,
-  ProductDto,
+  CompletedOrderProductDto,
   SizeTypeDto,
   CreateCompletedOrderCommand,
   UpdateCompletedOrderCommand,
-  CreateProductCommand,
-  UpdateProductCommand
+  CreateCompletedOrderProductCommand,
+  UpdateCompletedOrderProductCommand
 } from '../web-api-client';
 
 @Component({
@@ -22,18 +21,17 @@ export class CompletedOrdersComponent implements OnInit {
   completedOrders: CompletedOrderDto[];
   sizeTypes: SizeTypeDto[];
   selectedCompletedOrder: CompletedOrderDto;
-  selectedProduct: ProductDto;
+  selectedCompletedOrderProduct: CompletedOrderProductDto;
   newCompletedOrderEditor: any = {};
   completedOrderOptionsEditor: any = {};
-  productDetailsEditor: any = {};
+  completedOrderProductDetailsEditor: any = {};
   newCompletedOrderModalRef: BsModalRef;
   completedOrderOptionsModalRef: BsModalRef;
   deleteCompletedOrderModalRef: BsModalRef;
-  productDetailsModalRef: BsModalRef;
+  completedOrderProductDetailsModalRef: BsModalRef;
 
   constructor(
     private completedOrdersClient: CompletedOrdersClient,
-    private productsClient: ProductsClient,
     private modalService: BsModalService
   ) { }
 
@@ -41,7 +39,6 @@ export class CompletedOrdersComponent implements OnInit {
     this.completedOrdersClient.get().subscribe(
       result => {
         this.completedOrders = result.completedOrders;
-        this.sizeTypes = result.sizeTypes;
         if (this.completedOrders.length) {
           this.selectedCompletedOrder = this.completedOrders[0];
         }
@@ -51,8 +48,8 @@ export class CompletedOrdersComponent implements OnInit {
   }
 
   // Completed Orders
-  remainingProducts(completedOrder: CompletedOrderDto): number {
-    return completedOrder.products.filter(t => !t.walmartId).length;
+  remainingCompletedOrderProducts(completedOrder: CompletedOrderDto): number {
+    return completedOrder.completedOrderProducts.filter(t => !t.walmartId).length;
   }
 
   showNewCompletedOrderModal(template: TemplateRef<any>): void {
@@ -70,7 +67,7 @@ export class CompletedOrdersComponent implements OnInit {
       id: 0,
       name: this.newCompletedOrderEditor.name,
       userImport: this.newCompletedOrderEditor.userImport,
-      products: []
+      completedOrderProducts: []
     } as CompletedOrderDto;
 
     this.completedOrdersClient.create(completedOrder as CreateCompletedOrderCommand).subscribe(
@@ -137,39 +134,34 @@ export class CompletedOrdersComponent implements OnInit {
   }
 
   // Products
-  showProductDetailsModal(template: TemplateRef<any>, product: ProductDto): void {
-    this.productsClient.getProduct(product.id).subscribe(
+  showCompletedOrderProductDetailsModal(template: TemplateRef<any>, completedOrderProduct: CompletedOrderProductDto): void {
+    this.completedOrdersClient.getCompletedOrderProduct(completedOrderProduct.id).subscribe(
       result => {
-        this.selectedProduct = result;
-        for (var i = this.selectedCompletedOrder.products.length - 1; i >= 0; i--) {
-          if (this.selectedCompletedOrder.products[i].id == this.selectedProduct.id) {
-            this.selectedCompletedOrder.products[i] = this.selectedProduct;
+        this.selectedCompletedOrderProduct = result;
+        for (var i = this.selectedCompletedOrder.completedOrderProducts.length - 1; i >= 0; i--) {
+          if (this.selectedCompletedOrder.completedOrderProducts[i].id == this.selectedCompletedOrderProduct.id) {
+            this.selectedCompletedOrder.completedOrderProducts[i] = this.selectedCompletedOrderProduct;
             break;
           }
         }
-        this.productDetailsEditor = {
-          ...this.selectedProduct
+        this.completedOrderProductDetailsEditor = {
+          ...this.selectedCompletedOrderProduct,
+          search: this.selectedCompletedOrderProduct.name
         };
-        if (this.selectedProduct.walmartSearchResponse) {
-          this.productDetailsEditor.walmartSearchItems = JSON.parse(this.selectedProduct.walmartSearchResponse).items;
+        if (this.selectedCompletedOrderProduct.walmartSearchResponse) {
+          this.completedOrderProductDetailsEditor.walmartSearchItems = JSON.parse(this.selectedCompletedOrderProduct.walmartSearchResponse).items;
         }
 
-        this.productDetailsModalRef = this.modalService.show(template);
+        this.completedOrderProductDetailsModalRef = this.modalService.show(template);
       },
       error => console.error(error)
     );
-    
-  }
-
-  verifyProductDetails(): void {
-    this.productDetailsEditor.verified = true;
-    this.updateProductDetails();
   }
 
   getWalmartLinkFromProductDetailsEditor(): string {
-    if (this.productDetailsEditor.walmartSearchItems) {
-      for (var walmartSearchItem of this.productDetailsEditor.walmartSearchItems) {
-        if (walmartSearchItem.itemId == this.productDetailsEditor.walmartId) {
+    if (this.completedOrderProductDetailsEditor.walmartSearchItems) {
+      for (var walmartSearchItem of this.completedOrderProductDetailsEditor.walmartSearchItems) {
+        if (walmartSearchItem.itemId == this.completedOrderProductDetailsEditor.walmartId) {
           return "https://www.walmart.com/ip/" + walmartSearchItem.name +"/" + walmartSearchItem.itemId;
         }
       }
@@ -177,83 +169,118 @@ export class CompletedOrdersComponent implements OnInit {
     return "#";
   }
 
-  updateProductDetails(): void {
-    const product = this.productDetailsEditor as UpdateProductCommand;
-    this.productsClient.updateProductDetails(this.selectedProduct.id, product).subscribe(
-      () => {
-        this.selectedProduct.sizeType = this.productDetailsEditor.sizeType;
-        this.selectedProduct.walmartId = this.productDetailsEditor.walmartId;
-        this.selectedProduct.verified = this.productDetailsEditor.verified;
-        this.productDetailsModalRef.hide();
-        this.productDetailsEditor = {};
+  searchCompletedOrderProductName(): void {
+    this.completedOrdersClient.searchCompletedOrderProductName(this.completedOrderProductDetailsEditor.id, this.completedOrderProductDetailsEditor.search).subscribe(
+      result => {
+        this.selectedCompletedOrderProduct = result;
+        for (var i = this.selectedCompletedOrder.completedOrderProducts.length - 1; i >= 0; i--) {
+          if (this.selectedCompletedOrder.completedOrderProducts[i].id == this.selectedCompletedOrderProduct.id) {
+            this.selectedCompletedOrder.completedOrderProducts[i] = this.selectedCompletedOrderProduct;
+            break;
+          }
+        }
+        var oldSearch = this.completedOrderProductDetailsEditor.search;
+        this.completedOrderProductDetailsEditor = {
+          ...this.selectedCompletedOrderProduct,
+          search: oldSearch
+        };
+        if (this.selectedCompletedOrderProduct.walmartSearchResponse) {
+          this.completedOrderProductDetailsEditor.walmartSearchItems = JSON.parse(this.selectedCompletedOrderProduct.walmartSearchResponse).items;
+        }
+      },
+      error => {
+        const errors = JSON.parse(error.response);
+
+        if (errors && errors.Title) {
+          this.completedOrderProductDetailsEditor.error = errors.Title[0];
+        }
+
+        setTimeout(() => document.getElementById('name').focus(), 250);
+      }
+    );
+  }
+
+  updateCompletedOrderProductDetails(): void {
+    const completedOrderProduct = this.completedOrderProductDetailsEditor as UpdateCompletedOrderProductCommand;
+    this.completedOrdersClient.updateCompletedOrderProduct(this.selectedCompletedOrderProduct.id, completedOrderProduct).subscribe(
+      result => {
+        this.selectedCompletedOrderProduct = result;
+        for (var i = this.selectedCompletedOrder.completedOrderProducts.length - 1; i >= 0; i--) {
+          if (this.selectedCompletedOrder.completedOrderProducts[i].id == this.selectedCompletedOrderProduct.id) {
+            this.selectedCompletedOrder.completedOrderProducts[i] = this.selectedCompletedOrderProduct;
+            break;
+          }
+        }
+        this.selectedCompletedOrderProduct = null;
+        this.completedOrderProductDetailsModalRef.hide();
+        this.completedOrderProductDetailsEditor = {};
       },
       error => console.error(error)
     );
   }
 
-  addProduct() {
-    const product = {
+  addCompletedOrderProduct() {
+    const completedOrderProduct = {
       id: 0,
       name: '',
-      sizeType: this.sizeTypes[0].value
-    } as ProductDto;
+    } as CompletedOrderProductDto;
 
-    this.selectedCompletedOrder.products.push(product);
-    const index = this.selectedCompletedOrder.products.length - 1;
-    this.editProduct(product, 'productName' + index);
+    this.selectedCompletedOrder.completedOrderProducts.push(completedOrderProduct);
+    const index = this.selectedCompletedOrder.completedOrderProducts.length - 1;
+    this.editCompletedOrderProduct(completedOrderProduct, 'completedOrderProductName' + index);
   }
 
-  editProduct(product: ProductDto, inputId: string): void {
-    this.selectedProduct = product;
+  editCompletedOrderProduct(completedOrderProduct: CompletedOrderProductDto, inputId: string): void {
+    this.selectedCompletedOrderProduct = completedOrderProduct;
     setTimeout(() => document.getElementById(inputId).focus(), 100);
   }
 
-  updateProduct(product: ProductDto, pressedEnter: boolean = false): void {
-    const isNewProduct = product.id === 0;
+  updateCompletedOrderProduct(completedOrderProduct: CompletedOrderProductDto, pressedEnter: boolean = false): void {
+    const isNewCompletedOrderProduct = completedOrderProduct.id === 0;
 
-    if (!product.name.trim()) {
-      this.deleteProduct(product);
+    if (!completedOrderProduct.name.trim()) {
+      this.deleteCompletedOrderProduct(completedOrderProduct);
       return;
     }
 
-    if (product.id === 0) {
-      this.productsClient
-        .create({
-          ...product, completedOrderId: this.selectedCompletedOrder.id
-        } as CreateProductCommand)
+    if (completedOrderProduct.id === 0) {
+      this.completedOrdersClient
+        .createCompletedOrderProduct({
+          ...completedOrderProduct, completedOrderId: this.selectedCompletedOrder.id
+        } as CreateCompletedOrderProductCommand)
         .subscribe(
           result => {
-            product.id = result;
+            completedOrderProduct.id = result;
           },
           error => console.error(error)
         );
     } else {
-      this.productsClient.update(product.id, product).subscribe(
+      this.completedOrdersClient.updateCompletedOrderProduct(completedOrderProduct.id, completedOrderProduct).subscribe(
         () => console.log('Update succeeded.'),
         error => console.error(error)
       );
     }
 
-    this.selectedProduct = null;
+    this.selectedCompletedOrderProduct = null;
 
-    if (isNewProduct && pressedEnter) {
-      setTimeout(() => this.addProduct(), 250);
+    if (isNewCompletedOrderProduct && pressedEnter) {
+      setTimeout(() => this.addCompletedOrderProduct(), 250);
     }
   }
 
-  deleteProduct(product: ProductDto) {
-    if (this.productDetailsModalRef) {
-      this.productDetailsModalRef.hide();
+  deleteCompletedOrderProduct(completedOrderProduct: CompletedOrderProductDto) {
+    if (this.completedOrderProductDetailsModalRef) {
+      this.completedOrderProductDetailsModalRef.hide();
     }
 
-    if (product.id === 0) {
-      const productIndex = this.selectedCompletedOrder.products.indexOf(this.selectedProduct);
-      this.selectedCompletedOrder.products.splice(productIndex, 1);
+    if (completedOrderProduct.id === 0) {
+      const completedOrderProductIndex = this.selectedCompletedOrder.completedOrderProducts.indexOf(this.selectedCompletedOrderProduct);
+      this.selectedCompletedOrder.completedOrderProducts.splice(completedOrderProductIndex, 1);
     } else {
-      this.productsClient.delete(product.id).subscribe(
+      this.completedOrdersClient.deleteCompletedOrderProduct(completedOrderProduct.id).subscribe(
         () =>
-        (this.selectedCompletedOrder.products = this.selectedCompletedOrder.products.filter(
-          t => t.id !== product.id
+        (this.selectedCompletedOrder.completedOrderProducts = this.selectedCompletedOrder.completedOrderProducts.filter(
+          t => t.id !== completedOrderProduct.id
         )),
         error => console.error(error)
       );

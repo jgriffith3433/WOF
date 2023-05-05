@@ -1,4 +1,4 @@
-﻿using WOF.Application.CompletedOrders.Queries.GetCompletedOrders;
+﻿using WOF.Application.Products;
 
 namespace WOF.Application.Recipes.Queries.GetRecipes;
 

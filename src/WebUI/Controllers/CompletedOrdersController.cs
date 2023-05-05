@@ -4,8 +4,10 @@ using WOF.Application.CompletedOrders.Commands.UpdateCompletedOrders;
 using WOF.Application.CompletedOrders.Queries.GetCompletedOrders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WOF.Domain.Entities;
-using WOF.Application.Walmart.Commands;
+using WOF.Application.CompletedOrders.Queries.GetCompletedOrderProducts;
+using WOF.Application.CompletedOrders.Commands.CreateCompletedOrderProduct;
+using WOF.Application.CompletedOrders.Commands.DeleteCompletedOrderProduct;
+using WOF.Application.CompletedOrders.Commands.UpdateCompletedOrderProduct;
 
 namespace WOF.WebUI.Controllers;
 
@@ -50,6 +52,48 @@ public class CompletedOrdersController : ApiControllerBase
     public async Task<ActionResult> Delete(int id)
     {
         await Mediator.Send(new DeleteCompletedOrderCommand(id));
+
+        return NoContent();
+    }
+
+    //Completed Order Products
+
+    [HttpGet("GetCompletedOrderProduct/{id}")]
+    public async Task<ActionResult<CompletedOrderProductDto>> GetCompletedOrderProduct(int id)
+    {
+        return await Mediator.Send(new GetCompletedOrderProductQuery
+        {
+            Id = id
+        });
+    }
+
+    [HttpGet("SearchCompletedOrderProductName")]
+    public async Task<ActionResult<CompletedOrderProductDto>> SearchCompletedOrderProductName([FromQuery] SearchCompletedOrderProductNameQuery query)
+    {
+        return await Mediator.Send(query);
+    }
+
+    [HttpPost("CreateCompletedOrderProduct")]
+    public async Task<ActionResult<int>> CreateCompletedOrderProduct(CreateCompletedOrderProductCommand command)
+    {
+        return await Mediator.Send(command);
+    }
+
+    [HttpPut("UpdateCompletedOrderProduct/{id}")]
+    public async Task<ActionResult<CompletedOrderProductDto>> UpdateCompletedOrderProduct(int id, UpdateCompletedOrderProductCommand command)
+    {
+        if (id != command.Id)
+        {
+            return BadRequest();
+        }
+
+        return await Mediator.Send(command);
+    }
+
+    [HttpDelete("DeleteCompletedOrderProduct/{id}")]
+    public async Task<ActionResult> DeleteCompletedOrderProduct(int id)
+    {
+        await Mediator.Send(new DeleteCompletedOrderProductCommand(id));
 
         return NoContent();
     }

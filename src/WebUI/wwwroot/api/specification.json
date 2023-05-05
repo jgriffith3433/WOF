@@ -67,6 +67,88 @@
         ]
       }
     },
+    "/api/CalledIngredients/GetCalledIngredientDetails/{id}": {
+      "get": {
+        "tags": [
+          "CalledIngredients"
+        ],
+        "operationId": "CalledIngredients_GetCalledIngredientDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalledIngredientDetailsVm"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/CalledIngredients/SearchProductStockName": {
+      "get": {
+        "tags": [
+          "CalledIngredients"
+        ],
+        "operationId": "CalledIngredients_SearchProductStockName",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Search",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalledIngredientDetailsVm"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/CalledIngredients/{id}": {
       "put": {
         "tags": [
@@ -175,7 +257,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateCalledIngredientDetailCommand"
+                "$ref": "#/components/schemas/UpdateCalledIngredientDetailsCommand"
               }
             }
           },
@@ -384,12 +466,12 @@
         ]
       }
     },
-    "/api/Products/{id}": {
+    "/api/CompletedOrders/GetCompletedOrderProduct/{id}": {
       "get": {
         "tags": [
-          "Products"
+          "CompletedOrders"
         ],
-        "operationId": "Products_GetProduct",
+        "operationId": "CompletedOrders_GetCompletedOrderProduct",
         "parameters": [
           {
             "name": "id",
@@ -408,7 +490,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductDto"
+                  "$ref": "#/components/schemas/CompletedOrderProductDto"
                 }
               }
             }
@@ -419,12 +501,97 @@
             "JWT": []
           }
         ]
-      },
+      }
+    },
+    "/api/CompletedOrders/SearchCompletedOrderProductName": {
+      "get": {
+        "tags": [
+          "CompletedOrders"
+        ],
+        "operationId": "CompletedOrders_SearchCompletedOrderProductName",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Search",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompletedOrderProductDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/CompletedOrders/CreateCompletedOrderProduct": {
+      "post": {
+        "tags": [
+          "CompletedOrders"
+        ],
+        "operationId": "CompletedOrders_CreateCompletedOrderProduct",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompletedOrderProductCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/CompletedOrders/UpdateCompletedOrderProduct/{id}": {
       "put": {
         "tags": [
-          "Products"
+          "CompletedOrders"
         ],
-        "operationId": "Products_Update",
+        "operationId": "CompletedOrders_UpdateCompletedOrderProduct",
         "parameters": [
           {
             "name": "id",
@@ -442,7 +609,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateProductCommand"
+                "$ref": "#/components/schemas/UpdateCompletedOrderProductCommand"
               }
             }
           },
@@ -453,10 +620,9 @@
           "200": {
             "description": "",
             "content": {
-              "application/octet-stream": {
+              "application/json": {
                 "schema": {
-                  "type": "string",
-                  "format": "binary"
+                  "$ref": "#/components/schemas/CompletedOrderProductDto"
                 }
               }
             }
@@ -467,12 +633,14 @@
             "JWT": []
           }
         ]
-      },
+      }
+    },
+    "/api/CompletedOrders/DeleteCompletedOrderProduct/{id}": {
       "delete": {
         "tags": [
-          "Products"
+          "CompletedOrders"
         ],
-        "operationId": "Products_Delete",
+        "operationId": "CompletedOrders_DeleteCompletedOrderProduct",
         "parameters": [
           {
             "name": "id",
@@ -518,91 +686,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetProductsVm"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "Products"
-        ],
-        "operationId": "Products_Create",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateProductCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/api/Products/UpdateProductDetails": {
-      "put": {
-        "tags": [
-          "Products"
-        ],
-        "operationId": "Products_UpdateProductDetails",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateProductDetailCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
                 }
               }
             }
@@ -1335,7 +1418,7 @@
               },
               "walmartId": {
                 "type": "integer",
-                "format": "int32",
+                "format": "int64",
                 "nullable": true
               },
               "walmartLink": {
@@ -1372,10 +1455,10 @@
               "sizeType": {
                 "$ref": "#/components/schemas/SizeType"
               },
-              "completedOrders": {
+              "completedOrderProducts": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/CompletedOrder"
+                  "$ref": "#/components/schemas/CompletedOrderProduct"
                 }
               }
             }
@@ -1396,6 +1479,50 @@
           2
         ]
       },
+      "CompletedOrderProduct": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "walmartId": {
+                "type": "integer",
+                "format": "int64",
+                "nullable": true
+              },
+              "walmartItemResponse": {
+                "type": "string",
+                "nullable": true
+              },
+              "walmartSearchResponse": {
+                "type": "string",
+                "nullable": true
+              },
+              "walmartError": {
+                "type": "string",
+                "nullable": true
+              },
+              "completedOrder": {
+                "$ref": "#/components/schemas/CompletedOrder"
+              },
+              "product": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
       "CompletedOrder": {
         "allOf": [
           {
@@ -1412,10 +1539,10 @@
                 "type": "string",
                 "nullable": true
               },
-              "products": {
+              "completedOrderProducts": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Product"
+                  "$ref": "#/components/schemas/CompletedOrderProduct"
                 }
               }
             }
@@ -1541,6 +1668,46 @@
           }
         ]
       },
+      "CalledIngredientDetailsVm": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "productStock": {
+            "$ref": "#/components/schemas/ProductStock"
+          },
+          "units": {
+            "type": "number",
+            "format": "float"
+          },
+          "sizeType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "productStockId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "productStockSearchItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductStock"
+            }
+          },
+          "recipes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Recipe"
+            }
+          }
+        }
+      },
       "CreateCalledIngredientCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -1549,9 +1716,9 @@
             "type": "string",
             "nullable": true
           },
-          "units": {
-            "type": "number",
-            "format": "float"
+          "recipeId": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -1573,7 +1740,7 @@
           }
         }
       },
-      "UpdateCalledIngredientDetailCommand": {
+      "UpdateCalledIngredientDetailsCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1583,6 +1750,11 @@
           },
           "sizeType": {
             "$ref": "#/components/schemas/SizeType"
+          },
+          "productStockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           },
           "name": {
             "type": "string",
@@ -1598,31 +1770,11 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "sizeTypes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SizeTypeDto"
-            }
-          },
           "completedOrders": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CompletedOrderDto"
             }
-          }
-        }
-      },
-      "SizeTypeDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "value": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
           }
         }
       },
@@ -1641,11 +1793,53 @@
             "type": "string",
             "nullable": true
           },
-          "products": {
+          "completedOrderProducts": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ProductDto"
+              "$ref": "#/components/schemas/CompletedOrderProductDto"
             }
+          }
+        }
+      },
+      "CompletedOrderProductDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "walmartId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "walmartItemResponse": {
+            "type": "string",
+            "nullable": true
+          },
+          "walmartSearchResponse": {
+            "type": "string",
+            "nullable": true
+          },
+          "walmartError": {
+            "type": "string",
+            "nullable": true
+          },
+          "completedOrderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "product": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProductDto"
+              }
+            ]
           }
         }
       },
@@ -1662,7 +1856,7 @@
           },
           "walmartId": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "nullable": true
           },
           "walmartLink": {
@@ -1736,29 +1930,12 @@
           }
         }
       },
-      "GetProductsVm": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "products": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ProductDto"
-            }
-          }
-        }
-      },
-      "CreateProductCommand": {
+      "CreateCompletedOrderProductCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "name": {
             "type": "string",
-            "nullable": true
-          },
-          "walmartId": {
-            "type": "integer",
-            "format": "int32",
             "nullable": true
           },
           "completedOrderId": {
@@ -1767,7 +1944,7 @@
           }
         }
       },
-      "UpdateProductCommand": {
+      "UpdateCompletedOrderProductCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1781,33 +1958,40 @@
           },
           "walmartId": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "nullable": true
           }
         }
       },
-      "UpdateProductDetailCommand": {
+      "GetProductsVm": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
+          "sizeTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SizeTypeDto"
+            }
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductDto"
+            }
+          }
+        }
+      },
+      "SizeTypeDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
             "type": "integer",
             "format": "int32"
-          },
-          "sizeType": {
-            "$ref": "#/components/schemas/SizeType"
           },
           "name": {
             "type": "string",
             "nullable": true
-          },
-          "walmartId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "verified": {
-            "type": "boolean"
           }
         }
       },
@@ -1873,7 +2057,7 @@
           "calledIngredients": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CalledIngredientDto"
+              "$ref": "#/components/schemas/CalledIngredientDetailsVm"
             }
           }
         }

@@ -4,12 +4,14 @@ import {
   RecipesClient,
   CalledIngredientsClient,
   RecipeDto,
+  CalledIngredientDetailsVm,
   CalledIngredientDto,
   SizeTypeDto,
   CreateRecipeCommand,
   UpdateRecipeCommand,
   CreateCalledIngredientCommand,
-  UpdateCalledIngredientCommand
+  UpdateCalledIngredientCommand,
+  UpdateCalledIngredientDetailsCommand
 } from '../web-api-client';
 
 @Component({
@@ -23,6 +25,7 @@ export class RecipesComponent implements OnInit {
   sizeTypes: SizeTypeDto[];
   selectedRecipe: RecipeDto;
   selectedCalledIngredient: CalledIngredientDto;
+  selectedCalledIngredientDetails: CalledIngredientDetailsVm;
   newRecipeEditor: any = {};
   recipeOptionsEditor: any = {};
   calledIngredientDetailsEditor: any = {};
@@ -144,20 +147,61 @@ export class RecipesComponent implements OnInit {
 
   // CalledIngredients
   showCalledIngredientDetailsModal(template: TemplateRef<any>, calledIngredient: CalledIngredientDto): void {
-    this.selectedCalledIngredient = calledIngredient;
-    this.calledIngredientDetailsEditor = {
-      ...this.selectedCalledIngredient
-    };
+    this.calledIngredientsClient.getCalledIngredientDetails(calledIngredient.id).subscribe(
+      result => {
+        this.selectedCalledIngredientDetails = result;
+        for (var i = this.selectedRecipe.calledIngredients.length - 1; i >= 0; i--) {
+          if (this.selectedRecipe.calledIngredients[i].id == this.selectedCalledIngredientDetails.id) {
+            this.selectedRecipe.calledIngredients[i] = this.selectedCalledIngredientDetails;
+            break;
+          }
+        }
+        this.calledIngredientDetailsEditor = {
+          ...this.selectedCalledIngredientDetails,
+          search: this.selectedCalledIngredientDetails.name
+        };
 
-    this.calledIngredientDetailsModalRef = this.modalService.show(template);
+        this.calledIngredientDetailsModalRef = this.modalService.show(template);
+      },
+      error => console.error(error)
+    );
+  }
+
+
+  searchIngredientName(): void {
+    this.calledIngredientsClient.searchProductStockName(this.calledIngredientDetailsEditor.id, this.calledIngredientDetailsEditor.search).subscribe(
+      result => {
+        this.selectedCalledIngredientDetails = result;
+        for (var i = this.selectedRecipe.calledIngredients.length - 1; i >= 0; i--) {
+          if (this.selectedRecipe.calledIngredients[i].id == this.selectedCalledIngredientDetails.id) {
+            this.selectedRecipe.calledIngredients[i] = this.selectedCalledIngredientDetails;
+            break;
+          }
+        }
+        var oldSearch = this.calledIngredientDetailsEditor.search;
+        this.calledIngredientDetailsEditor = {
+          ...this.selectedCalledIngredientDetails,
+          search: oldSearch
+        };
+      },
+      error => {
+        const errors = JSON.parse(error.response);
+
+        if (errors && errors.Title) {
+          this.calledIngredientDetailsEditor.error = errors.Title[0];
+        }
+
+        setTimeout(() => document.getElementById('name').focus(), 250);
+      }
+    );
   }
 
   updateCalledIngredientDetails(): void {
-    const calledIngredient = this.calledIngredientDetailsEditor as UpdateCalledIngredientCommand;
-    this.calledIngredientsClient.updateCalledIngredientDetails(this.selectedCalledIngredient.id, calledIngredient).subscribe(
+    const calledIngredient = this.calledIngredientDetailsEditor as UpdateCalledIngredientDetailsCommand;
+    this.calledIngredientsClient.updateCalledIngredientDetails(this.selectedCalledIngredientDetails.id, calledIngredient).subscribe(
       () => {
-        this.selectedCalledIngredient.sizeType = this.calledIngredientDetailsEditor.sizeType;
-        this.selectedCalledIngredient.units = this.calledIngredientDetailsEditor.units;
+        this.selectedCalledIngredientDetails.sizeType = this.calledIngredientDetailsEditor.sizeType;
+        this.selectedCalledIngredientDetails.units = this.calledIngredientDetailsEditor.units;
         this.calledIngredientDetailsModalRef.hide();
         this.calledIngredientDetailsEditor = {};
       },
@@ -190,26 +234,26 @@ export class RecipesComponent implements OnInit {
       return;
     }
 
-    //TODO: need to look at this
-    //if (calledIngredient.id === 0) {
-    //  this.calledIngredientsClient
-    //    .create({
-    //      ...calledIngredient, listId: this.selectedRecipe.id
-    //    } as CreateCalledIngredientCommand)
-    //    .subscribe(
-    //      result => {
-    //        calledIngredient.id = result;
-    //      },
-    //      error => console.error(error)
-    //    );
-    //} else {
-    //  this.calledIngredientsClient.update(calledIngredient.id, calledIngredient).subscribe(
-    //    () => console.log('Update succeeded.'),
-    //    error => console.error(error)
-    //  );
-    //}
+    if (calledIngredient.id === 0) {
+      this.calledIngredientsClient
+        .create({
+          ...calledIngredient, recipeId: this.selectedRecipe.id
+        } as CreateCalledIngredientCommand)
+        .subscribe(
+          result => {
+            calledIngredient.id = result;
+          },
+          error => console.error(error)
+        );
+    } else {
+      this.calledIngredientsClient.update(calledIngredient.id, calledIngredient).subscribe(
+        () => console.log('Update succeeded.'),
+        error => console.error(error)
+      );
+    }
 
     this.selectedCalledIngredient = null;
+    this.selectedCalledIngredientDetails = null;
 
     if (isNewCalledIngredient && pressedEnter) {
       setTimeout(() => this.addCalledIngredient(), 250);

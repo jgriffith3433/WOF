@@ -405,8 +405,24 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProductId")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
+
+                    b.Property<string>("WalmartError")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long?>("WalmartId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("WalmartItemResponse")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WalmartSearchResponse")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -457,8 +473,8 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.Property<bool>("Verified")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("WalmartId")
-                        .HasColumnType("int");
+                    b.Property<long?>("WalmartId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("WalmartItemResponse")
                         .HasColumnType("nvarchar(max)");
@@ -766,16 +782,14 @@ namespace WOF.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("WOF.Domain.Entities.CompletedOrderProduct", b =>
                 {
                     b.HasOne("WOF.Domain.Entities.CompletedOrder", "CompletedOrder")
-                        .WithMany()
+                        .WithMany("CompletedOrderProducts")
                         .HasForeignKey("CompletedOrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("WOF.Domain.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("CompletedOrderProducts")
+                        .HasForeignKey("ProductId");
 
                     b.Navigation("CompletedOrder");
 
@@ -825,6 +839,16 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Colour")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("WOF.Domain.Entities.CompletedOrder", b =>
+                {
+                    b.Navigation("CompletedOrderProducts");
+                });
+
+            modelBuilder.Entity("WOF.Domain.Entities.Product", b =>
+                {
+                    b.Navigation("CompletedOrderProducts");
                 });
 
             modelBuilder.Entity("WOF.Domain.Entities.Recipe", b =>

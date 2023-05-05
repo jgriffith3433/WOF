@@ -4,11 +4,8 @@ using Microsoft.Extensions.Logging;
 using WOF.Application.Walmart.Requests;
 using WOF.Application.Walmart.Responses;
 using WOF.Application.Common.Interfaces;
-using Org.BouncyCastle.Asn1.Ocsp;
 using WOF.Domain.Entities;
 using Newtonsoft.Json;
-using Microsoft.EntityFrameworkCore;
-using WOF.Application.Common.Exceptions;
 using WOF.Application.CompletedOrders.Queries.GetCompletedOrders;
 
 namespace WOF.Application.Products.EventHandlers;
@@ -35,70 +32,74 @@ public class CompletedOrderUserImportEventHandler : INotificationHandler<Complet
         {
             var splitLink = userImportObject.Link.Split('/');
             int walmartId = int.Parse(splitLink[splitLink.Length - 1]);
-            var product = _context.Products.FirstOrDefaultAsync(i => i.Name == userImportObject.Name, cancellationToken).Result;
-            if (product != null)
+
+            var completedOrderProduct = new CompletedOrderProduct
             {
-                notification.CompletedOrder.Products.Add(product);
-            }
-            else
-            {
-                product = new Product
-                {
-                    Name = userImportObject.Name,
-                    WalmartId = walmartId,
-                    WalmartLink = userImportObject.Link
-                };
-                _context.Products.Add(product);
-                notification.CompletedOrder.Products.Add(product);
-            }
+                Name = userImportObject.Name,
+                WalmartId = walmartId
+            };
+            _context.CompletedOrderProducts.Add(completedOrderProduct);
+
+            notification.CompletedOrder.CompletedOrderProducts.Add(completedOrderProduct);
         }
         var result = _context.SaveChangesAsync(cancellationToken).Result;
 
-        foreach (var product in notification.CompletedOrder.Products)
+        foreach (var completedOrderProduct in notification.CompletedOrder.CompletedOrderProducts)
         {
             try
             {
-                //var stock = _context.ProductStocks.FirstOrDefaultAsync(ps => ps.Product == product, cancellationToken).Result;
-                //if (stock == null)
-                //{
-                //    stock = new ProductStock
-                //    {
-                //        Name = product.Name,
-                //        Product = product
-                //    };
-                //    _context.ProductStocks.Add(stock);
-                //}
-
-                ////TODO: Need to convert from walmart product to stock units.
-                ////for now just going to put 1 (even though we sometimes order X2 of products)
-                ////Lots of parsing needs to be done using walmartresponse objects name and size properties
-                ////stock.Units += product.Units;
-                //stock.Units += 1;
-
                 var itemRequest = new ItemRequest
                 {
-                    id = product.WalmartId.ToString()
+                    id = completedOrderProduct.WalmartId.ToString()
                 };
 
                 var itemResponse = itemRequest.GetResponse<ItemResponse>().Result;
-                product.WalmartItemResponse = JsonConvert.SerializeObject(itemResponse);
-                if (itemResponse.size == null)
+                var serializedItemResponse = JsonConvert.SerializeObject(itemResponse);
+                completedOrderProduct.WalmartItemResponse = serializedItemResponse;
+                completedOrderProduct.Name = itemResponse.name;
+
+                var productEntity = _context.Products.FirstOrDefault(p => p.WalmartId == itemResponse.itemId);
+                ProductStock? productStock = null;
+
+                if (productEntity != null)
                 {
-                    product.WalmartSize = "No walmart size";
+                    productStock = _context.ProductStocks.FirstOrDefault(ps => ps.Product == productEntity);
+                    productStock.Units += 1;
                 }
                 else
                 {
-                    product.WalmartSize = itemResponse.size;
+                    productEntity = new Product
+                    {
+                        WalmartId = itemResponse.itemId,
+                    };
+
+                    //always ensure a product stock record exists for each product
+                    productStock = new ProductStock
+                    {
+                        Name = itemResponse.name,
+                        Units = 1
+                    };
+                    _context.ProductStocks.Add(productStock);
+
+                    //TODO: do we only need one of these for entity framework?
+                    productStock.Product = productEntity;
                 }
-                product.Price = itemResponse.salePrice;
+
+                //always update values from walmart to keep synced
+                productEntity.WalmartItemResponse = serializedItemResponse;
+                productEntity.Name = itemResponse.name;
+                productEntity.Price = itemResponse.salePrice;
+                productEntity.WalmartSize = itemResponse.size;
+                productEntity.WalmartLink = string.Format("https://walmart.com/ip/{0}/{1}", itemResponse.name, itemResponse.itemId);
+                completedOrderProduct.Product = productEntity;
             }
             catch (Exception ex)
             {
-                product.Error = ex.Message;
+                completedOrderProduct.WalmartError = ex.Message;
             }
             result = _context.SaveChangesAsync(cancellationToken).Result;
         }
-        
+
         return _context.SaveChangesAsync(cancellationToken);
     }
 }
