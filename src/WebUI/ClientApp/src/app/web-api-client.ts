@@ -1047,7 +1047,11 @@ export class ProductsClient implements IProductsClient {
 }
 
 export interface IProductStockClient {
-    getProductStock(): Observable<GetProductStockVm>;
+    getProductStocks(): Observable<GetProductStocksVm>;
+    update(id: number | undefined, command: UpdateProductStockCommand): Observable<ProductStockDto>;
+    create(command: CreateProductStockCommand): Observable<number>;
+    getProductStockDetails(id: number | undefined, search: string | null | undefined): Observable<ProductStockDetailsVm>;
+    updateProductStockDetails(id: number | undefined, command: UpdateProductStockDetailsCommand): Observable<ProductStockDto>;
 }
 
 @Injectable({
@@ -1063,7 +1067,7 @@ export class ProductStockClient implements IProductStockClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getProductStock(): Observable<GetProductStockVm> {
+    getProductStocks(): Observable<GetProductStocksVm> {
         let url_ = this.baseUrl + "/api/ProductStock";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1076,20 +1080,20 @@ export class ProductStockClient implements IProductStockClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetProductStock(response_);
+            return this.processGetProductStocks(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetProductStock(response_ as any);
+                    return this.processGetProductStocks(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetProductStockVm>;
+                    return _observableThrow(e) as any as Observable<GetProductStocksVm>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<GetProductStockVm>;
+                return _observableThrow(response_) as any as Observable<GetProductStocksVm>;
         }));
     }
 
-    protected processGetProductStock(response: HttpResponseBase): Observable<GetProductStockVm> {
+    protected processGetProductStocks(response: HttpResponseBase): Observable<GetProductStocksVm> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1100,7 +1104,226 @@ export class ProductStockClient implements IProductStockClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetProductStockVm.fromJS(resultData200);
+            result200 = GetProductStocksVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    update(id: number | undefined, command: UpdateProductStockCommand): Observable<ProductStockDto> {
+        let url_ = this.baseUrl + "/api/ProductStock?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ProductStockDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ProductStockDto>;
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<ProductStockDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ProductStockDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    create(command: CreateProductStockCommand): Observable<number> {
+        let url_ = this.baseUrl + "/api/ProductStock";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<number>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<number>;
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getProductStockDetails(id: number | undefined, search: string | null | undefined): Observable<ProductStockDetailsVm> {
+        let url_ = this.baseUrl + "/api/ProductStock/GetProductStockDetails?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        if (search !== undefined && search !== null)
+            url_ += "Search=" + encodeURIComponent("" + search) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetProductStockDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetProductStockDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ProductStockDetailsVm>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ProductStockDetailsVm>;
+        }));
+    }
+
+    protected processGetProductStockDetails(response: HttpResponseBase): Observable<ProductStockDetailsVm> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ProductStockDetailsVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    updateProductStockDetails(id: number | undefined, command: UpdateProductStockDetailsCommand): Observable<ProductStockDto> {
+        let url_ = this.baseUrl + "/api/ProductStock/UpdateProductStockDetails?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateProductStockDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateProductStockDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ProductStockDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ProductStockDto>;
+        }));
+    }
+
+    protected processUpdateProductStockDetails(response: HttpResponseBase): Observable<ProductStockDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ProductStockDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -2274,7 +2497,8 @@ export interface IBaseAuditableEntity extends IBaseEntity {
 export class ProductStock extends BaseAuditableEntity implements IProductStock {
     name?: string;
     units?: number;
-    product?: Product;
+    productId?: number | undefined;
+    product?: Product | undefined;
 
     constructor(data?: IProductStock) {
         super(data);
@@ -2285,6 +2509,7 @@ export class ProductStock extends BaseAuditableEntity implements IProductStock {
         if (_data) {
             this.name = _data["name"];
             this.units = _data["units"];
+            this.productId = _data["productId"];
             this.product = _data["product"] ? Product.fromJS(_data["product"]) : <any>undefined;
         }
     }
@@ -2300,6 +2525,7 @@ export class ProductStock extends BaseAuditableEntity implements IProductStock {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
         data["units"] = this.units;
+        data["productId"] = this.productId;
         data["product"] = this.product ? this.product.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
@@ -2309,7 +2535,8 @@ export class ProductStock extends BaseAuditableEntity implements IProductStock {
 export interface IProductStock extends IBaseAuditableEntity {
     name?: string;
     units?: number;
-    product?: Product;
+    productId?: number | undefined;
+    product?: Product | undefined;
 }
 
 export class Product extends BaseAuditableEntity implements IProduct {
@@ -2325,6 +2552,7 @@ export class Product extends BaseAuditableEntity implements IProduct {
     verified?: boolean;
     sizeType?: SizeType;
     completedOrderProducts?: CompletedOrderProduct[];
+    productStock?: ProductStock;
 
     constructor(data?: IProduct) {
         super(data);
@@ -2349,6 +2577,7 @@ export class Product extends BaseAuditableEntity implements IProduct {
                 for (let item of _data["completedOrderProducts"])
                     this.completedOrderProducts!.push(CompletedOrderProduct.fromJS(item));
             }
+            this.productStock = _data["productStock"] ? ProductStock.fromJS(_data["productStock"]) : <any>undefined;
         }
     }
 
@@ -2377,6 +2606,7 @@ export class Product extends BaseAuditableEntity implements IProduct {
             for (let item of this.completedOrderProducts)
                 data["completedOrderProducts"].push(item.toJSON());
         }
+        data["productStock"] = this.productStock ? this.productStock.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }
@@ -2395,6 +2625,7 @@ export interface IProduct extends IBaseAuditableEntity {
     verified?: boolean;
     sizeType?: SizeType;
     completedOrderProducts?: CompletedOrderProduct[];
+    productStock?: ProductStock;
 }
 
 export enum SizeType {
@@ -3036,7 +3267,7 @@ export class ProductDto implements IProductDto {
     price?: number;
     verified?: boolean;
     sizeType?: number;
-    completedOrderId?: number;
+    productStockId?: number | undefined;
 
     constructor(data?: IProductDto) {
         if (data) {
@@ -3061,7 +3292,7 @@ export class ProductDto implements IProductDto {
             this.price = _data["price"];
             this.verified = _data["verified"];
             this.sizeType = _data["sizeType"];
-            this.completedOrderId = _data["completedOrderId"];
+            this.productStockId = _data["productStockId"];
         }
     }
 
@@ -3086,7 +3317,7 @@ export class ProductDto implements IProductDto {
         data["price"] = this.price;
         data["verified"] = this.verified;
         data["sizeType"] = this.sizeType;
-        data["completedOrderId"] = this.completedOrderId;
+        data["productStockId"] = this.productStockId;
         return data;
     }
 }
@@ -3104,7 +3335,7 @@ export interface IProductDto {
     price?: number;
     verified?: boolean;
     sizeType?: number;
-    completedOrderId?: number;
+    productStockId?: number | undefined;
 }
 
 export class CreateCompletedOrderCommand implements ICreateCompletedOrderCommand {
@@ -3371,10 +3602,10 @@ export interface ISizeTypeDto {
     name?: string | undefined;
 }
 
-export class GetProductStockVm implements IGetProductStockVm {
+export class GetProductStocksVm implements IGetProductStocksVm {
     productStocks?: ProductStockDto[];
 
-    constructor(data?: IGetProductStockVm) {
+    constructor(data?: IGetProductStocksVm) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -3393,9 +3624,9 @@ export class GetProductStockVm implements IGetProductStockVm {
         }
     }
 
-    static fromJS(data: any): GetProductStockVm {
+    static fromJS(data: any): GetProductStocksVm {
         data = typeof data === 'object' ? data : {};
-        let result = new GetProductStockVm();
+        let result = new GetProductStocksVm();
         result.init(data);
         return result;
     }
@@ -3411,7 +3642,7 @@ export class GetProductStockVm implements IGetProductStockVm {
     }
 }
 
-export interface IGetProductStockVm {
+export interface IGetProductStocksVm {
     productStocks?: ProductStockDto[];
 }
 
@@ -3419,6 +3650,7 @@ export class ProductStockDto implements IProductStockDto {
     id?: number;
     name?: string;
     units?: number;
+    productId?: number | undefined;
 
     constructor(data?: IProductStockDto) {
         if (data) {
@@ -3434,6 +3666,7 @@ export class ProductStockDto implements IProductStockDto {
             this.id = _data["id"];
             this.name = _data["name"];
             this.units = _data["units"];
+            this.productId = _data["productId"];
         }
     }
 
@@ -3449,6 +3682,7 @@ export class ProductStockDto implements IProductStockDto {
         data["id"] = this.id;
         data["name"] = this.name;
         data["units"] = this.units;
+        data["productId"] = this.productId;
         return data;
     }
 }
@@ -3457,6 +3691,191 @@ export interface IProductStockDto {
     id?: number;
     name?: string;
     units?: number;
+    productId?: number | undefined;
+}
+
+export class UpdateProductStockCommand implements IUpdateProductStockCommand {
+    id?: number;
+    units?: number;
+
+    constructor(data?: IUpdateProductStockCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.units = _data["units"];
+        }
+    }
+
+    static fromJS(data: any): UpdateProductStockCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateProductStockCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["units"] = this.units;
+        return data;
+    }
+}
+
+export interface IUpdateProductStockCommand {
+    id?: number;
+    units?: number;
+}
+
+export class ProductStockDetailsVm implements IProductStockDetailsVm {
+    id?: number;
+    name?: string;
+    units?: number;
+    productId?: number | undefined;
+    product?: ProductDto;
+    productSearchItems?: ProductDto[];
+
+    constructor(data?: IProductStockDetailsVm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.units = _data["units"];
+            this.productId = _data["productId"];
+            this.product = _data["product"] ? ProductDto.fromJS(_data["product"]) : <any>undefined;
+            if (Array.isArray(_data["productSearchItems"])) {
+                this.productSearchItems = [] as any;
+                for (let item of _data["productSearchItems"])
+                    this.productSearchItems!.push(ProductDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ProductStockDetailsVm {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProductStockDetailsVm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["units"] = this.units;
+        data["productId"] = this.productId;
+        data["product"] = this.product ? this.product.toJSON() : <any>undefined;
+        if (Array.isArray(this.productSearchItems)) {
+            data["productSearchItems"] = [];
+            for (let item of this.productSearchItems)
+                data["productSearchItems"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IProductStockDetailsVm {
+    id?: number;
+    name?: string;
+    units?: number;
+    productId?: number | undefined;
+    product?: ProductDto;
+    productSearchItems?: ProductDto[];
+}
+
+export class UpdateProductStockDetailsCommand implements IUpdateProductStockDetailsCommand {
+    id?: number;
+    productId?: number;
+    units?: number;
+
+    constructor(data?: IUpdateProductStockDetailsCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.productId = _data["productId"];
+            this.units = _data["units"];
+        }
+    }
+
+    static fromJS(data: any): UpdateProductStockDetailsCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateProductStockDetailsCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["productId"] = this.productId;
+        data["units"] = this.units;
+        return data;
+    }
+}
+
+export interface IUpdateProductStockDetailsCommand {
+    id?: number;
+    productId?: number;
+    units?: number;
+}
+
+export class CreateProductStockCommand implements ICreateProductStockCommand {
+    name?: string;
+
+    constructor(data?: ICreateProductStockCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): CreateProductStockCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateProductStockCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface ICreateProductStockCommand {
+    name?: string;
 }
 
 export class RecipesVm implements IRecipesVm {

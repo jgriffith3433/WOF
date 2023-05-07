@@ -1,6 +1,7 @@
 ﻿using WOF.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Metadata;
 
 namespace WOF.Infrastructure.Persistence.Configurations;
 

@@ -5,25 +5,25 @@ using WOF.Application.Common.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace WOF.Application.ProductStocks.Queries.GetProductStock;
+namespace WOF.Application.ProductStocks.Queries.GetProductStocks;
 
 [Authorize]
-public record GetProductStockQuery : IRequest<GetProductStockVm>;
+public record GetProductStocksQuery : IRequest<GetProductStocksVm>;
 
-public class GetProductStockQueryHandler : IRequestHandler<GetProductStockQuery, GetProductStockVm>
+public class GetProductStocksQueryHandler : IRequestHandler<GetProductStocksQuery, GetProductStocksVm>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetProductStockQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public GetProductStocksQueryHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
     }
 
-    public async Task<GetProductStockVm> Handle(GetProductStockQuery request, CancellationToken cancellationToken)
+    public async Task<GetProductStocksVm> Handle(GetProductStocksQuery request, CancellationToken cancellationToken)
     {
-        return new GetProductStockVm
+        return new GetProductStocksVm
         {
             ProductStocks = await _context.ProductStocks
                 .AsNoTracking()

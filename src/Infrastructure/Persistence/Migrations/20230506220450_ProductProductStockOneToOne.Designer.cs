@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WOF.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using WOF.Infrastructure.Persistence;
 namespace WOF.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230506220450_ProductProductStockOneToOne")]
+    partial class ProductProductStockOneToOne
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -518,7 +521,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<float>("Units")
@@ -527,8 +530,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId")
-                        .IsUnique()
-                        .HasFilter("[ProductId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("ProductStocks");
                 });
@@ -802,7 +804,9 @@ namespace WOF.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("WOF.Domain.Entities.Product", "Product")
                         .WithOne("ProductStock")
-                        .HasForeignKey("WOF.Domain.Entities.ProductStock", "ProductId");
+                        .HasForeignKey("WOF.Domain.Entities.ProductStock", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Product");
                 });

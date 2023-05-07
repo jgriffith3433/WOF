@@ -14,4 +14,5 @@ public class Product : BaseAuditableEntity
     public bool Verified { get; set; }
     public SizeType SizeType { get; set; }
     public IList<CompletedOrderProduct> CompletedOrderProducts { get; private set; } = new List<CompletedOrderProduct>();
+    public ProductStock ProductStock { get; set; }
 }
