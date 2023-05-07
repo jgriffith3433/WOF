@@ -22,7 +22,7 @@ export interface ICalledIngredientsClient {
     searchProductStockName(id: number | undefined, search: string | null | undefined): Observable<CalledIngredientDetailsVm>;
     update(id: number, command: UpdateCalledIngredientCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
-    updateCalledIngredientDetails(id: number | undefined, command: UpdateCalledIngredientDetailsCommand): Observable<FileResponse>;
+    updateCalledIngredientDetails(id: number | undefined, command: UpdateCalledIngredientDetailsCommand): Observable<CalledIngredientDetailsVm>;
 }
 
 @Injectable({
@@ -358,7 +358,7 @@ export class CalledIngredientsClient implements ICalledIngredientsClient {
         return _observableOf(null as any);
     }
 
-    updateCalledIngredientDetails(id: number | undefined, command: UpdateCalledIngredientDetailsCommand): Observable<FileResponse> {
+    updateCalledIngredientDetails(id: number | undefined, command: UpdateCalledIngredientDetailsCommand): Observable<CalledIngredientDetailsVm> {
         let url_ = this.baseUrl + "/api/CalledIngredients/UpdateCalledIngredientDetails?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -374,7 +374,7 @@ export class CalledIngredientsClient implements ICalledIngredientsClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             })
         };
 
@@ -385,31 +385,27 @@ export class CalledIngredientsClient implements ICalledIngredientsClient {
                 try {
                     return this.processUpdateCalledIngredientDetails(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<FileResponse>;
+                    return _observableThrow(e) as any as Observable<CalledIngredientDetailsVm>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<FileResponse>;
+                return _observableThrow(response_) as any as Observable<CalledIngredientDetailsVm>;
         }));
     }
 
-    protected processUpdateCalledIngredientDetails(response: HttpResponseBase): Observable<FileResponse> {
+    protected processUpdateCalledIngredientDetails(response: HttpResponseBase): Observable<CalledIngredientDetailsVm> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CalledIngredientDetailsVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -1337,9 +1333,8 @@ export class ProductStockClient implements IProductStockClient {
 
 export interface IRecipesClient {
     get(): Observable<RecipesVm>;
-    create(command: CreateRecipeCommand): Observable<number>;
-    get2(id: number): Observable<RecipeDto>;
-    update(id: number, command: UpdateRecipeCommand): Observable<FileResponse>;
+    create(command: CreateRecipeCommand): Observable<RecipeDto>;
+    update(id: number, command: UpdateRecipeCommand): Observable<RecipeDto>;
     delete(id: number): Observable<FileResponse>;
 }
 
@@ -1404,7 +1399,7 @@ export class RecipesClient implements IRecipesClient {
         return _observableOf(null as any);
     }
 
-    create(command: CreateRecipeCommand): Observable<number> {
+    create(command: CreateRecipeCommand): Observable<RecipeDto> {
         let url_ = this.baseUrl + "/api/Recipes";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1427,58 +1422,6 @@ export class RecipesClient implements IRecipesClient {
                 try {
                     return this.processCreate(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<number>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<number>;
-        }));
-    }
-
-    protected processCreate(response: HttpResponseBase): Observable<number> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    get2(id: number): Observable<RecipeDto> {
-        let url_ = this.baseUrl + "/api/Recipes/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGet2(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGet2(response_ as any);
-                } catch (e) {
                     return _observableThrow(e) as any as Observable<RecipeDto>;
                 }
             } else
@@ -1486,7 +1429,7 @@ export class RecipesClient implements IRecipesClient {
         }));
     }
 
-    protected processGet2(response: HttpResponseBase): Observable<RecipeDto> {
+    protected processCreate(response: HttpResponseBase): Observable<RecipeDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1508,7 +1451,7 @@ export class RecipesClient implements IRecipesClient {
         return _observableOf(null as any);
     }
 
-    update(id: number, command: UpdateRecipeCommand): Observable<FileResponse> {
+    update(id: number, command: UpdateRecipeCommand): Observable<RecipeDto> {
         let url_ = this.baseUrl + "/api/Recipes/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1523,7 +1466,7 @@ export class RecipesClient implements IRecipesClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             })
         };
 
@@ -1534,31 +1477,27 @@ export class RecipesClient implements IRecipesClient {
                 try {
                     return this.processUpdate(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<FileResponse>;
+                    return _observableThrow(e) as any as Observable<RecipeDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<FileResponse>;
+                return _observableThrow(response_) as any as Observable<RecipeDto>;
         }));
     }
 
-    protected processUpdate(response: HttpResponseBase): Observable<FileResponse> {
+    protected processUpdate(response: HttpResponseBase): Observable<RecipeDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RecipeDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -3936,6 +3875,7 @@ export interface IRecipesVm {
 
 export class RecipeDto implements IRecipeDto {
     id?: number;
+    name?: string;
     userImport?: string | undefined;
     calledIngredients?: CalledIngredientDetailsVm[];
 
@@ -3951,6 +3891,7 @@ export class RecipeDto implements IRecipeDto {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.name = _data["name"];
             this.userImport = _data["userImport"];
             if (Array.isArray(_data["calledIngredients"])) {
                 this.calledIngredients = [] as any;
@@ -3970,6 +3911,7 @@ export class RecipeDto implements IRecipeDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["name"] = this.name;
         data["userImport"] = this.userImport;
         if (Array.isArray(this.calledIngredients)) {
             data["calledIngredients"] = [];
@@ -3982,11 +3924,13 @@ export class RecipeDto implements IRecipeDto {
 
 export interface IRecipeDto {
     id?: number;
+    name?: string;
     userImport?: string | undefined;
     calledIngredients?: CalledIngredientDetailsVm[];
 }
 
 export class CreateRecipeCommand implements ICreateRecipeCommand {
+    name?: string | undefined;
     userImport?: string | undefined;
 
     constructor(data?: ICreateRecipeCommand) {
@@ -4000,6 +3944,7 @@ export class CreateRecipeCommand implements ICreateRecipeCommand {
 
     init(_data?: any) {
         if (_data) {
+            this.name = _data["name"];
             this.userImport = _data["userImport"];
         }
     }
@@ -4013,17 +3958,20 @@ export class CreateRecipeCommand implements ICreateRecipeCommand {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
         data["userImport"] = this.userImport;
         return data;
     }
 }
 
 export interface ICreateRecipeCommand {
+    name?: string | undefined;
     userImport?: string | undefined;
 }
 
 export class UpdateRecipeCommand implements IUpdateRecipeCommand {
     id?: number;
+    name?: string;
     userImport?: string | undefined;
 
     constructor(data?: IUpdateRecipeCommand) {
@@ -4038,6 +3986,7 @@ export class UpdateRecipeCommand implements IUpdateRecipeCommand {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.name = _data["name"];
             this.userImport = _data["userImport"];
         }
     }
@@ -4052,6 +4001,7 @@ export class UpdateRecipeCommand implements IUpdateRecipeCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["name"] = this.name;
         data["userImport"] = this.userImport;
         return data;
     }
@@ -4059,6 +4009,7 @@ export class UpdateRecipeCommand implements IUpdateRecipeCommand {
 
 export interface IUpdateRecipeCommand {
     id?: number;
+    name?: string;
     userImport?: string | undefined;
 }
 

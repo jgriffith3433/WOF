@@ -20,7 +20,7 @@
             [ngClass]="{ 'active': selectedRecipe == recipe }" (click)="selectedRecipe = recipe">
           <div class="clearfix">
             <div class="float-start">
-              {{ recipe.userImport | slice:0:14 }}
+              {{ recipe.name | slice:0:20 }}
             </div>
             <div class="float-end text-right">
               <!--<span class="badge badge-light">{{ remainingCalledIngredients(recipe) }}</span>-->
@@ -83,9 +83,14 @@
   </div>
   <div class="modal-body">
     <div class="form-group">
+      <label for="inputRecipeName">Recipe Name</label>
+      <input type="text" class="form-control" id="inputRecipeName" placeholder="Name..."
+             [(ngModel)]="recipeOptionsEditor.name" />
+    </div>
+    <div class="form-group">
       <label for="inputRecipeUserImport">User Import</label>
       <textarea type="text" class="form-control" id="inputRecipeUserImport" placeholder="User Import..."
-                [(ngModel)]="recipeOptionsEditor.userImport" (keyup.enter)="updateRecipeOptions()"></textarea>
+                [(ngModel)]="recipeOptionsEditor.userImport"></textarea>
     </div>
     <div *ngIf="debug">
       <pre>{{ recipeOptionsEditor | json }}</pre>
@@ -120,8 +125,8 @@
         </select>
       </div>
       <div class="form-group">
-        <label for="search">Search by Name</label>
         <div *ngIf="!calledIngredientDetailsEditor.productStock && calledIngredientDetailsEditor.productStockSearchItems">
+          <label for="search">Search by Name</label>
           <input type="text" class="form-control" id="search" placeholder="Name..." [(ngModel)]="calledIngredientDetailsEditor.search"
                  [ngClass]="{ 'is-invalid': calledIngredientDetailsEditor.error }" (keyup.enter)="searchIngredientName()" />
           <div class="float-end">
@@ -131,13 +136,14 @@
             <option [ngValue]="productStockSearchItem.id" *ngFor="let productStockSearchItem of calledIngredientDetailsEditor.productStockSearchItems">{{ productStockSearchItem.name }}</option>
           </select>
         </div>
-        <div *ngIf="!calledIngredientDetailsEditor.productStock && !calledIngredientDetailsEditor.productStockSearchItems">
+        <!--TODO:we can have a button that unlinks a called ingredient to a stocked product if we make a mistake-->
+        <!--<div *ngIf="calledIngredientDetailsEditor.productStock">
           <input type="text" class="form-control" id="search" placeholder="Name..." [(ngModel)]="calledIngredientDetailsEditor.search"
                  [ngClass]="{ 'is-invalid': calledIngredientDetailsEditor.error }" (keyup.enter)="searchIngredientName()" />
           <div class="float-end">
-            <button class="btn btn-primary" (click)="searchIngredientName()">Search</button>
+            <button class="btn btn-primary" (click)="searchIngredientName()">Unlink Stocked Product</button>
           </div>
-        </div>
+        </div>-->
       </div>
       <div class="form-group">
         <label for="units">Units</label>
@@ -151,7 +157,7 @@
   <div class="modal-footer">
     <div class="clearfix">
       <div class="float-start">
-        <button class="btn btn-default text-danger" (click)="deleteCalledIngredient(selectedCalledIngredient)">Delete</button>
+        <button class="btn btn-default text-danger" (click)="deleteCalledIngredient(selectedCalledIngredientDetails)">Delete</button>
       </div>
       <div class="float-end">
         <button class="btn btn-default" (click)="calledIngredientDetailsModalRef.hide()">Cancel</button>
@@ -192,9 +198,17 @@
   </div>
   <div class="modal-body">
     <div class="form-group">
+      <label for="inputRecipeName">Name</label>
+      <input type="text" class="form-control" id="inputRecipeName" placeholder="Name..." [(ngModel)]="newRecipeEditor.name"
+             [ngClass]="{ 'is-invalid': newRecipeEditor.error }" />
+      <div *ngIf="newRecipeEditor.error" class="invalid-feedback">
+        {{ newRecipeEditor.error }}
+      </div>
+    </div>
+    <div class="form-group">
       <label for="userImport">User Import</label>
       <textarea type="text" class="form-control" id="userImport" placeholder="User Import..." [(ngModel)]="newRecipeEditor.userImport"
-                [ngClass]="{ 'is-invalid': newRecipeEditor.error }" (keyup.enter)="addRecipe()"></textarea>
+                [ngClass]="{ 'is-invalid': newRecipeEditor.error }"></textarea>
       <div *ngIf="newRecipeEditor.error" class="invalid-feedback">
         {{ newRecipeEditor.error }}
       </div>

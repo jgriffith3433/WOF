@@ -60,7 +60,7 @@ export class RecipesComponent implements OnInit {
 
   showNewRecipeModal(template: TemplateRef<any>): void {
     this.newRecipeModalRef = this.modalService.show(template);
-    setTimeout(() => document.getElementById('userImport').focus(), 250);
+    setTimeout(() => document.getElementById('inputRecipeName').focus(), 250);
   }
 
   newRecipeCancelled(): void {
@@ -72,23 +72,16 @@ export class RecipesComponent implements OnInit {
     const recipe = {
       id: 0,
       userImport: this.newRecipeEditor.userImport,
+      name: this.newRecipeEditor.name,
       calledIngredients: []
     } as RecipeDto;
 
     this.recipesClient.create(recipe as CreateRecipeCommand).subscribe(
       result => {
-        recipe.id = result;
+        this.selectedRecipe = result;
         this.recipes.push(recipe);
-        this.selectedRecipe = recipe;
         this.newRecipeModalRef.hide();
         this.newRecipeEditor = {};
-
-        this.recipesClient.get2(recipe.id).subscribe(
-          result => {
-            this.selectedRecipe = result;
-          },
-          error => console.error(error)
-        );
       },
       error => {
         const errors = JSON.parse(error.response);
@@ -97,7 +90,7 @@ export class RecipesComponent implements OnInit {
           this.newRecipeEditor.error = errors.Title[0];
         }
 
-        setTimeout(() => document.getElementById('userImport').focus(), 250);
+        setTimeout(() => document.getElementById('inputRecipeName').focus(), 250);
       }
     );
   }
@@ -105,7 +98,8 @@ export class RecipesComponent implements OnInit {
   showRecipeOptionsModal(template: TemplateRef<any>) {
     this.recipeOptionsEditor = {
       id: this.selectedRecipe.id,
-      userImport: this.selectedRecipe.userImport
+      userImport: this.selectedRecipe.userImport,
+      name: this.selectedRecipe.name
     };
 
     this.recipeOptionsModalRef = this.modalService.show(template);
@@ -114,15 +108,10 @@ export class RecipesComponent implements OnInit {
   updateRecipeOptions() {
     const updateRecipeCommand = this.recipeOptionsEditor as UpdateRecipeCommand;
     this.recipesClient.update(this.selectedRecipe.id, updateRecipeCommand).subscribe(
-      () => {
-        this.selectedRecipe.userImport = this.recipeOptionsEditor.userImport;
+      result => {
+        this.selectedRecipe = result;
+
         this.recipeOptionsModalRef.hide();
-        this.recipesClient.get2(this.selectedRecipe.id).subscribe(
-          result => {
-            this.selectedRecipe = result;
-          },
-          error => console.error(error)
-        );
         this.recipeOptionsEditor = {};
       },
       error => console.error(error)
@@ -191,7 +180,7 @@ export class RecipesComponent implements OnInit {
           this.calledIngredientDetailsEditor.error = errors.Title[0];
         }
 
-        setTimeout(() => document.getElementById('name').focus(), 250);
+        setTimeout(() => document.getElementById('search').focus(), 250);
       }
     );
   }
@@ -199,9 +188,16 @@ export class RecipesComponent implements OnInit {
   updateCalledIngredientDetails(): void {
     const calledIngredient = this.calledIngredientDetailsEditor as UpdateCalledIngredientDetailsCommand;
     this.calledIngredientsClient.updateCalledIngredientDetails(this.selectedCalledIngredientDetails.id, calledIngredient).subscribe(
-      () => {
-        this.selectedCalledIngredientDetails.sizeType = this.calledIngredientDetailsEditor.sizeType;
-        this.selectedCalledIngredientDetails.units = this.calledIngredientDetailsEditor.units;
+      result => {
+        this.selectedCalledIngredientDetails = result;
+
+        for (var i = this.selectedRecipe.calledIngredients.length - 1; i >= 0; i--) {
+          if (this.selectedRecipe.calledIngredients[i].id == this.selectedCalledIngredientDetails.id) {
+            this.selectedRecipe.calledIngredients[i] = this.selectedCalledIngredientDetails;
+            break;
+          }
+        }
+
         this.calledIngredientDetailsModalRef.hide();
         this.calledIngredientDetailsEditor = {};
       },

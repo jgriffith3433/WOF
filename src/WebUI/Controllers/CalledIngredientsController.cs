@@ -55,16 +55,14 @@ public class CalledIngredientsController : ApiControllerBase
     }
 
     [HttpPut("[action]")]
-    public async Task<ActionResult> UpdateCalledIngredientDetails(int id, UpdateCalledIngredientDetailsCommand command)
+    public async Task<ActionResult<CalledIngredientDetailsVm>> UpdateCalledIngredientDetails(int id, UpdateCalledIngredientDetailsCommand command)
     {
         if (id != command.Id)
         {
             return BadRequest();
         }
 
-        await Mediator.Send(command);
-
-        return NoContent();
+        return await Mediator.Send(command);
     }
 
     [HttpDelete("{id}")]

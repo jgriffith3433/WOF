@@ -1,49 +1,31 @@
-﻿using WOF.Application.Common.Interfaces;
-using WOF.Domain.Entities;
+﻿using WOF.Domain.Events;
 using MediatR;
-using WOF.Application.Walmart.Queries;
-using WOF.Application.Walmart.Requests;
-using WOF.Application.Walmart.Responses;
-using WOF.Application.Common.Exceptions;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
+using WOF.Application.Common.Interfaces;
+using WOF.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using System.Numerics;
-using Org.BouncyCastle.Crypto;
-using WOF.Application.Recipes.Queries.GetRecipes;
 
-namespace WOF.Application.Walmart.Commands;
+namespace WOF.Application.Recipes.EventHandlers;
 
-
-public record CreateCalledIngredientsFromRecipeCommand : IRequest<RecipeDto>
-{
-    public int RecipeId { get; init; }
-}
-
-public class CreateCalledIngredientsFromCompletedOrderCommandHandler : IRequestHandler<CreateCalledIngredientsFromRecipeCommand, RecipeDto>
+public class RecipeUserImportEventHandler : INotificationHandler<RecipeUserImportEvent>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
+    private readonly ILogger<RecipeUserImportEventHandler> _logger;
 
-    public CreateCalledIngredientsFromCompletedOrderCommandHandler(IApplicationDbContext context, IMapper mapper)
+    public RecipeUserImportEventHandler(ILogger<RecipeUserImportEventHandler> logger, IApplicationDbContext context)
     {
+        _logger = logger;
         _context = context;
-        _mapper = mapper;
     }
 
-    public async Task<RecipeDto> Handle(CreateCalledIngredientsFromRecipeCommand request, CancellationToken cancellationToken)
+    public Task Handle(RecipeUserImportEvent notification, CancellationToken cancellationToken)
     {
-        var recipe = await _context.Recipes
-            .FindAsync(new object[] { request.RecipeId }, cancellationToken);
-
-        if (recipe == null)
-        {
-            throw new NotFoundException(nameof(CompletedOrder), request.RecipeId);
-        }
+        _logger.LogInformation("WOF Domain Event: {DomainEvent}", notification.GetType().Name);
 
         //create called ingredients per recipe user import
-        var userImportNewLineSplit = recipe.UserImport.Split('\n');
+        var userImportNewLineSplit = notification.Recipe.UserImport.Split('\n');
+
+        //TODO:decide if we need to clear all called ingredients upon import
 
         foreach (var l in userImportNewLineSplit)
         {
@@ -86,13 +68,10 @@ public class CreateCalledIngredientsFromCompletedOrderCommandHandler : IRequestH
                     calledIngredient.ProductStock = foundProductStock;
                 }
                 _context.CalledIngredients.Add(calledIngredient);
-                recipe.CalledIngredients.Add(calledIngredient);
+                notification.Recipe.CalledIngredients.Add(calledIngredient);
             }
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return _mapper.Map<RecipeDto>(recipe);
+        return _context.SaveChangesAsync(cancellationToken);
     }
 }
-

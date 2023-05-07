@@ -5,7 +5,6 @@ using WOF.Application.Recipes.Queries.GetRecipes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WOF.Domain.Entities;
-using WOF.Application.Walmart.Commands;
 using WOF.Application.CalledIngredients.Queries.GetCalledIngredients;
 
 namespace WOF.WebUI.Controllers;
@@ -19,32 +18,21 @@ public class RecipesController : ApiControllerBase
         return await Mediator.Send(new GetRecipesQuery());
     }
 
-    [HttpGet("{id}")]
-    public async Task<RecipeDto> Get(int id)
-    {
-        return await Mediator.Send(new CreateCalledIngredientsFromRecipeCommand
-        {
-            RecipeId = id
-        });
-    }
-
     [HttpPost]
-    public async Task<ActionResult<int>> Create(CreateRecipeCommand command)
+    public async Task<ActionResult<RecipeDto>> Create(CreateRecipeCommand command)
     {
         return await Mediator.Send(command);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, UpdateRecipeCommand command)
+    public async Task<ActionResult<RecipeDto>> Update(int id, UpdateRecipeCommand command)
     {
         if (id != command.Id)
         {
             return BadRequest();
         }
 
-        await Mediator.Send(command);
-
-        return NoContent();
+        return await Mediator.Send(command);
     }
 
     [HttpDelete("{id}")]

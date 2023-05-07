@@ -3,10 +3,11 @@ using WOF.Application.Common.Interfaces;
 using WOF.Domain.Entities;
 using WOF.Domain.Enums;
 using MediatR;
+using AutoMapper;
 
 namespace WOF.Application.CalledIngredients.Commands.UpdateCalledIngredientDetail;
 
-public record UpdateCalledIngredientDetailsCommand : IRequest
+public record UpdateCalledIngredientDetailsCommand : IRequest<CalledIngredientDetailsVm>
 {
     public int Id { get; init; }
 
@@ -19,16 +20,18 @@ public record UpdateCalledIngredientDetailsCommand : IRequest
     public float Units { get; init; }
 }
 
-public class UpdateCalledIngredientDetailCommandHandler : IRequestHandler<UpdateCalledIngredientDetailsCommand>
+public class UpdateCalledIngredientDetailCommandHandler : IRequestHandler<UpdateCalledIngredientDetailsCommand, CalledIngredientDetailsVm>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IMapper _mapper;
 
-    public UpdateCalledIngredientDetailCommandHandler(IApplicationDbContext context)
+    public UpdateCalledIngredientDetailCommandHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
-    public async Task<Unit> Handle(UpdateCalledIngredientDetailsCommand request, CancellationToken cancellationToken)
+    public async Task<CalledIngredientDetailsVm> Handle(UpdateCalledIngredientDetailsCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.CalledIngredients
             .FindAsync(new object[] { request.Id }, cancellationToken);
@@ -48,6 +51,6 @@ public class UpdateCalledIngredientDetailCommandHandler : IRequestHandler<Update
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Unit.Value;
+        return _mapper.Map<CalledIngredientDetailsVm>(entity);
     }
 }
