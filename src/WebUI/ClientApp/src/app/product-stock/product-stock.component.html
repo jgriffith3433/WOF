@@ -27,7 +27,7 @@
           <span>{{ productStock.units }}</span>
         </div>
         <div class="item-commands d-flex">
-          <button *ngIf="productStock.id != 0 && !productStock.productId" (click)="showProductStockDetailsModal(productStockModalTemplate, productStock)" class="my-auto btn btn-default btn-xs" role="button">
+          <button *ngIf="productStock.id != 0" (click)="showProductStockDetailsModal(productStockModalTemplate, productStock)" class="my-auto btn btn-default btn-xs" role="button">
             <i class="bi bi-three-dots-vertical"></i>
           </button>
         </div>
@@ -83,6 +83,9 @@
   </div>
   <div class="modal-footer">
     <div class="clearfix">
+      <div class="float-start">
+        <button class="btn btn-default text-danger" (click)="confirmDeleteProductStock(deleteProductStockModalTemplate)">Delete</button>
+      </div>
       <div class="float-end">
         <button class="btn btn-default" (click)="productStockModalRef.hide()">Cancel</button>
         <button class="btn btn-primary" (click)="updateProductStockDetails()">Update</button>
@@ -103,7 +106,7 @@
     <div class="form-group">
       <label for="name">Name</label>
       <input type="text" class="form-control" id="name" placeholder="Name..." [(ngModel)]="newProductStockEditor.name"
-                [ngClass]="{ 'is-invalid': newProductStockEditor.error }" (keyup.enter)="addProductStock()" />
+             [ngClass]="{ 'is-invalid': newProductStockEditor.error }" (keyup.enter)="addProductStock()" />
       <div *ngIf="newProductStockEditor.error" class="invalid-feedback">
         {{ newProductStockEditor.error }}
       </div>
@@ -119,3 +122,25 @@
     </div>
   </div>
 </ng-template>
+
+<ng-template #deleteProductStockModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Delete "{{ productStockEditor?.name }}"?</h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="deleteProductStockModalRef.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p> Will be permanently deleted. </p>
+    <div *ngIf="debug">
+      <pre>{{ productStockEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer clearfix">
+    <div class="float-end">
+      <button type="button" class="btn btn-default" (click)="deleteProductStockModalRef.hide()">Cancel</button>
+      <button type="button" class="btn btn-danger" (click)="deleteProductStockConfirmed()">Delete</button>
+    </div>
+  </div>
+</ng-template>
+

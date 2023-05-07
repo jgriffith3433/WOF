@@ -25,13 +25,12 @@ public class CompletedOrderUserImportEventHandler : INotificationHandler<Complet
     {
         _logger.LogInformation("WOF Domain Event: {DomainEvent}", notification.GetType().Name);
 
-
         var userImportObjects = JsonConvert.DeserializeObject<List<UserImportObject>>(notification.CompletedOrder.UserImport);
 
         foreach (var userImportObject in userImportObjects)
         {
             var splitLink = userImportObject.Link.Split('/');
-            int walmartId = int.Parse(splitLink[splitLink.Length - 1]);
+            var walmartId = long.Parse(splitLink[splitLink.Length - 1]);
 
             var completedOrderProduct = new CompletedOrderProduct
             {

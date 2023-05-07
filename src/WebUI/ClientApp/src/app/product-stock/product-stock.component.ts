@@ -21,6 +21,7 @@ export class ProductStockComponent implements OnInit {
   newProductStockEditor: any = {};
   productStockModalRef: BsModalRef;
   newProductStockModalRef: BsModalRef;
+  deleteProductStockModalRef: BsModalRef;
 
   constructor(
     private productStockClient: ProductStockClient,
@@ -70,22 +71,6 @@ export class ProductStockComponent implements OnInit {
         setTimeout(() => document.getElementById('userImport').focus(), 250);
       }
     );
-  }
-
-  confirmDeleteProductStock(template: TemplateRef<any>) {
-    //this.recipeOptionsModalRef.hide();
-    //this.deleteRecipeModalRef = this.modalService.show(template);
-  }
-
-  deleteProductStockConfirmed(): void {
-    //this.productStockClient.delete(this.selectedRecipe.id).subscribe(
-    //  () => {
-    //    this.deleteRecipeModalRef.hide();
-    //    this.recipes = this.recipes.filter(t => t.id !== this.selectedRecipe.id);
-    //    this.selectedRecipe = this.recipes.length ? this.recipes[0] : null;
-    //  },
-    //  error => console.error(error)
-    //);
   }
 
   editProductStockUnits(productStock: ProductStockDto, inputId: string): void {
@@ -184,5 +169,19 @@ export class ProductStockComponent implements OnInit {
     );
   }
 
+  confirmDeleteProductStock(template: TemplateRef<any>) {
+    this.productStockModalRef.hide();
+    this.deleteProductStockModalRef = this.modalService.show(template);
+  }
+
+  deleteProductStockConfirmed(): void {
+    this.productStockClient.delete(this.productStockEditor.id).subscribe(
+      () => {
+        this.deleteProductStockModalRef.hide();
+        this.productStocks = this.productStocks.filter(t => t.id !== this.productStockEditor.id);
+      },
+      error => console.error(error)
+    );
+  }
 
 }

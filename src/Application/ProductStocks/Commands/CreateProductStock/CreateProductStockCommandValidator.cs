@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 
-namespace WOF.Application.CalledIngredients.Commands.CreateCalledIngredient;
+namespace WOF.Application.ProductStocks.Commands.CreateProductStock;
 
-public class CreateProductStockCommandValidator : AbstractValidator<CreateCalledIngredientCommand>
+public class CreateProductStockCommandValidator : AbstractValidator<CreateProductStockCommand>
 {
     public CreateProductStockCommandValidator()
     {
