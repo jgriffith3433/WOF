@@ -12,7 +12,7 @@ public record UpdateProductStockCommand : IRequest<ProductStockDto>
 {
     public int Id { get; init; }
 
-    public int Units { get; init; }
+    public float Units { get; init; }
 }
 
 public class UpdateProductStockCommandHandler : IRequestHandler<UpdateProductStockCommand, ProductStockDto>

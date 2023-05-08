@@ -40,7 +40,7 @@
       </div>
 
       <ul id="called-ingredients" class="list-group mb-2 list-group-flush">
-        <li class="list-group-item" *ngFor="let calledIngredient of selectedRecipe.calledIngredients; index as i" [ngClass]="{'list-group-item-warning': !calledIngredient.productStock, 'list-group-item-danger': !calledIngredient.sizeType || !calledIngredient.units}">
+        <li class="list-group-item" *ngFor="let calledIngredient of selectedRecipe.calledIngredients; index as i" [ngClass]="{'list-group-item-warning': calledIngredient.productStock != null ? calledIngredient.productStock.units < calledIngredient.units : false, 'list-group-item-danger': !calledIngredient.sizeType || !calledIngredient.units || !calledIngredient.productStock}">
           <div class="d-flex">
             <div class="flex-fill">
               <div *ngIf="calledIngredient.productStock" class="item-name form-control form-control-plaintext">
@@ -147,7 +147,7 @@
       </div>
       <div class="form-group">
         <label for="units">Units</label>
-        <textarea id="units" class="form-control" rows="3" [(ngModel)]="calledIngredientDetailsEditor.units"></textarea>
+        <input id="units" class="form-control" rows="3" [(ngModel)]="calledIngredientDetailsEditor.units" [ngClass]="{'bg-warning': calledIngredientDetailsEditor.productStock != null ? calledIngredientDetailsEditor.productStock.units < calledIngredientDetailsEditor.units: false }" />
       </div>
     </div>
     <div *ngIf="debug">

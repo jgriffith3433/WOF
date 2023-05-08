@@ -827,6 +827,104 @@
         ]
       }
     },
+    "/api/Products/UpdateSizeType/{id}": {
+      "put": {
+        "tags": [
+          "Products"
+        ],
+        "operationId": "Products_UpdateSizeType",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductSizeTypeCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Products/UpdateSize/{id}": {
+      "put": {
+        "tags": [
+          "Products"
+        ],
+        "operationId": "Products_UpdateSize",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductSizeCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Products/GetProductDetails": {
       "get": {
         "tags": [
@@ -1863,12 +1961,32 @@
         "x-enumNames": [
           "None",
           "Bulk",
-          "Ounces"
+          "Ounce",
+          "Teaspoon",
+          "Tablespoon",
+          "Pound",
+          "Cup",
+          "Cloves",
+          "Can",
+          "Whole",
+          "Package",
+          "Bar",
+          "Bun"
         ],
         "enum": [
           0,
           1,
-          2
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
         ]
       },
       "CompletedOrderProduct": {
@@ -2425,10 +2543,44 @@
           }
         }
       },
+      "UpdateProductSizeTypeCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sizeType": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateProductSizeCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
       "GetProductStocksVm": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "sizeTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SizeTypeDto"
+            }
+          },
           "productStocks": {
             "type": "array",
             "items": {
@@ -2456,6 +2608,9 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductDto"
           }
         }
       },
@@ -2468,8 +2623,8 @@
             "format": "int32"
           },
           "units": {
-            "type": "integer",
-            "format": "int32"
+            "type": "number",
+            "format": "float"
           }
         }
       },
@@ -2517,8 +2672,8 @@
             "format": "int32"
           },
           "units": {
-            "type": "integer",
-            "format": "int32"
+            "type": "number",
+            "format": "float"
           }
         }
       },

@@ -4,7 +4,8 @@ import {
   ProductsClient,
   ProductDto,
   CreateProductCommand,
-  UpdateProductCommand
+  UpdateProductCommand,
+  SizeTypeDto
 } from '../web-api-client';
 
 @Component({
@@ -14,7 +15,10 @@ import {
 export class ProductsComponent implements OnInit {
   debug: boolean = false;
   public products: ProductDto[];
+  sizeTypes: SizeTypeDto[];
   selectedProductName: ProductDto;
+  selectedProductSize: ProductDto;
+  selectedProductSizeType: ProductDto;
   productEditor: any = {};
   newProductEditor: any = {};
   productModalRef: BsModalRef;
@@ -31,6 +35,7 @@ export class ProductsComponent implements OnInit {
     this.productsClient.getProducts().subscribe(
       result => {
         this.products = result.products;
+        this.sizeTypes = result.sizeTypes;
       },
       error => console.error(error)
     );
@@ -45,6 +50,15 @@ export class ProductsComponent implements OnInit {
   newProductCancelled(): void {
     this.newProductModalRef.hide();
     this.newProductEditor = {};
+  }
+
+  getSizeTypeNameFromSizeTypeValue(sizeTypeValue: number): string {
+    for (var sizeType of this.sizeTypes) {
+      if (sizeType.value == sizeTypeValue) {
+        return sizeType.name;
+      }
+    }
+    return "Unknown";
   }
 
   addProduct(): void {
@@ -76,6 +90,19 @@ export class ProductsComponent implements OnInit {
     setTimeout(() => document.getElementById(inputId).focus(), 100);
   }
 
+  editProductSizeType(product: ProductDto, inputId: string): void {
+    this.selectedProductSizeType = product;
+    setTimeout(() => {
+      document.getElementById(inputId).focus();
+      (<HTMLSelectElement>document.getElementById(inputId)).size = (<HTMLSelectElement>document.getElementById(inputId)).length;
+    }, 100);
+  }
+
+  editProductSize(product: ProductDto, inputId: string): void {
+    this.selectedProductSize = product;
+    setTimeout(() => { document.getElementById(inputId).focus(); }, 100);
+  }
+
   updateProductName(product: ProductDto, pressedEnter: boolean = false): void {
     const updateProductCommand = product as UpdateProductCommand;
     this.productsClient.updateName(product.id, updateProductCommand).subscribe(
@@ -87,6 +114,38 @@ export class ProductsComponent implements OnInit {
           }
         }
         this.selectedProductName = null;
+      },
+      error => console.error(error)
+    );
+  }
+
+  updateProductSizeType(product: ProductDto, pressedEnter: boolean = false): void {
+    const updateProductCommand = product as UpdateProductCommand;
+    this.productsClient.updateSizeType(product.id, updateProductCommand).subscribe(
+      result => {
+        for (var i = this.products.length - 1; i >= 0; i--) {
+          if (this.products[i].id == result.id) {
+            this.products[i] = result;
+            break;
+          }
+        }
+        this.selectedProductSizeType = null;
+      },
+      error => console.error(error)
+    );
+  }
+
+  updateProductSize(product: ProductDto, pressedEnter: boolean = false): void {
+    const updateProductCommand = product as UpdateProductCommand;
+    this.productsClient.updateSize(product.id, updateProductCommand).subscribe(
+      result => {
+        for (var i = this.products.length - 1; i >= 0; i--) {
+          if (this.products[i].id == result.id) {
+            this.products[i] = result;
+            break;
+          }
+        }
+        this.selectedProductSize = null;
       },
       error => console.error(error)
     );

@@ -25,8 +25,6 @@ public class RecipeUserImportEventHandler : INotificationHandler<RecipeUserImpor
         //create called ingredients per recipe user import
         var userImportNewLineSplit = notification.Recipe.UserImport.Split('\n');
 
-        //TODO:decide if we need to clear all called ingredients upon import
-
         foreach (var l in userImportNewLineSplit)
         {
             var line = l.Trim();

@@ -39,21 +39,10 @@ public class UpdateRecipeCommandHandler : IRequestHandler<UpdateRecipeCommand, R
             throw new NotFoundException(nameof(Recipe), request.Id);
         }
 
-        var imported = false;
-        if (request.UserImport != null && entity.UserImport != request.UserImport)
-        {
-            imported = true;
-        }
-
         entity.Name = request.Name;
         entity.UserImport = request.UserImport;
 
         await _context.SaveChangesAsync(cancellationToken);
-
-        if (imported)
-        {
-            entity.AddDomainEvent(new RecipeUserImportEvent(entity));
-        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

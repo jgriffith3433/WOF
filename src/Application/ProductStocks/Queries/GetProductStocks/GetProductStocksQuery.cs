@@ -4,6 +4,8 @@ using WOF.Application.Common.Interfaces;
 using WOF.Application.Common.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using WOF.Application.Products;
+using WOF.Domain.Enums;
 
 namespace WOF.Application.ProductStocks.Queries.GetProductStocks;
 
@@ -25,11 +27,17 @@ public class GetProductStocksQueryHandler : IRequestHandler<GetProductStocksQuer
     {
         return new GetProductStocksVm
         {
+            SizeTypes = Enum.GetValues(typeof(SizeType))
+                .Cast<SizeType>()
+                .Select(p => new SizeTypeDto { Value = (int)p, Name = p.ToString() })
+                .ToList(),
+
             ProductStocks = await _context.ProductStocks
-                .AsNoTracking()
-                .ProjectTo<ProductStockDto>(_mapper.ConfigurationProvider)
-                .OrderBy(t => t.Id)
-                .ToListAsync(cancellationToken)
+                        .Include(ps => ps.Product)
+                        .AsNoTracking()
+                        .ProjectTo<ProductStockDto>(_mapper.ConfigurationProvider)
+                        .OrderBy(t => t.Id)
+                        .ToListAsync(cancellationToken)
         };
     }
 }

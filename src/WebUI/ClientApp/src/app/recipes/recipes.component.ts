@@ -160,18 +160,7 @@ export class RecipesComponent implements OnInit {
   searchIngredientName(): void {
     this.calledIngredientsClient.searchProductStockName(this.calledIngredientDetailsEditor.id, this.calledIngredientDetailsEditor.search).subscribe(
       result => {
-        this.selectedCalledIngredientDetails = result;
-        for (var i = this.selectedRecipe.calledIngredients.length - 1; i >= 0; i--) {
-          if (this.selectedRecipe.calledIngredients[i].id == this.selectedCalledIngredientDetails.id) {
-            this.selectedRecipe.calledIngredients[i] = this.selectedCalledIngredientDetails;
-            break;
-          }
-        }
-        var oldSearch = this.calledIngredientDetailsEditor.search;
-        this.calledIngredientDetailsEditor = {
-          ...this.selectedCalledIngredientDetails,
-          search: oldSearch
-        };
+        this.calledIngredientDetailsEditor.productStockSearchItems = result.productStockSearchItems;
       },
       error => {
         const errors = JSON.parse(error.response);

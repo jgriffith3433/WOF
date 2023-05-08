@@ -6,7 +6,8 @@ import {
   ProductStockDetailsVm,
   CreateProductStockCommand,
   UpdateProductStockCommand,
-  UpdateProductStockDetailsCommand
+  UpdateProductStockDetailsCommand,
+  SizeTypeDto
 } from '../web-api-client';
 
 @Component({
@@ -15,6 +16,7 @@ import {
 })
 export class ProductStockComponent implements OnInit {
   public productStocks: ProductStockDto[];
+  sizeTypes: SizeTypeDto[];
   debug = false;
   selectedProductStockUnits: ProductStockDto;
   productStockEditor: any = {};
@@ -32,6 +34,7 @@ export class ProductStockComponent implements OnInit {
     this.productStockClient.getProductStocks().subscribe(
       result => {
         this.productStocks = result.productStocks;
+        this.sizeTypes = result.sizeTypes;
       },
       error => console.error(error)
     );
@@ -45,6 +48,15 @@ export class ProductStockComponent implements OnInit {
   newProductStockCancelled(): void {
     this.newProductStockModalRef.hide();
     this.newProductStockEditor = {};
+  }
+
+  getSizeTypeNameFromSizeTypeValue(sizeTypeValue: number): string {
+    for (var sizeType of this.sizeTypes) {
+      if (sizeType.value == sizeTypeValue) {
+        return sizeType.name;
+      }
+    }
+    return "Unknown";
   }
 
   addProductStock(): void {

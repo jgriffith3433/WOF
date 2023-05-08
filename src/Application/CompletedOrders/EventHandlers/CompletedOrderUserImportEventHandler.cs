@@ -30,16 +30,35 @@ public class CompletedOrderUserImportEventHandler : INotificationHandler<Complet
         foreach (var userImportObject in userImportObjects)
         {
             var splitLink = userImportObject.Link.Split('/');
-            var walmartId = long.Parse(splitLink[splitLink.Length - 1]);
-
-            var completedOrderProduct = new CompletedOrderProduct
+            var endOfUrl = splitLink[splitLink.Length - 1];
+            if (endOfUrl.Contains("?"))
             {
-                Name = userImportObject.Name,
-                WalmartId = walmartId
-            };
-            _context.CompletedOrderProducts.Add(completedOrderProduct);
+                endOfUrl = endOfUrl.Substring(0, endOfUrl.IndexOf("?"));
+            }
+            long walmartId;
 
-            notification.CompletedOrder.CompletedOrderProducts.Add(completedOrderProduct);
+            if (long.TryParse(endOfUrl, out walmartId))
+            {
+                var completedOrderProduct = new CompletedOrderProduct
+                {
+                    Name = userImportObject.Name,
+                    WalmartId = walmartId
+                };
+                _context.CompletedOrderProducts.Add(completedOrderProduct);
+
+                notification.CompletedOrder.CompletedOrderProducts.Add(completedOrderProduct);
+            }
+            else
+            {
+                var completedOrderProduct = new CompletedOrderProduct
+                {
+                    Name = userImportObject.Name,
+                    WalmartError = "Walmart id invalid: " + endOfUrl
+                };
+                _context.CompletedOrderProducts.Add(completedOrderProduct);
+
+                notification.CompletedOrder.CompletedOrderProducts.Add(completedOrderProduct);
+            }
         }
         var result = _context.SaveChangesAsync(cancellationToken).Result;
 
@@ -47,6 +66,8 @@ public class CompletedOrderUserImportEventHandler : INotificationHandler<Complet
         {
             try
             {
+                if (completedOrderProduct.WalmartId == null) { continue; }
+
                 var itemRequest = new ItemRequest
                 {
                     id = completedOrderProduct.WalmartId.ToString()

@@ -38,6 +38,18 @@ public class ProductsController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
+    [HttpPut("UpdateSizeType/{id}")]
+    public async Task<ActionResult<ProductDto>> UpdateSizeType(int id, UpdateProductSizeTypeCommand command)
+    {
+        return await Mediator.Send(command);
+    }
+
+    [HttpPut("UpdateSize/{id}")]
+    public async Task<ActionResult<ProductDto>> UpdateSize(int id, UpdateProductSizeCommand command)
+    {
+        return await Mediator.Send(command);
+    }
+
     [HttpGet("GetProductDetails")]
     public async Task<ActionResult<ProductDto>> GetProductDetails([FromQuery] GetProductDetailsQuery query)
     {

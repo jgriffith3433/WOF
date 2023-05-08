@@ -981,6 +981,8 @@ export interface IProductsClient {
     create(command: CreateProductCommand): Observable<ProductDto>;
     update(id: number | undefined, command: UpdateProductCommand): Observable<ProductDto>;
     updateName(id: number, command: UpdateProductNameCommand): Observable<ProductDto>;
+    updateSizeType(id: number, command: UpdateProductSizeTypeCommand): Observable<ProductDto>;
+    updateSize(id: number, command: UpdateProductSizeCommand): Observable<ProductDto>;
     getProductDetails(id: number | undefined): Observable<ProductDto>;
     delete(id: number): Observable<FileResponse>;
 }
@@ -1188,6 +1190,116 @@ export class ProductsClient implements IProductsClient {
     }
 
     protected processUpdateName(response: HttpResponseBase): Observable<ProductDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ProductDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    updateSizeType(id: number, command: UpdateProductSizeTypeCommand): Observable<ProductDto> {
+        let url_ = this.baseUrl + "/api/Products/UpdateSizeType/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateSizeType(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateSizeType(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ProductDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ProductDto>;
+        }));
+    }
+
+    protected processUpdateSizeType(response: HttpResponseBase): Observable<ProductDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ProductDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    updateSize(id: number, command: UpdateProductSizeCommand): Observable<ProductDto> {
+        let url_ = this.baseUrl + "/api/Products/UpdateSize/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateSize(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateSize(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ProductDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ProductDto>;
+        }));
+    }
+
+    protected processUpdateSize(response: HttpResponseBase): Observable<ProductDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2901,7 +3013,17 @@ export interface IProduct extends IBaseAuditableEntity {
 export enum SizeType {
     None = 0,
     Bulk = 1,
-    Ounces = 2,
+    Ounce = 2,
+    Teaspoon = 3,
+    Tablespoon = 4,
+    Pound = 5,
+    Cup = 6,
+    Cloves = 7,
+    Can = 8,
+    Whole = 9,
+    Package = 10,
+    Bar = 11,
+    Bun = 12,
 }
 
 export class CompletedOrderProduct extends BaseAuditableEntity implements ICompletedOrderProduct {
@@ -3988,7 +4110,88 @@ export interface IUpdateProductNameCommand {
     name?: string;
 }
 
+export class UpdateProductSizeTypeCommand implements IUpdateProductSizeTypeCommand {
+    id?: number;
+    sizeType?: number;
+
+    constructor(data?: IUpdateProductSizeTypeCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.sizeType = _data["sizeType"];
+        }
+    }
+
+    static fromJS(data: any): UpdateProductSizeTypeCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateProductSizeTypeCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["sizeType"] = this.sizeType;
+        return data;
+    }
+}
+
+export interface IUpdateProductSizeTypeCommand {
+    id?: number;
+    sizeType?: number;
+}
+
+export class UpdateProductSizeCommand implements IUpdateProductSizeCommand {
+    id?: number;
+    size?: number;
+
+    constructor(data?: IUpdateProductSizeCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.size = _data["size"];
+        }
+    }
+
+    static fromJS(data: any): UpdateProductSizeCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateProductSizeCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["size"] = this.size;
+        return data;
+    }
+}
+
+export interface IUpdateProductSizeCommand {
+    id?: number;
+    size?: number;
+}
+
 export class GetProductStocksVm implements IGetProductStocksVm {
+    sizeTypes?: SizeTypeDto[];
     productStocks?: ProductStockDto[];
 
     constructor(data?: IGetProductStocksVm) {
@@ -4002,6 +4205,11 @@ export class GetProductStocksVm implements IGetProductStocksVm {
 
     init(_data?: any) {
         if (_data) {
+            if (Array.isArray(_data["sizeTypes"])) {
+                this.sizeTypes = [] as any;
+                for (let item of _data["sizeTypes"])
+                    this.sizeTypes!.push(SizeTypeDto.fromJS(item));
+            }
             if (Array.isArray(_data["productStocks"])) {
                 this.productStocks = [] as any;
                 for (let item of _data["productStocks"])
@@ -4019,6 +4227,11 @@ export class GetProductStocksVm implements IGetProductStocksVm {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.sizeTypes)) {
+            data["sizeTypes"] = [];
+            for (let item of this.sizeTypes)
+                data["sizeTypes"].push(item.toJSON());
+        }
         if (Array.isArray(this.productStocks)) {
             data["productStocks"] = [];
             for (let item of this.productStocks)
@@ -4029,6 +4242,7 @@ export class GetProductStocksVm implements IGetProductStocksVm {
 }
 
 export interface IGetProductStocksVm {
+    sizeTypes?: SizeTypeDto[];
     productStocks?: ProductStockDto[];
 }
 
@@ -4037,6 +4251,7 @@ export class ProductStockDto implements IProductStockDto {
     name?: string;
     units?: number;
     productId?: number | undefined;
+    product?: ProductDto;
 
     constructor(data?: IProductStockDto) {
         if (data) {
@@ -4053,6 +4268,7 @@ export class ProductStockDto implements IProductStockDto {
             this.name = _data["name"];
             this.units = _data["units"];
             this.productId = _data["productId"];
+            this.product = _data["product"] ? ProductDto.fromJS(_data["product"]) : <any>undefined;
         }
     }
 
@@ -4069,6 +4285,7 @@ export class ProductStockDto implements IProductStockDto {
         data["name"] = this.name;
         data["units"] = this.units;
         data["productId"] = this.productId;
+        data["product"] = this.product ? this.product.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -4078,6 +4295,7 @@ export interface IProductStockDto {
     name?: string;
     units?: number;
     productId?: number | undefined;
+    product?: ProductDto;
 }
 
 export class UpdateProductStockCommand implements IUpdateProductStockCommand {

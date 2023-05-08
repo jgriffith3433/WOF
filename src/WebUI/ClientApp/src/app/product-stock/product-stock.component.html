@@ -12,6 +12,7 @@
     <tr>
       <th>Id</th>
       <th>Name</th>
+      <th>Size Type</th>
       <th>Units</th>
     </tr>
   </thead>
@@ -19,6 +20,7 @@
     <tr *ngFor="let productStock of productStocks index as i">
       <td>{{ productStock.id }}</td>
       <td>{{ productStock.name }}</td>
+      <td>{{ getSizeTypeNameFromSizeTypeValue(productStock.product != null ? productStock.product.sizeType : -1) }}</td>
       <td>
         <input id="{{ 'productStock' + i }}" *ngIf="productStock == selectedProductStockUnits" type="text"
                class="form-control item-input-control" [(ngModel)]="productStock.units" (change)="updateProductStockUnits(productStock)"
@@ -74,7 +76,7 @@
       </div>
       <div class="form-group">
         <label for="units">Units</label>
-        <textarea id="units" class="form-control" rows="3" [(ngModel)]="productStockEditor.units"></textarea>
+        <input id="units" class="form-control" rows="3" [(ngModel)]="productStockEditor.units" />
       </div>
     </div>
     <div *ngIf="debug">
