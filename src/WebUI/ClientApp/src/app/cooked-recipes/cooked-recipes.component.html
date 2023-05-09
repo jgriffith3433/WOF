@@ -1,0 +1,211 @@
+<h1>Cooked Recipes</h1>
+
+<p>This is a complex cooked recipes component.</p>
+
+<p *ngIf="!cookedRecipes"><em>Loading...</em></p>
+
+<div *ngIf="cookedRecipes">
+
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="clearfix">
+        <h2 class="float-start">Cooked Recipes</h2>
+        <button class="btn btn-default float-end" title="New Cooked Recipe..."
+                (click)="showNewCookedRecipeModal(newCookedRecipeModalTemplate)">
+          <i class="bi bi-journal-plus"></i>
+        </button>
+      </div>
+      <ul class="list-group">
+        <li *ngFor="let cookedRecipe of cookedRecipes; index as i" class="list-group-item"
+            [ngClass]="{ 'active': selectedCookedRecipe == cookedRecipe }" (click)="selectedCookedRecipe = cookedRecipe">
+          <div class="clearfix">
+            <div class="float-start">
+              {{ cookedRecipe.recipe?.name }}
+            </div>
+            <div class="float-end text-right">
+              <!--<span class="badge badge-light">{{ remainingCalledIngredients(cookedRecipe) }}</span>-->
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="col-sm-8" *ngIf="selectedCookedRecipe">
+      <div class="clearfix">
+        <button id="cookedRecipeOptions" class="btn btn-default float-end" title="Cooked Recipe Options..."
+                (click)="showCookedRecipeOptionsModal(cookedRecipeOptionsModalTemplate)">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+      </div>
+
+      <!--<ul id="called-ingredients" class="list-group mb-2 list-group-flush">
+        <li class="list-group-item" *ngFor="let calledIngredient of selectedCookedRecipe.calledIngredients; index as i" [ngClass]="{'list-group-item-warning': calledIngredient.productStock != null ? calledIngredient.productStock.units < calledIngredient.units : false, 'list-group-item-danger': !calledIngredient.sizeType || !calledIngredient.units || !calledIngredient.productStock}">
+          <div class="d-flex">
+            <div class="flex-fill">
+              <div *ngIf="calledIngredient.productStock" class="item-name form-control form-control-plaintext">
+                <input type="text" readonly class="form-control-plaintext" value="{{ calledIngredient.name + ' ( ' + calledIngredient.productStock.name + ' )'}}">
+              </div>
+              <div *ngIf="!calledIngredient.productStock" class="item-name form-control">
+                <input id="{{ 'calledIngredientName' + i }}" *ngIf="calledIngredient == selectedCalledIngredient" type="text"
+                       class="form-control item-input-control" [(ngModel)]="calledIngredient.name" (keyup.enter)="updateCalledIngredient(calledIngredient, true)"
+                       (blur)="updateCalledIngredient(calledIngredient)" autofocus="autofocus" />
+                <div *ngIf="calledIngredient != selectedCalledIngredient" (click)="editCalledIngredient(calledIngredient, 'calledIngredientName' + i)" class="item-name form-control item-input-control">
+                  <span>{{ calledIngredient.name }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="item-commands d-flex">
+              <button *ngIf="calledIngredient.id != 0" (click)="showCalledIngredientDetailsModal(calledIngredientDetailsModalTemplate, calledIngredient)" class="my-auto btn btn-default btn-xs" role="button">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+            </div>
+          </div>
+        </li>
+        <li class="list-group-item" (click)="addCalledIngredient()">
+          <button class="btn btn-default">Add CalledIngredient...</button>
+        </li>
+      </ul>-->
+    </div>
+  </div>
+</div>
+
+<div *ngIf="debug">
+  <pre>{{ cookedRecipes | json }}</pre>
+</div>
+
+<ng-template #newCookedRecipeModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">New Cooked Recipe</h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="newCookedRecipeCancelled()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <select class="form-control" [(ngModel)]="newCookedRecipeEditor.recipeId">
+        <option [ngValue]="recipesOption.value" *ngFor="let recipesOption of recipesOptions">{{ recipesOption.name }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <div *ngIf="newCookedRecipeEditor.errorResponse" class="invalid-feedback d-block">
+        {{ newCookedRecipeEditor.errorResponse.title }}
+      </div>
+    </div>
+    <div *ngIf="debug">
+      <pre>{{ newCookedRecipeEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer clearfix">
+    <div class="float-end">
+      <button class="btn btn-default" (click)="newCookedRecipeCancelled()">Cancel</button>
+      <button class="btn btn-primary" (click)="addCookedRecipe()">Create</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #cookedRecipeOptionsModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Cooked Recipe Options</h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="cookedRecipeOptionsModalRef.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <select class="form-control" [(ngModel)]="cookedRecipeOptionsEditor.recipeId">
+        <option [ngValue]="recipesOption.value" *ngFor="let recipesOption of recipesOptions">{{ recipesOption.name }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <div *ngIf="cookedRecipeOptionsEditor.errorResponse" class="invalid-feedback d-block">
+        {{ cookedRecipeOptionsEditor.errorResponse.title }}
+      </div>
+    </div>
+    <div *ngIf="debug">
+      <pre>{{ cookedRecipeOptionsEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="clearfix">
+      <div class="float-start">
+        <button class="btn btn-default text-danger" (click)="confirmDeleteCookedRecipe(deleteCookedRecipeModalTemplate)">Delete</button>
+      </div>
+      <div class="float-end">
+        <button class="btn btn-default" (click)="cookedRecipeOptionsModalRef.hide()">Cancel</button>
+        <!--<button class="btn btn-primary" (click)="updateRecipeOptions()">Update</button>-->
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!--<ng-template #calledIngredientDetailsModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">CalledIngredient Details</h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="calledIngredientDetailsModalRef.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form">
+      <div class="form-group">
+        <label for="sizeType">Size Type</label>
+        <select class="form-control" [(ngModel)]="calledIngredientDetailsEditor.sizeType">
+          <option [ngValue]="sizeType.value" *ngFor="let sizeType of sizeTypes">{{ sizeType.name }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div *ngIf="!calledIngredientDetailsEditor.productStock && calledIngredientDetailsEditor.productStockSearchItems">
+          <label for="search">Search by Name</label>
+          <input type="text" class="form-control" id="search" placeholder="Name..." [(ngModel)]="calledIngredientDetailsEditor.search"
+                 [ngClass]="{ 'is-invalid': calledIngredientDetailsEditor.error }" (keyup.enter)="searchIngredientName()" />
+          <div class="float-end">
+            <button class="btn btn-primary" (click)="searchIngredientName()">Search</button>
+          </div>
+          <select class="form-control" [(ngModel)]="calledIngredientDetailsEditor.productStockId">
+            <option [ngValue]="productStockSearchItem.id" *ngFor="let productStockSearchItem of calledIngredientDetailsEditor.productStockSearchItems">{{ productStockSearchItem.name }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="units">Units</label>
+        <input id="units" class="form-control" rows="3" [(ngModel)]="calledIngredientDetailsEditor.units" [ngClass]="{'bg-warning': calledIngredientDetailsEditor.productStock != null ? calledIngredientDetailsEditor.productStock.units < calledIngredientDetailsEditor.units: false }" />
+      </div>
+    </div>
+    <div *ngIf="debug">
+      <pre>{{ calledIngredientDetailsEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="clearfix">
+      <div class="float-start">
+        <button class="btn btn-default text-danger" (click)="deleteCalledIngredient(selectedCalledIngredientDetails)">Delete</button>
+      </div>
+      <div class="float-end">
+        <button class="btn btn-default" (click)="calledIngredientDetailsModalRef.hide()">Cancel</button>
+        <button class="btn btn-primary" (click)="updateCalledIngredientDetails()">Update</button>
+      </div>
+    </div>
+  </div>
+</ng-template>-->
+
+<ng-template #deleteCookedRecipeModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Delete "{{ selectedCookedRecipe.recipe?.name }}"?</h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="deleteCookedRecipeModalRef.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p> Will be permanently deleted. </p>
+    <div *ngIf="debug">
+      <pre>{{ selectedCookedRecipe | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer clearfix">
+    <div class="float-end">
+      <button type="button" class="btn btn-default" (click)="deleteCookedRecipeModalRef.hide()">Cancel</button>
+      <button type="button" class="btn btn-danger" (click)="deleteCookedRecipeConfirmed()">Delete</button>
+    </div>
+  </div>
+</ng-template>
+

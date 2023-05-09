@@ -22,6 +22,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="CookedRecipeCalledIngredients\Commands\" />
+      <Folder Include="CookedRecipeCalledIngredients\Queries\" />
       <Folder Include="Products\EventHandlers\" />
     </ItemGroup>
 

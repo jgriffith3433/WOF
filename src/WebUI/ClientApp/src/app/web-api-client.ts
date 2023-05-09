@@ -976,6 +976,181 @@ export class CompletedOrdersClient implements ICompletedOrdersClient {
     }
 }
 
+export interface ICookedRecipesClient {
+    get(): Observable<CookedRecipesVm>;
+    create(command: CreateCookedRecipeCommand): Observable<CookedRecipeDto>;
+    delete(id: number): Observable<FileResponse>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class CookedRecipesClient implements ICookedRecipesClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    get(): Observable<CookedRecipesVm> {
+        let url_ = this.baseUrl + "/api/CookedRecipes";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<CookedRecipesVm>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<CookedRecipesVm>;
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<CookedRecipesVm> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CookedRecipesVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    create(command: CreateCookedRecipeCommand): Observable<CookedRecipeDto> {
+        let url_ = this.baseUrl + "/api/CookedRecipes";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<CookedRecipeDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<CookedRecipeDto>;
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<CookedRecipeDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CookedRecipeDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    delete(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/CookedRecipes/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
 export interface IProductsClient {
     getProducts(): Observable<GetProductsVm>;
     create(command: CreateProductCommand): Observable<ProductDto>;
@@ -3958,6 +4133,426 @@ export interface IUpdateCompletedOrderProductCommand {
     walmartId?: number | undefined;
 }
 
+export class CookedRecipesVm implements ICookedRecipesVm {
+    sizeTypes?: SizeTypeDto[];
+    cookedRecipes?: CookedRecipeDto[];
+    recipesOptions?: RecipesOptionVm[];
+
+    constructor(data?: ICookedRecipesVm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["sizeTypes"])) {
+                this.sizeTypes = [] as any;
+                for (let item of _data["sizeTypes"])
+                    this.sizeTypes!.push(SizeTypeDto.fromJS(item));
+            }
+            if (Array.isArray(_data["cookedRecipes"])) {
+                this.cookedRecipes = [] as any;
+                for (let item of _data["cookedRecipes"])
+                    this.cookedRecipes!.push(CookedRecipeDto.fromJS(item));
+            }
+            if (Array.isArray(_data["recipesOptions"])) {
+                this.recipesOptions = [] as any;
+                for (let item of _data["recipesOptions"])
+                    this.recipesOptions!.push(RecipesOptionVm.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CookedRecipesVm {
+        data = typeof data === 'object' ? data : {};
+        let result = new CookedRecipesVm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.sizeTypes)) {
+            data["sizeTypes"] = [];
+            for (let item of this.sizeTypes)
+                data["sizeTypes"].push(item.toJSON());
+        }
+        if (Array.isArray(this.cookedRecipes)) {
+            data["cookedRecipes"] = [];
+            for (let item of this.cookedRecipes)
+                data["cookedRecipes"].push(item.toJSON());
+        }
+        if (Array.isArray(this.recipesOptions)) {
+            data["recipesOptions"] = [];
+            for (let item of this.recipesOptions)
+                data["recipesOptions"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ICookedRecipesVm {
+    sizeTypes?: SizeTypeDto[];
+    cookedRecipes?: CookedRecipeDto[];
+    recipesOptions?: RecipesOptionVm[];
+}
+
+export class SizeTypeDto implements ISizeTypeDto {
+    value?: number;
+    name?: string | undefined;
+
+    constructor(data?: ISizeTypeDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.value = _data["value"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): SizeTypeDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new SizeTypeDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["value"] = this.value;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface ISizeTypeDto {
+    value?: number;
+    name?: string | undefined;
+}
+
+export class CookedRecipeDto implements ICookedRecipeDto {
+    id?: number;
+    recipe?: RecipeDto;
+    recipeId?: number;
+    cookedRecipeCalledIngredients?: CookedRecipeCalledIngredientDetailsVm[];
+
+    constructor(data?: ICookedRecipeDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.recipe = _data["recipe"] ? RecipeDto.fromJS(_data["recipe"]) : <any>undefined;
+            this.recipeId = _data["recipeId"];
+            if (Array.isArray(_data["cookedRecipeCalledIngredients"])) {
+                this.cookedRecipeCalledIngredients = [] as any;
+                for (let item of _data["cookedRecipeCalledIngredients"])
+                    this.cookedRecipeCalledIngredients!.push(CookedRecipeCalledIngredientDetailsVm.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CookedRecipeDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CookedRecipeDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["recipe"] = this.recipe ? this.recipe.toJSON() : <any>undefined;
+        data["recipeId"] = this.recipeId;
+        if (Array.isArray(this.cookedRecipeCalledIngredients)) {
+            data["cookedRecipeCalledIngredients"] = [];
+            for (let item of this.cookedRecipeCalledIngredients)
+                data["cookedRecipeCalledIngredients"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ICookedRecipeDto {
+    id?: number;
+    recipe?: RecipeDto;
+    recipeId?: number;
+    cookedRecipeCalledIngredients?: CookedRecipeCalledIngredientDetailsVm[];
+}
+
+export class RecipeDto implements IRecipeDto {
+    id?: number;
+    name?: string;
+    serves?: number;
+    userImport?: string | undefined;
+    calledIngredients?: CalledIngredientDetailsVm[];
+
+    constructor(data?: IRecipeDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.serves = _data["serves"];
+            this.userImport = _data["userImport"];
+            if (Array.isArray(_data["calledIngredients"])) {
+                this.calledIngredients = [] as any;
+                for (let item of _data["calledIngredients"])
+                    this.calledIngredients!.push(CalledIngredientDetailsVm.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): RecipeDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RecipeDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["serves"] = this.serves;
+        data["userImport"] = this.userImport;
+        if (Array.isArray(this.calledIngredients)) {
+            data["calledIngredients"] = [];
+            for (let item of this.calledIngredients)
+                data["calledIngredients"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IRecipeDto {
+    id?: number;
+    name?: string;
+    serves?: number;
+    userImport?: string | undefined;
+    calledIngredients?: CalledIngredientDetailsVm[];
+}
+
+export class CookedRecipeCalledIngredientDetailsVm implements ICookedRecipeCalledIngredientDetailsVm {
+    id?: number;
+    cookedRecipe?: CookedRecipeDto;
+    calledIngredient?: CalledIngredientDto | undefined;
+    productStock?: ProductStockDto;
+    sizeType?: SizeType;
+    units?: number;
+    productStockSearchItems?: ProductStock[];
+
+    constructor(data?: ICookedRecipeCalledIngredientDetailsVm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.cookedRecipe = _data["cookedRecipe"] ? CookedRecipeDto.fromJS(_data["cookedRecipe"]) : <any>undefined;
+            this.calledIngredient = _data["calledIngredient"] ? CalledIngredientDto.fromJS(_data["calledIngredient"]) : <any>undefined;
+            this.productStock = _data["productStock"] ? ProductStockDto.fromJS(_data["productStock"]) : <any>undefined;
+            this.sizeType = _data["sizeType"];
+            this.units = _data["units"];
+            if (Array.isArray(_data["productStockSearchItems"])) {
+                this.productStockSearchItems = [] as any;
+                for (let item of _data["productStockSearchItems"])
+                    this.productStockSearchItems!.push(ProductStock.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CookedRecipeCalledIngredientDetailsVm {
+        data = typeof data === 'object' ? data : {};
+        let result = new CookedRecipeCalledIngredientDetailsVm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["cookedRecipe"] = this.cookedRecipe ? this.cookedRecipe.toJSON() : <any>undefined;
+        data["calledIngredient"] = this.calledIngredient ? this.calledIngredient.toJSON() : <any>undefined;
+        data["productStock"] = this.productStock ? this.productStock.toJSON() : <any>undefined;
+        data["sizeType"] = this.sizeType;
+        data["units"] = this.units;
+        if (Array.isArray(this.productStockSearchItems)) {
+            data["productStockSearchItems"] = [];
+            for (let item of this.productStockSearchItems)
+                data["productStockSearchItems"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ICookedRecipeCalledIngredientDetailsVm {
+    id?: number;
+    cookedRecipe?: CookedRecipeDto;
+    calledIngredient?: CalledIngredientDto | undefined;
+    productStock?: ProductStockDto;
+    sizeType?: SizeType;
+    units?: number;
+    productStockSearchItems?: ProductStock[];
+}
+
+export class ProductStockDto implements IProductStockDto {
+    id?: number;
+    name?: string;
+    units?: number;
+    productId?: number | undefined;
+    product?: ProductDto;
+
+    constructor(data?: IProductStockDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.units = _data["units"];
+            this.productId = _data["productId"];
+            this.product = _data["product"] ? ProductDto.fromJS(_data["product"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ProductStockDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProductStockDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["units"] = this.units;
+        data["productId"] = this.productId;
+        data["product"] = this.product ? this.product.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IProductStockDto {
+    id?: number;
+    name?: string;
+    units?: number;
+    productId?: number | undefined;
+    product?: ProductDto;
+}
+
+export class RecipesOptionVm implements IRecipesOptionVm {
+    value?: number;
+    name?: string | undefined;
+
+    constructor(data?: IRecipesOptionVm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.value = _data["value"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): RecipesOptionVm {
+        data = typeof data === 'object' ? data : {};
+        let result = new RecipesOptionVm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["value"] = this.value;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface IRecipesOptionVm {
+    value?: number;
+    name?: string | undefined;
+}
+
+export class CreateCookedRecipeCommand implements ICreateCookedRecipeCommand {
+    recipeId?: number | undefined;
+
+    constructor(data?: ICreateCookedRecipeCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.recipeId = _data["recipeId"];
+        }
+    }
+
+    static fromJS(data: any): CreateCookedRecipeCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateCookedRecipeCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["recipeId"] = this.recipeId;
+        return data;
+    }
+}
+
+export interface ICreateCookedRecipeCommand {
+    recipeId?: number | undefined;
+}
+
 export class GetProductsVm implements IGetProductsVm {
     sizeTypes?: SizeTypeDto[];
     products?: ProductDto[];
@@ -4012,46 +4607,6 @@ export class GetProductsVm implements IGetProductsVm {
 export interface IGetProductsVm {
     sizeTypes?: SizeTypeDto[];
     products?: ProductDto[];
-}
-
-export class SizeTypeDto implements ISizeTypeDto {
-    value?: number;
-    name?: string | undefined;
-
-    constructor(data?: ISizeTypeDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.value = _data["value"];
-            this.name = _data["name"];
-        }
-    }
-
-    static fromJS(data: any): SizeTypeDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new SizeTypeDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["value"] = this.value;
-        data["name"] = this.name;
-        return data;
-    }
-}
-
-export interface ISizeTypeDto {
-    value?: number;
-    name?: string | undefined;
 }
 
 export class CreateProductCommand implements ICreateProductCommand {
@@ -4306,58 +4861,6 @@ export interface IGetProductStocksVm {
     productStocks?: ProductStockDto[];
 }
 
-export class ProductStockDto implements IProductStockDto {
-    id?: number;
-    name?: string;
-    units?: number;
-    productId?: number | undefined;
-    product?: ProductDto;
-
-    constructor(data?: IProductStockDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.units = _data["units"];
-            this.productId = _data["productId"];
-            this.product = _data["product"] ? ProductDto.fromJS(_data["product"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): ProductStockDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProductStockDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["units"] = this.units;
-        data["productId"] = this.productId;
-        data["product"] = this.product ? this.product.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IProductStockDto {
-    id?: number;
-    name?: string;
-    units?: number;
-    productId?: number | undefined;
-    product?: ProductDto;
-}
-
 export class UpdateProductStockCommand implements IUpdateProductStockCommand {
     id?: number;
     units?: number;
@@ -4596,66 +5099,6 @@ export class RecipesVm implements IRecipesVm {
 export interface IRecipesVm {
     sizeTypes?: SizeTypeDto[];
     recipes?: RecipeDto[];
-}
-
-export class RecipeDto implements IRecipeDto {
-    id?: number;
-    name?: string;
-    serves?: number;
-    userImport?: string | undefined;
-    calledIngredients?: CalledIngredientDetailsVm[];
-
-    constructor(data?: IRecipeDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.serves = _data["serves"];
-            this.userImport = _data["userImport"];
-            if (Array.isArray(_data["calledIngredients"])) {
-                this.calledIngredients = [] as any;
-                for (let item of _data["calledIngredients"])
-                    this.calledIngredients!.push(CalledIngredientDetailsVm.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): RecipeDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new RecipeDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["serves"] = this.serves;
-        data["userImport"] = this.userImport;
-        if (Array.isArray(this.calledIngredients)) {
-            data["calledIngredients"] = [];
-            for (let item of this.calledIngredients)
-                data["calledIngredients"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IRecipeDto {
-    id?: number;
-    name?: string;
-    serves?: number;
-    userImport?: string | undefined;
-    calledIngredients?: CalledIngredientDetailsVm[];
 }
 
 export class CreateRecipeCommand implements ICreateRecipeCommand {

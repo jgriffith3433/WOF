@@ -22,6 +22,7 @@ import { AuthorizeInterceptor } from 'src/api-authorization/authorize.intercepto
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CalledIngredientsComponent } from './called-ingredients/called-ingredients.component';
 import { RecipesComponent } from './recipes/recipes.component';
+import { CookedRecipesComponent } from './cooked-recipes/cooked-recipes.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { RecipesComponent } from './recipes/recipes.component';
     TodoComponent,
     CompletedOrdersComponent,
     RecipesComponent,
+    CookedRecipesComponent,
     CalledIngredientsComponent,
     TokenComponent
   ],

@@ -33,6 +33,12 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
     public DbSet<Recipe> Recipes => Set<Recipe>();
 
+    public DbSet<CookedRecipe> CookedRecipes => Set<CookedRecipe>();
+
+    public DbSet<ConsumedCookedRecipe> ConsumedCookedRecipes => Set<ConsumedCookedRecipe>();
+
+    public DbSet<CookedRecipeCalledIngredient> CookedRecipeCalledIngredients => Set<CookedRecipeCalledIngredient>();
+
     public DbSet<Product> Products => Set<Product>();
 
     public DbSet<ProductStock> ProductStocks => Set<ProductStock>();

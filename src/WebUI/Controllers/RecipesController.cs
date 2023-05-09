@@ -4,8 +4,6 @@ using WOF.Application.Recipes.Commands.UpdateRecipes;
 using WOF.Application.Recipes.Queries.GetRecipes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WOF.Domain.Entities;
-using WOF.Application.CalledIngredients.Queries.GetCalledIngredients;
 
 namespace WOF.WebUI.Controllers;
 

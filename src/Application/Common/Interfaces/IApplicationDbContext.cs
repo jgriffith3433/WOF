@@ -11,6 +11,12 @@ public interface IApplicationDbContext
 
     DbSet<Recipe> Recipes { get; }
 
+    DbSet<CookedRecipe> CookedRecipes { get; }
+
+    DbSet<ConsumedCookedRecipe> ConsumedCookedRecipes { get; }
+
+    DbSet<CookedRecipeCalledIngredient> CookedRecipeCalledIngredients { get; }
+
     DbSet<Product> Products { get; }
 
     DbSet<ProductStock> ProductStocks { get; }
