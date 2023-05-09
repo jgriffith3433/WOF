@@ -20,7 +20,7 @@
             [ngClass]="{ 'active': selectedRecipe == recipe }" (click)="selectedRecipe = recipe">
           <div class="clearfix">
             <div class="float-start">
-              {{ recipe.name | slice:0:20 }}
+              {{ recipe.name }}
             </div>
             <div class="float-end text-right">
               <!--<span class="badge badge-light">{{ remainingCalledIngredients(recipe) }}</span>-->
@@ -31,8 +31,7 @@
     </div>
     <div class="col-sm-8" *ngIf="selectedRecipe">
       <div class="clearfix">
-        <textarea readonly type="text" id="form7" class="md-textarea md-textarea-auto form-control" mdbInput value="{{ selectedRecipe.userImport }}"></textarea>
-        <h2 class=""></h2>
+        <h2>Serves: {{ selectedRecipe.serves }}</h2>
         <button id="recipeOptions" class="btn btn-default float-end" title="Recipe Options..."
                 (click)="showRecipeOptionsModal(recipeOptionsModalTemplate)">
           <i class="bi bi-three-dots-vertical"></i>
@@ -74,6 +73,55 @@
   <pre>{{ recipes | json }}</pre>
 </div>
 
+<ng-template #newRecipeModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">New Recipe</h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="newRecipeCancelled()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="inputRecipeName">Name</label>
+      <input type="text" class="form-control" id="inputRecipeName" placeholder="Name..." [(ngModel)]="newRecipeEditor.name"
+             [ngClass]="{ 'is-invalid': newRecipeEditor.errorResponse?.errors.Name }" />
+      <div *ngIf="newRecipeEditor.errorResponse" class="invalid-feedback">
+        {{ newRecipeEditor.errorResponse.errors.Name }}
+      </div>
+      <label for="inputRecipeServes">Serves</label>
+      <input type="number" class="form-control" id="inputRecipeServes" placeholder="Serves..."
+             [(ngModel)]="newRecipeEditor.serves"
+             [ngClass]="{ 'is-invalid': newRecipeEditor.errorResponse?.errors.Serves }" />
+      <div *ngIf="newRecipeEditor.errorResponse" class="invalid-feedback">
+        {{ newRecipeEditor.errorResponse.errors.Serves }}
+      </div>
+
+    </div>
+    <div class="form-group">
+      <label for="userImport">User Import</label>
+      <textarea type="text" class="form-control" id="inputRecipeUserImport" placeholder="User Import..." [(ngModel)]="newRecipeEditor.userImport"
+                [ngClass]="{ 'is-invalid': newRecipeEditor.errorResponse?.errors.UserImport }"></textarea>
+      <div *ngIf="newRecipeEditor.errorResponse" class="invalid-feedback">
+        {{ newRecipeEditor.errorResponse.errors.UserImport }}
+      </div>
+    </div>
+    <div class="form-group">
+      <div *ngIf="newRecipeEditor.errorResponse" class="invalid-feedback d-block">
+        {{ newRecipeEditor.errorResponse.title }}
+      </div>
+    </div>
+    <div *ngIf="debug">
+      <pre>{{ newRecipeEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer clearfix">
+    <div class="float-end">
+      <button class="btn btn-default" (click)="newRecipeCancelled()">Cancel</button>
+      <button class="btn btn-primary" (click)="addRecipe()">Create</button>
+    </div>
+  </div>
+</ng-template>
+
 <ng-template #recipeOptionsModalTemplate>
   <div class="modal-header">
     <h4 class="modal-title pull-left">Recipe Options</h4>
@@ -85,12 +133,23 @@
     <div class="form-group">
       <label for="inputRecipeName">Recipe Name</label>
       <input type="text" class="form-control" id="inputRecipeName" placeholder="Name..."
-             [(ngModel)]="recipeOptionsEditor.name" />
+             [(ngModel)]="recipeOptionsEditor.name"
+             [ngClass]="{ 'is-invalid': recipeOptionsEditor.errorResponse?.errors.Name }" />
+      <div *ngIf="recipeOptionsEditor.errorResponse" class="invalid-feedback">
+        {{ recipeOptionsEditor.errorResponse.errors.Name }}
+      </div>
+      <label for="inputRecipeServes">Serves</label>
+      <input type="number" class="form-control" id="inputRecipeServes" placeholder="Serves..."
+             [(ngModel)]="recipeOptionsEditor.serves"
+             [ngClass]="{ 'is-invalid': recipeOptionsEditor.errorResponse?.errors.Serves }" />
+      <div *ngIf="recipeOptionsEditor.errorResponse" class="invalid-feedback">
+        {{ recipeOptionsEditor.errorResponse.errors.Serves }}
+      </div>
     </div>
     <div class="form-group">
-      <label for="inputRecipeUserImport">User Import</label>
-      <textarea type="text" class="form-control" id="inputRecipeUserImport" placeholder="User Import..."
-                [(ngModel)]="recipeOptionsEditor.userImport"></textarea>
+      <div *ngIf="recipeOptionsEditor.errorResponse" class="invalid-feedback d-block">
+        {{ recipeOptionsEditor.errorResponse.title }}
+      </div>
     </div>
     <div *ngIf="debug">
       <pre>{{ recipeOptionsEditor | json }}</pre>
@@ -169,7 +228,7 @@
 
 <ng-template #deleteRecipeModalTemplate>
   <div class="modal-header">
-    <h4 class="modal-title pull-left">Delete "{{ selectedRecipe?.userImport }}"?</h4>
+    <h4 class="modal-title pull-left">Delete "{{ selectedRecipe.name }}"?</h4>
     <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="deleteRecipeModalRef.hide()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
@@ -188,39 +247,3 @@
   </div>
 </ng-template>
 
-
-<ng-template #newRecipeModalTemplate>
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">New Recipe</h4>
-    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="newRecipeCancelled()">
-      <span aria-hidden="true" class="visually-hidden">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <div class="form-group">
-      <label for="inputRecipeName">Name</label>
-      <input type="text" class="form-control" id="inputRecipeName" placeholder="Name..." [(ngModel)]="newRecipeEditor.name"
-             [ngClass]="{ 'is-invalid': newRecipeEditor.error }" />
-      <div *ngIf="newRecipeEditor.error" class="invalid-feedback">
-        {{ newRecipeEditor.error }}
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="userImport">User Import</label>
-      <textarea type="text" class="form-control" id="userImport" placeholder="User Import..." [(ngModel)]="newRecipeEditor.userImport"
-                [ngClass]="{ 'is-invalid': newRecipeEditor.error }"></textarea>
-      <div *ngIf="newRecipeEditor.error" class="invalid-feedback">
-        {{ newRecipeEditor.error }}
-      </div>
-    </div>
-    <div *ngIf="debug">
-      <pre>{{ newRecipeEditor | json }}</pre>
-    </div>
-  </div>
-  <div class="modal-footer clearfix">
-    <div class="float-end">
-      <button class="btn btn-default" (click)="newRecipeCancelled()">Cancel</button>
-      <button class="btn btn-primary" (click)="addRecipe()">Create</button>
-    </div>
-  </div>
-</ng-template>

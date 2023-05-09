@@ -32,7 +32,7 @@ public class ProductStockController : ApiControllerBase
     [HttpPut("[action]")]
     public async Task<ActionResult<ProductStockDto>> UpdateProductStockDetails(int id, UpdateProductStockDetailsCommand command)
     {
-        if (id != command.Id)
+        if (command == null || id != command.Id)
         {
             return BadRequest();
         }

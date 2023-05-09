@@ -34,7 +34,7 @@ public class TodoListsController : ApiControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult> Update(int id, UpdateTodoListCommand command)
     {
-        if (id != command.Id)
+        if (command == null || id != command.Id)
         {
             return BadRequest();
         }

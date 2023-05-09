@@ -27,7 +27,7 @@ public class TodoItemsController : ApiControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult> Update(int id, UpdateTodoItemCommand command)
     {
-        if (id != command.Id)
+        if (command == null || id != command.Id)
         {
             return BadRequest();
         }
@@ -40,7 +40,7 @@ public class TodoItemsController : ApiControllerBase
     [HttpPut("[action]")]
     public async Task<ActionResult> UpdateItemDetails(int id, UpdateTodoItemDetailCommand command)
     {
-        if (id != command.Id)
+        if (command == null || id != command.Id)
         {
             return BadRequest();
         }

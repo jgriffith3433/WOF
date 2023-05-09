@@ -8,7 +8,8 @@ import {
   CalledIngredientDto,
   SizeTypeDto,
   CreateRecipeCommand,
-  UpdateRecipeCommand,
+  UpdateRecipeNameCommand,
+  UpdateRecipeServesCommand,
   CreateCalledIngredientCommand,
   UpdateCalledIngredientCommand,
   UpdateCalledIngredientDetailsCommand
@@ -73,6 +74,7 @@ export class RecipesComponent implements OnInit {
       id: 0,
       userImport: this.newRecipeEditor.userImport,
       name: this.newRecipeEditor.name,
+      serves: this.newRecipeEditor.serves,
       calledIngredients: []
     } as RecipeDto;
 
@@ -84,13 +86,7 @@ export class RecipesComponent implements OnInit {
         this.newRecipeEditor = {};
       },
       error => {
-        const errors = JSON.parse(error.response);
-
-        if (errors && errors.Title) {
-          this.newRecipeEditor.error = errors.Title[0];
-        }
-
-        setTimeout(() => document.getElementById('inputRecipeName').focus(), 250);
+        this.newRecipeEditor.errorResponse = JSON.parse(error.response);
       }
     );
   }
@@ -98,24 +94,39 @@ export class RecipesComponent implements OnInit {
   showRecipeOptionsModal(template: TemplateRef<any>) {
     this.recipeOptionsEditor = {
       id: this.selectedRecipe.id,
-      userImport: this.selectedRecipe.userImport,
-      name: this.selectedRecipe.name
+      name: this.selectedRecipe.name,
+      serves: this.selectedRecipe.serves
     };
 
     this.recipeOptionsModalRef = this.modalService.show(template);
   }
 
   updateRecipeOptions() {
-    const updateRecipeCommand = this.recipeOptionsEditor as UpdateRecipeCommand;
-    this.recipesClient.update(this.selectedRecipe.id, updateRecipeCommand).subscribe(
-      result => {
-        this.selectedRecipe = result;
+    let updateResponseSuccess = (result) => {
+      this.selectedRecipe = result;
 
-        this.recipeOptionsModalRef.hide();
-        this.recipeOptionsEditor = {};
-      },
-      error => console.error(error)
-    );
+      for (var i = this.recipes.length - 1; i >= 0; i--) {
+        if (this.recipes[i].id == this.selectedRecipe.id) {
+          this.recipes[i] = this.selectedRecipe;
+          break;
+        }
+      }
+      this.recipeOptionsModalRef.hide();
+      this.recipeOptionsEditor = {};
+    }
+    let updateResponseError = (error) => {
+      this.recipeOptionsEditor.errorResponse = JSON.parse(error.response);
+    }
+
+    if (this.selectedRecipe.name != this.recipeOptionsEditor.name) {
+      const updateRecipeNameCommand = this.recipeOptionsEditor as UpdateRecipeNameCommand;
+      this.recipesClient.updateName(this.selectedRecipe.id, updateRecipeNameCommand).subscribe(updateResponseSuccess, updateResponseError);
+    }
+
+    if (this.selectedRecipe.serves != this.recipeOptionsEditor.serves) {
+      const updateRecipeServesCommand = this.recipeOptionsEditor as UpdateRecipeServesCommand;
+      this.recipesClient.updateServes(this.selectedRecipe.id, updateRecipeServesCommand).subscribe(updateResponseSuccess, updateResponseError);
+    }
   }
 
   confirmDeleteRecipe(template: TemplateRef<any>) {
@@ -163,13 +174,7 @@ export class RecipesComponent implements OnInit {
         this.calledIngredientDetailsEditor.productStockSearchItems = result.productStockSearchItems;
       },
       error => {
-        const errors = JSON.parse(error.response);
-
-        if (errors && errors.Title) {
-          this.calledIngredientDetailsEditor.error = errors.Title[0];
-        }
-
-        setTimeout(() => document.getElementById('search').focus(), 250);
+        this.newRecipeEditor.errorResponse = JSON.parse(error.response);
       }
     );
   }

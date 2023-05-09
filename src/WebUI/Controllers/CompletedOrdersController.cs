@@ -38,7 +38,7 @@ public class CompletedOrdersController : ApiControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult> Update(int id, UpdateCompletedOrderCommand command)
     {
-        if (id != command.Id)
+        if (command == null || id != command.Id)
         {
             return BadRequest();
         }
@@ -82,7 +82,7 @@ public class CompletedOrdersController : ApiControllerBase
     [HttpPut("UpdateCompletedOrderProduct/{id}")]
     public async Task<ActionResult<CompletedOrderProductDto>> UpdateCompletedOrderProduct(int id, UpdateCompletedOrderProductCommand command)
     {
-        if (id != command.Id)
+        if (command == null || id != command.Id)
         {
             return BadRequest();
         }

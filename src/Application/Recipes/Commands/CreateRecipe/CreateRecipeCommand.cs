@@ -9,7 +9,8 @@ namespace WOF.Application.Recipes.Commands.CreateRecipes;
 
 public record CreateRecipeCommand : IRequest<RecipeDto>
 {
-    public string? Name { get; init; }
+    public string Name { get; init; }
+    public int? Serves { get; init; }
     public string? UserImport { get; init; }
 }
 
@@ -29,6 +30,7 @@ public class CreateRecipeCommandHandler : IRequestHandler<CreateRecipeCommand, R
         var entity = new Recipe();
 
         entity.Name = request.Name;
+        entity.Serves = request.Serves.Value;
         entity.UserImport = request.UserImport;
         _context.Recipes.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);

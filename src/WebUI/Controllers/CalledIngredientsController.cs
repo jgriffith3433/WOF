@@ -44,7 +44,7 @@ public class CalledIngredientsController : ApiControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult> Update(int id, UpdateCalledIngredientCommand command)
     {
-        if (id != command.Id)
+        if (command == null || id != command.Id)
         {
             return BadRequest();
         }
@@ -57,7 +57,7 @@ public class CalledIngredientsController : ApiControllerBase
     [HttpPut("[action]")]
     public async Task<ActionResult<CalledIngredientDetailsVm>> UpdateCalledIngredientDetails(int id, UpdateCalledIngredientDetailsCommand command)
     {
-        if (id != command.Id)
+        if (command == null || id != command.Id)
         {
             return BadRequest();
         }

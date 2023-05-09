@@ -15,6 +15,8 @@ public class RecipeDto : IMapFrom<Recipe>
     
     public string Name { get; set; }
 
+    public int Serves { get; set; }
+
     public string? UserImport { get; set; }
 
     public IList<CalledIngredientDetailsVm> CalledIngredients { get; set; }

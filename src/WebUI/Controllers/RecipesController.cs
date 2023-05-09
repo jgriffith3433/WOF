@@ -24,10 +24,21 @@ public class RecipesController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult<RecipeDto>> Update(int id, UpdateRecipeCommand command)
+    [HttpPut("UpdateName/{id}")]
+    public async Task<ActionResult<RecipeDto>> UpdateName(int id, UpdateRecipeNameCommand command)
     {
-        if (id != command.Id)
+        if (command == null || id != command.Id)
+        {
+            return BadRequest();
+        }
+
+        return await Mediator.Send(command);
+    }
+
+    [HttpPut("UpdateServes/{id}")]
+    public async Task<ActionResult<RecipeDto>> UpdateServes(int id, UpdateRecipeServesCommand command)
+    {
+        if (command == null || id != command.Id)
         {
             return BadRequest();
         }
