@@ -976,6 +976,357 @@ export class CompletedOrdersClient implements ICompletedOrdersClient {
     }
 }
 
+export interface ICookedRecipeCalledIngredientsClient {
+    getCookedRecipeCalledIngredientDetails(id: number): Observable<CookedRecipeCalledIngredientDetailsVm>;
+    searchProductStockName(id: number | undefined, search: string | null | undefined): Observable<CookedRecipeCalledIngredientDetailsVm>;
+    create(command: CreateCookedRecipeCalledIngredientCommand): Observable<number>;
+    update(id: number, command: UpdateCookedRecipeCalledIngredientCommand): Observable<FileResponse>;
+    delete(id: number): Observable<FileResponse>;
+    updateCookedRecipeCalledIngredientDetails(id: number | undefined, command: UpdateCookedRecipeCalledIngredientDetailsCommand): Observable<CookedRecipeCalledIngredientDetailsVm>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class CookedRecipeCalledIngredientsClient implements ICookedRecipeCalledIngredientsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getCookedRecipeCalledIngredientDetails(id: number): Observable<CookedRecipeCalledIngredientDetailsVm> {
+        let url_ = this.baseUrl + "/api/CookedRecipeCalledIngredients/GetCookedRecipeCalledIngredientDetails/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetCookedRecipeCalledIngredientDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetCookedRecipeCalledIngredientDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<CookedRecipeCalledIngredientDetailsVm>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<CookedRecipeCalledIngredientDetailsVm>;
+        }));
+    }
+
+    protected processGetCookedRecipeCalledIngredientDetails(response: HttpResponseBase): Observable<CookedRecipeCalledIngredientDetailsVm> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CookedRecipeCalledIngredientDetailsVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    searchProductStockName(id: number | undefined, search: string | null | undefined): Observable<CookedRecipeCalledIngredientDetailsVm> {
+        let url_ = this.baseUrl + "/api/CookedRecipeCalledIngredients/SearchProductStockName?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        if (search !== undefined && search !== null)
+            url_ += "Search=" + encodeURIComponent("" + search) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSearchProductStockName(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSearchProductStockName(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<CookedRecipeCalledIngredientDetailsVm>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<CookedRecipeCalledIngredientDetailsVm>;
+        }));
+    }
+
+    protected processSearchProductStockName(response: HttpResponseBase): Observable<CookedRecipeCalledIngredientDetailsVm> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CookedRecipeCalledIngredientDetailsVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    create(command: CreateCookedRecipeCalledIngredientCommand): Observable<number> {
+        let url_ = this.baseUrl + "/api/CookedRecipeCalledIngredients";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<number>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<number>;
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    update(id: number, command: UpdateCookedRecipeCalledIngredientCommand): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/CookedRecipeCalledIngredients/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    delete(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/CookedRecipeCalledIngredients/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    updateCookedRecipeCalledIngredientDetails(id: number | undefined, command: UpdateCookedRecipeCalledIngredientDetailsCommand): Observable<CookedRecipeCalledIngredientDetailsVm> {
+        let url_ = this.baseUrl + "/api/CookedRecipeCalledIngredients/UpdateCookedRecipeCalledIngredientDetails?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateCookedRecipeCalledIngredientDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateCookedRecipeCalledIngredientDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<CookedRecipeCalledIngredientDetailsVm>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<CookedRecipeCalledIngredientDetailsVm>;
+        }));
+    }
+
+    protected processUpdateCookedRecipeCalledIngredientDetails(response: HttpResponseBase): Observable<CookedRecipeCalledIngredientDetailsVm> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CookedRecipeCalledIngredientDetailsVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
 export interface ICookedRecipesClient {
     get(): Observable<CookedRecipesVm>;
     create(command: CreateCookedRecipeCommand): Observable<CookedRecipeDto>;
@@ -4133,6 +4484,278 @@ export interface IUpdateCompletedOrderProductCommand {
     walmartId?: number | undefined;
 }
 
+export class CookedRecipeCalledIngredientDetailsVm implements ICookedRecipeCalledIngredientDetailsVm {
+    id?: number;
+    cookedRecipeId?: number;
+    calledIngredient?: CalledIngredientDto | undefined;
+    productStock?: ProductStockDto | undefined;
+    productStockId?: number | undefined;
+    name?: string;
+    sizeType?: SizeType;
+    units?: number;
+    productStockSearchItems?: ProductStock[];
+
+    constructor(data?: ICookedRecipeCalledIngredientDetailsVm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.cookedRecipeId = _data["cookedRecipeId"];
+            this.calledIngredient = _data["calledIngredient"] ? CalledIngredientDto.fromJS(_data["calledIngredient"]) : <any>undefined;
+            this.productStock = _data["productStock"] ? ProductStockDto.fromJS(_data["productStock"]) : <any>undefined;
+            this.productStockId = _data["productStockId"];
+            this.name = _data["name"];
+            this.sizeType = _data["sizeType"];
+            this.units = _data["units"];
+            if (Array.isArray(_data["productStockSearchItems"])) {
+                this.productStockSearchItems = [] as any;
+                for (let item of _data["productStockSearchItems"])
+                    this.productStockSearchItems!.push(ProductStock.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CookedRecipeCalledIngredientDetailsVm {
+        data = typeof data === 'object' ? data : {};
+        let result = new CookedRecipeCalledIngredientDetailsVm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["cookedRecipeId"] = this.cookedRecipeId;
+        data["calledIngredient"] = this.calledIngredient ? this.calledIngredient.toJSON() : <any>undefined;
+        data["productStock"] = this.productStock ? this.productStock.toJSON() : <any>undefined;
+        data["productStockId"] = this.productStockId;
+        data["name"] = this.name;
+        data["sizeType"] = this.sizeType;
+        data["units"] = this.units;
+        if (Array.isArray(this.productStockSearchItems)) {
+            data["productStockSearchItems"] = [];
+            for (let item of this.productStockSearchItems)
+                data["productStockSearchItems"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ICookedRecipeCalledIngredientDetailsVm {
+    id?: number;
+    cookedRecipeId?: number;
+    calledIngredient?: CalledIngredientDto | undefined;
+    productStock?: ProductStockDto | undefined;
+    productStockId?: number | undefined;
+    name?: string;
+    sizeType?: SizeType;
+    units?: number;
+    productStockSearchItems?: ProductStock[];
+}
+
+export class ProductStockDto implements IProductStockDto {
+    id?: number;
+    name?: string;
+    units?: number;
+    productId?: number | undefined;
+    product?: ProductDto;
+
+    constructor(data?: IProductStockDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.units = _data["units"];
+            this.productId = _data["productId"];
+            this.product = _data["product"] ? ProductDto.fromJS(_data["product"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ProductStockDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProductStockDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["units"] = this.units;
+        data["productId"] = this.productId;
+        data["product"] = this.product ? this.product.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IProductStockDto {
+    id?: number;
+    name?: string;
+    units?: number;
+    productId?: number | undefined;
+    product?: ProductDto;
+}
+
+export class CreateCookedRecipeCalledIngredientCommand implements ICreateCookedRecipeCalledIngredientCommand {
+    name?: string | undefined;
+    cookedRecipeId?: number;
+    productStockId?: number | undefined;
+
+    constructor(data?: ICreateCookedRecipeCalledIngredientCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.cookedRecipeId = _data["cookedRecipeId"];
+            this.productStockId = _data["productStockId"];
+        }
+    }
+
+    static fromJS(data: any): CreateCookedRecipeCalledIngredientCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateCookedRecipeCalledIngredientCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["cookedRecipeId"] = this.cookedRecipeId;
+        data["productStockId"] = this.productStockId;
+        return data;
+    }
+}
+
+export interface ICreateCookedRecipeCalledIngredientCommand {
+    name?: string | undefined;
+    cookedRecipeId?: number;
+    productStockId?: number | undefined;
+}
+
+export class UpdateCookedRecipeCalledIngredientCommand implements IUpdateCookedRecipeCalledIngredientCommand {
+    id?: number;
+    name?: string | undefined;
+    units?: number | undefined;
+    productStockId?: number | undefined;
+
+    constructor(data?: IUpdateCookedRecipeCalledIngredientCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.units = _data["units"];
+            this.productStockId = _data["productStockId"];
+        }
+    }
+
+    static fromJS(data: any): UpdateCookedRecipeCalledIngredientCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateCookedRecipeCalledIngredientCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["units"] = this.units;
+        data["productStockId"] = this.productStockId;
+        return data;
+    }
+}
+
+export interface IUpdateCookedRecipeCalledIngredientCommand {
+    id?: number;
+    name?: string | undefined;
+    units?: number | undefined;
+    productStockId?: number | undefined;
+}
+
+export class UpdateCookedRecipeCalledIngredientDetailsCommand implements IUpdateCookedRecipeCalledIngredientDetailsCommand {
+    id?: number;
+    sizeType?: SizeType;
+    productStockId?: number | undefined;
+    name?: string | undefined;
+    units?: number | undefined;
+
+    constructor(data?: IUpdateCookedRecipeCalledIngredientDetailsCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.sizeType = _data["sizeType"];
+            this.productStockId = _data["productStockId"];
+            this.name = _data["name"];
+            this.units = _data["units"];
+        }
+    }
+
+    static fromJS(data: any): UpdateCookedRecipeCalledIngredientDetailsCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateCookedRecipeCalledIngredientDetailsCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["sizeType"] = this.sizeType;
+        data["productStockId"] = this.productStockId;
+        data["name"] = this.name;
+        data["units"] = this.units;
+        return data;
+    }
+}
+
+export interface IUpdateCookedRecipeCalledIngredientDetailsCommand {
+    id?: number;
+    sizeType?: SizeType;
+    productStockId?: number | undefined;
+    name?: string | undefined;
+    units?: number | undefined;
+}
+
 export class CookedRecipesVm implements ICookedRecipesVm {
     sizeTypes?: SizeTypeDto[];
     cookedRecipes?: CookedRecipeDto[];
@@ -4355,126 +4978,6 @@ export interface IRecipeDto {
     serves?: number;
     userImport?: string | undefined;
     calledIngredients?: CalledIngredientDetailsVm[];
-}
-
-export class CookedRecipeCalledIngredientDetailsVm implements ICookedRecipeCalledIngredientDetailsVm {
-    id?: number;
-    cookedRecipe?: CookedRecipeDto;
-    calledIngredient?: CalledIngredientDto | undefined;
-    productStock?: ProductStockDto;
-    sizeType?: SizeType;
-    units?: number;
-    productStockSearchItems?: ProductStock[];
-
-    constructor(data?: ICookedRecipeCalledIngredientDetailsVm) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.cookedRecipe = _data["cookedRecipe"] ? CookedRecipeDto.fromJS(_data["cookedRecipe"]) : <any>undefined;
-            this.calledIngredient = _data["calledIngredient"] ? CalledIngredientDto.fromJS(_data["calledIngredient"]) : <any>undefined;
-            this.productStock = _data["productStock"] ? ProductStockDto.fromJS(_data["productStock"]) : <any>undefined;
-            this.sizeType = _data["sizeType"];
-            this.units = _data["units"];
-            if (Array.isArray(_data["productStockSearchItems"])) {
-                this.productStockSearchItems = [] as any;
-                for (let item of _data["productStockSearchItems"])
-                    this.productStockSearchItems!.push(ProductStock.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): CookedRecipeCalledIngredientDetailsVm {
-        data = typeof data === 'object' ? data : {};
-        let result = new CookedRecipeCalledIngredientDetailsVm();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["cookedRecipe"] = this.cookedRecipe ? this.cookedRecipe.toJSON() : <any>undefined;
-        data["calledIngredient"] = this.calledIngredient ? this.calledIngredient.toJSON() : <any>undefined;
-        data["productStock"] = this.productStock ? this.productStock.toJSON() : <any>undefined;
-        data["sizeType"] = this.sizeType;
-        data["units"] = this.units;
-        if (Array.isArray(this.productStockSearchItems)) {
-            data["productStockSearchItems"] = [];
-            for (let item of this.productStockSearchItems)
-                data["productStockSearchItems"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface ICookedRecipeCalledIngredientDetailsVm {
-    id?: number;
-    cookedRecipe?: CookedRecipeDto;
-    calledIngredient?: CalledIngredientDto | undefined;
-    productStock?: ProductStockDto;
-    sizeType?: SizeType;
-    units?: number;
-    productStockSearchItems?: ProductStock[];
-}
-
-export class ProductStockDto implements IProductStockDto {
-    id?: number;
-    name?: string;
-    units?: number;
-    productId?: number | undefined;
-    product?: ProductDto;
-
-    constructor(data?: IProductStockDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.units = _data["units"];
-            this.productId = _data["productId"];
-            this.product = _data["product"] ? ProductDto.fromJS(_data["product"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): ProductStockDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProductStockDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["units"] = this.units;
-        data["productId"] = this.productId;
-        data["product"] = this.product ? this.product.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IProductStockDto {
-    id?: number;
-    name?: string;
-    units?: number;
-    productId?: number | undefined;
-    product?: ProductDto;
 }
 
 export class RecipesOptionVm implements IRecipesOptionVm {

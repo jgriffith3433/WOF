@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WOF.Application.CalledIngredients.Queries.GetCalledIngredients;
 using WOF.Application.CalledIngredients;
-using WOF.Application.CompletedOrders.Queries.GetCompletedOrderProducts;
-using WOF.Application.CompletedOrders.Queries.GetCompletedOrders;
 
 namespace WOF.WebUI.Controllers;
 

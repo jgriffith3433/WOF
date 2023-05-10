@@ -672,6 +672,260 @@
         ]
       }
     },
+    "/api/CookedRecipeCalledIngredients/GetCookedRecipeCalledIngredientDetails/{id}": {
+      "get": {
+        "tags": [
+          "CookedRecipeCalledIngredients"
+        ],
+        "operationId": "CookedRecipeCalledIngredients_GetCookedRecipeCalledIngredientDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CookedRecipeCalledIngredientDetailsVm"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/CookedRecipeCalledIngredients/SearchProductStockName": {
+      "get": {
+        "tags": [
+          "CookedRecipeCalledIngredients"
+        ],
+        "operationId": "CookedRecipeCalledIngredients_SearchProductStockName",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Search",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CookedRecipeCalledIngredientDetailsVm"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/CookedRecipeCalledIngredients": {
+      "post": {
+        "tags": [
+          "CookedRecipeCalledIngredients"
+        ],
+        "operationId": "CookedRecipeCalledIngredients_Create",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCookedRecipeCalledIngredientCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/CookedRecipeCalledIngredients/{id}": {
+      "put": {
+        "tags": [
+          "CookedRecipeCalledIngredients"
+        ],
+        "operationId": "CookedRecipeCalledIngredients_Update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCookedRecipeCalledIngredientCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "CookedRecipeCalledIngredients"
+        ],
+        "operationId": "CookedRecipeCalledIngredients_Delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/CookedRecipeCalledIngredients/UpdateCookedRecipeCalledIngredientDetails": {
+      "put": {
+        "tags": [
+          "CookedRecipeCalledIngredients"
+        ],
+        "operationId": "CookedRecipeCalledIngredients_UpdateCookedRecipeCalledIngredientDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCookedRecipeCalledIngredientDetailsCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CookedRecipeCalledIngredientDetailsVm"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/CookedRecipes": {
       "get": {
         "tags": [
@@ -2627,6 +2881,152 @@
           }
         }
       },
+      "CookedRecipeCalledIngredientDetailsVm": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cookedRecipeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "calledIngredient": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CalledIngredientDto"
+              }
+            ]
+          },
+          "productStock": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProductStockDto"
+              }
+            ]
+          },
+          "productStockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "sizeType": {
+            "$ref": "#/components/schemas/SizeType"
+          },
+          "units": {
+            "type": "number",
+            "format": "float"
+          },
+          "productStockSearchItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductStock"
+            }
+          }
+        }
+      },
+      "ProductStockDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "units": {
+            "type": "number",
+            "format": "float"
+          },
+          "productId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductDto"
+          }
+        }
+      },
+      "CreateCookedRecipeCalledIngredientCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "cookedRecipeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "productStockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateCookedRecipeCalledIngredientCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "units": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "productStockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateCookedRecipeCalledIngredientDetailsCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sizeType": {
+            "$ref": "#/components/schemas/SizeType"
+          },
+          "productStockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "units": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          }
+        }
+      },
       "CookedRecipesVm": {
         "type": "object",
         "additionalProperties": false,
@@ -2712,68 +3112,6 @@
             "items": {
               "$ref": "#/components/schemas/CalledIngredientDetailsVm"
             }
-          }
-        }
-      },
-      "CookedRecipeCalledIngredientDetailsVm": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "cookedRecipe": {
-            "$ref": "#/components/schemas/CookedRecipeDto"
-          },
-          "calledIngredient": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CalledIngredientDto"
-              }
-            ]
-          },
-          "productStock": {
-            "$ref": "#/components/schemas/ProductStockDto"
-          },
-          "sizeType": {
-            "$ref": "#/components/schemas/SizeType"
-          },
-          "units": {
-            "type": "number",
-            "format": "float"
-          },
-          "productStockSearchItems": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ProductStock"
-            }
-          }
-        }
-      },
-      "ProductStockDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string"
-          },
-          "units": {
-            "type": "number",
-            "format": "float"
-          },
-          "productId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "product": {
-            "$ref": "#/components/schemas/ProductDto"
           }
         }
       },

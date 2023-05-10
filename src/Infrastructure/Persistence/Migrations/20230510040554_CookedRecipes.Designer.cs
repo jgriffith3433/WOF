@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WOF.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using WOF.Infrastructure.Persistence;
 namespace WOF.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230510040554_CookedRecipes")]
+    partial class CookedRecipes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -526,7 +529,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProductStockId")
+                    b.Property<int>("ProductStockId")
                         .HasColumnType("int");
 
                     b.Property<int>("SizeType")
@@ -950,7 +953,9 @@ namespace WOF.Infrastructure.Persistence.Migrations
 
                     b.HasOne("WOF.Domain.Entities.ProductStock", "ProductStock")
                         .WithMany()
-                        .HasForeignKey("ProductStockId");
+                        .HasForeignKey("ProductStockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CalledIngredient");
 

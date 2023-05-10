@@ -24,7 +24,7 @@ public class DeleteCalledIngredientCommandHandler : IRequestHandler<DeleteCalled
 
         if (entity == null)
         {
-            throw new NotFoundException(nameof(TodoItem), request.Id);
+            throw new NotFoundException(nameof(CalledIngredient), request.Id);
         }
 
         _context.CalledIngredients.Remove(entity);

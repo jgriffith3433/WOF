@@ -167,14 +167,13 @@ export class RecipesComponent implements OnInit {
     );
   }
 
-
   searchIngredientName(): void {
     this.calledIngredientsClient.searchProductStockName(this.calledIngredientDetailsEditor.id, this.calledIngredientDetailsEditor.search).subscribe(
       result => {
         this.calledIngredientDetailsEditor.productStockSearchItems = result.productStockSearchItems;
       },
       error => {
-        this.newRecipeEditor.errorResponse = JSON.parse(error.response);
+        this.calledIngredientDetailsEditor.errorResponse = JSON.parse(error.response);
       }
     );
   }

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WOF.Application.CalledIngredients.Queries.GetCalledIngredients;
+namespace WOF.Application.CookedRecipeCalledIngredients.Queries.GetCookedRecipeCalledIngredients;
 
 public class SearchProductStockNameQueryValidator : AbstractValidator<SearchProductStockNameQuery>
 {
