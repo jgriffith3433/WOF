@@ -4,6 +4,7 @@ using WOF.Domain.Entities;
 using WOF.Domain.Enums;
 using MediatR;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace WOF.Application.CookedRecipeCalledIngredients.Commands.UpdateCookedRecipeCalledIngredientDetails;
 
@@ -33,8 +34,7 @@ public class UpdateCookedRecipeCalledIngredientDetailsCommandHandler : IRequestH
 
     public async Task<CookedRecipeCalledIngredientDetailsVm> Handle(UpdateCookedRecipeCalledIngredientDetailsCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.CookedRecipeCalledIngredients
-            .FindAsync(new object[] { request.Id }, cancellationToken);
+        var entity = await _context.CookedRecipeCalledIngredients.Include(crci => crci.CalledIngredient).Include(ps => ps.ProductStock).FirstOrDefaultAsync(crci => crci.Id == request.Id, cancellationToken);
 
         if (entity == null)
         {
@@ -45,15 +45,19 @@ public class UpdateCookedRecipeCalledIngredientDetailsCommandHandler : IRequestH
         entity.Units = request.Units.Value;
         entity.SizeType = request.SizeType;
 
-        if (request.ProductStockId != null)
+        if (entity.CalledIngredient == null && entity.ProductStock == null && request.ProductStockId != null)
         {
-            var productStock = _context.ProductStocks.FirstOrDefault(ps => ps.Id == request.ProductStockId);
+            var productStock = _context.ProductStocks.Include(ps => ps.Product).FirstOrDefault(ps => ps.Id == request.ProductStockId);
 
             if (productStock == null)
             {
                 throw new NotFoundException(nameof(ProductStock), request.Id);
             }
             entity.ProductStock = productStock;
+            if (productStock.Product != null)
+            {
+                entity.SizeType = productStock.Product.SizeType;
+            }
         }
 
         await _context.SaveChangesAsync(cancellationToken);

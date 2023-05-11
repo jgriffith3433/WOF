@@ -6,6 +6,7 @@ using WOF.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using WOF.Application.Products;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WOF.Application.CookedRecipes.Queries.GetCookedRecipes;
 
@@ -33,6 +34,10 @@ public class GetCookedRecipesQueryHandler : IRequestHandler<GetCookedRecipesQuer
                 .ToList(),
 
             CookedRecipes = await _context.CookedRecipes
+                .Include(x => x.CookedRecipeCalledIngredients)
+                    .ThenInclude(x => x.ProductStock)
+                .Include(x => x.CookedRecipeCalledIngredients)
+                    .ThenInclude(x => x.CalledIngredient)
                 .AsNoTracking()
                 .ProjectTo<CookedRecipeDto>(_mapper.ConfigurationProvider)
                 .OrderBy(t => t.Id)

@@ -149,6 +149,7 @@ export class CookedRecipesComponent implements OnInit {
     this.cookedRecipesCalledIngredientsClient.searchProductStockName(this.cookedRecipeCalledIngredientDetailsEditor.id, this.cookedRecipeCalledIngredientDetailsEditor.search).subscribe(
       result => {
         this.cookedRecipeCalledIngredientDetailsEditor.productStockSearchItems = result.productStockSearchItems;
+        this.cookedRecipeCalledIngredientDetailsEditor.productStockSearchItems.unshift({name: '', value: -1})
       },
       error => {
         this.cookedRecipeCalledIngredientDetailsEditor.errorResponse = JSON.parse(error.response);
