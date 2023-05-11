@@ -2,16 +2,15 @@
 using Newtonsoft.Json;
 using WOF.Application.Common.Interfaces;
 using WOF.Application.Common.Security;
-using WOF.Application.Walmart.Responses;
 
 namespace WOF.Application.Walmart.Requests;
 
-public class MultipleItemsRequest : IApiRequest
+public class SearchRequest : IWalmartApiRequest
 {
-    public MultipleItemsRequest()
+    public SearchRequest()
     {
     }
-    public string ids { get; set; }
+    public string query { get; set; }
 
     public async Task<T> GetResponse<T>()
     {
@@ -28,7 +27,7 @@ public class MultipleItemsRequest : IApiRequest
             client.Headers.Add("WM_SEC.AUTH_SIGNATURE", client.GetWalmartSignature(client.Key, requiredHeaders[0], requiredHeaders[1], requiredHeaders[2]));
 
             client.BaseAddress = "https://developer.api.walmart.com";
-            var jsonResponse = await client.DownloadStringTaskAsync(string.Format("/api-proxy/service/affil/product/v2/items?ids{0}", ids));
+            var jsonResponse = await client.DownloadStringTaskAsync(string.Format("/api-proxy/service/affil/product/v2/search?query={0}", query));
             return JsonConvert.DeserializeObject<T>(jsonResponse);
         }
     }

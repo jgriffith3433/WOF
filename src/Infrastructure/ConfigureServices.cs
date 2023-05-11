@@ -45,6 +45,9 @@ public static class ConfigureServices
         services.AddTransient<IIdentityService, IdentityService>();
         services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
+        services.AddTransient<IWalmartApiService, WalmartApiService>();
+        services.AddTransient<IOpenApiService, OpenApiService>();
+
         services.AddAuthentication()
             .AddIdentityServerJwt();
 

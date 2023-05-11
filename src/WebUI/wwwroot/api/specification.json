@@ -283,6 +283,43 @@
         ]
       }
     },
+    "/api/Chat": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "operationId": "Chat_Create",
+        "requestBody": {
+          "x-name": "query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetChatResponseQuery"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatResponseVm"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/CompletedOrders": {
       "get": {
         "tags": [
@@ -2680,6 +2717,49 @@
           "units": {
             "type": "number",
             "format": "float"
+          }
+        }
+      },
+      "GetChatResponseVm": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "previousMessages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessageVm"
+            }
+          },
+          "responseMessage": {
+            "$ref": "#/components/schemas/ChatMessageVm"
+          }
+        }
+      },
+      "ChatMessageVm": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "GetChatResponseQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "previousMessages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessageVm"
+            }
+          },
+          "chatMessage": {
+            "$ref": "#/components/schemas/ChatMessageVm"
           }
         }
       },

@@ -1,6 +1,6 @@
 ﻿namespace WOF.Application.Common.Interfaces;
 
-public interface IApiRequest
+public interface IWalmartApiRequest
 {
     Task<T> GetResponse<T>();
 }

@@ -1,8 +1,6 @@
 ﻿using WOF.Domain.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using WOF.Application.Walmart.Requests;
-using WOF.Application.Walmart.Responses;
 using WOF.Application.Common.Interfaces;
 using Newtonsoft.Json;
 
@@ -12,22 +10,20 @@ public class CompletedOrderProductNameUpdatedEventHandler : INotificationHandler
 {
     private readonly IApplicationDbContext _context;
     private readonly ILogger<CompletedOrderProductCreatedEventHandler> _logger;
+    private readonly IWalmartApiService _walmartApiService;
 
-    public CompletedOrderProductNameUpdatedEventHandler(ILogger<CompletedOrderProductCreatedEventHandler> logger, IApplicationDbContext context)
+    public CompletedOrderProductNameUpdatedEventHandler(ILogger<CompletedOrderProductCreatedEventHandler> logger, IApplicationDbContext context, IWalmartApiService walmartApiService)
     {
         _logger = logger;
         _context = context;
+        _walmartApiService = walmartApiService;
     }
 
     public Task Handle(CompletedOrderProductNameUpdatedEvent notification, CancellationToken cancellationToken)
     {
         _logger.LogInformation("WOF Domain Event: {DomainEvent}", notification.GetType().Name);
-        var searchRequest = new SearchRequest
-        {
-            query = notification.CompletedOrderProduct.Name
-        };
-
-        var searchResponse = searchRequest.GetResponse<SearchResponse>().Result;
+        var searchResponse = _walmartApiService.Search(notification.CompletedOrderProduct.Name);
+        
         notification.CompletedOrderProduct.WalmartSearchResponse = JsonConvert.SerializeObject(searchResponse);
         return _context.SaveChangesAsync(cancellationToken);
     }

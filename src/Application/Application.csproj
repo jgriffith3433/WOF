@@ -6,6 +6,7 @@
         <AssemblyName>WOF.Application</AssemblyName>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <UserSecretsId>d9e942b8-ee9b-4e55-affd-77cf4a048fe9</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>

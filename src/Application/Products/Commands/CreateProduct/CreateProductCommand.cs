@@ -1,8 +1,6 @@
 ﻿using WOF.Application.Common.Interfaces;
 using WOF.Domain.Entities;
 using MediatR;
-using WOF.Application.Walmart.Requests;
-using WOF.Application.Walmart.Responses;
 using Newtonsoft.Json;
 using AutoMapper;
 using WOF.Application.Products.Queries;
@@ -18,11 +16,13 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IWalmartApiService _walmartApiService;
 
-    public CreateProductCommandHandler(IApplicationDbContext context, IMapper mapper)
+    public CreateProductCommandHandler(IApplicationDbContext context, IMapper mapper, IWalmartApiService walmartApiService)
     {
         _context = context;
         _mapper = mapper;
+        _walmartApiService = walmartApiService;
     }
 
     public async Task<ProductDto> Handle(CreateProductCommand request, CancellationToken cancellationToken)
@@ -42,12 +42,8 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
 
         productStock.Product = entity;
 
-        var searchRequest = new SearchRequest
-        {
-            query = request.Name
-        };
-
-        var searchResponse = searchRequest.GetResponse<SearchResponse>().Result;
+        var searchResponse = _walmartApiService.Search(request.Name);
+        
         entity.WalmartSearchResponse = JsonConvert.SerializeObject(searchResponse);
 
         _context.Products.Add(entity);

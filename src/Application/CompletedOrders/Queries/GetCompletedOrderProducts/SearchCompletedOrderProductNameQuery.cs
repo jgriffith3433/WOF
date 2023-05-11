@@ -5,8 +5,6 @@ using WOF.Application.Common.Security;
 using WOF.Application.CompletedOrders.Queries.GetCompletedOrders;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using WOF.Application.Walmart.Requests;
-using WOF.Application.Walmart.Responses;
 
 namespace WOF.Application.CompletedOrders.Queries.GetCompletedOrderProducts;
 
@@ -21,23 +19,21 @@ public class SearchCompletedOrderProductNameQueryHandler : IRequestHandler<Searc
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IWalmartApiService _walmartApiService;
 
-    public SearchCompletedOrderProductNameQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public SearchCompletedOrderProductNameQueryHandler(IApplicationDbContext context, IMapper mapper, IWalmartApiService walmartApiService)
     {
         _context = context;
         _mapper = mapper;
+        _walmartApiService = walmartApiService;
     }
 
     public async Task<CompletedOrderProductDto> Handle(SearchCompletedOrderProductNameQuery request, CancellationToken cancellationToken)
     {
         var completedOrderProduct = await _context.CompletedOrderProducts.FirstOrDefaultAsync(cop => cop.Id == request.Id);
 
-        var searchRequest = new SearchRequest
-        {
-            query = request.Search
-        };
+        var searchResponse = _walmartApiService.Search(request.Search);
 
-        var searchResponse = searchRequest.GetResponse<SearchResponse>().Result;
         completedOrderProduct.WalmartSearchResponse = JsonConvert.SerializeObject(searchResponse);
         await _context.SaveChangesAsync(cancellationToken);
         return _mapper.Map<CompletedOrderProductDto>(completedOrderProduct);

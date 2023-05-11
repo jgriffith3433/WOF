@@ -1,3 +1,4 @@
+using OpenAI.GPT3.Extensions;
 using WOF.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebUIServices();
+builder.Services.AddOpenAIService();
 
 var app = builder.Build();
 

@@ -6,8 +6,6 @@ using WOF.Application.Products.Queries;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using WOF.Application.Walmart.Requests;
-using WOF.Application.Walmart.Responses;
 
 namespace WOF.Application.Products.Commands.UpdateProduct;
 
@@ -22,11 +20,13 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IWalmartApiService _walmartApiService;
 
-    public UpdateProductCommandHandler(IApplicationDbContext context, IMapper mapper)
+    public UpdateProductCommandHandler(IApplicationDbContext context, IMapper mapper, IWalmartApiService walmartApiService)
     {
         _context = context;
         _mapper = mapper;
+        _walmartApiService = walmartApiService;
     }
 
     public async Task<ProductDto> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
@@ -53,12 +53,8 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
 
             try
             {
-                var itemRequest = new ItemRequest
-                {
-                    id = request.WalmartId.ToString()
-                };
+                var itemResponse = _walmartApiService.GetItem(request.WalmartId);
 
-                var itemResponse = itemRequest.GetResponse<ItemResponse>().Result;
                 var serializedItemResponse = JsonConvert.SerializeObject(itemResponse);
 
                 //always update values from walmart to keep synced

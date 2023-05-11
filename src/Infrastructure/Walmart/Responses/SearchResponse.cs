@@ -1,6 +1,8 @@
-﻿namespace WOF.Application.Walmart.Responses;
+﻿using WOF.Application.Common.Interfaces;
 
-public class SearchResponse
+namespace WOF.Infrastructure.Walmart.Responses;
+
+public class SearchResponse : ISearchResponse
 {
     public string query { get; set; }
     public string sort { get; set; }
@@ -8,5 +10,5 @@ public class SearchResponse
     public long totalResults { get; set; }
     public long start { get; set; }
     public long numItems { get; set; }
-    public List<ItemResponse> items { get; set; }
+    public List<IItemResponse> items { get; set; }
 }

@@ -2,35 +2,31 @@
 using MediatR;
 using WOF.Application.Common.Interfaces;
 using WOF.Application.Common.Security;
-using WOF.Application.Walmart.Requests;
-using WOF.Application.Walmart.Responses;
 
 namespace WOF.Application.Walmart.Queries;
 
 
 [Authorize]
-public record ProductLookupQuery : IRequest<ItemResponse>
+public record ProductLookupQuery : IRequest<IItemResponse>
 {
     public int Id { get; set; }
 }
 
-public class ProductLookupQueryHandler : IRequestHandler<ProductLookupQuery, ItemResponse>
+public class ProductLookupQueryHandler : IRequestHandler<ProductLookupQuery, IItemResponse>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IWalmartApiService _walmartApiService;
 
-    public ProductLookupQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public ProductLookupQueryHandler(IApplicationDbContext context, IMapper mapper, IWalmartApiService walmartApiService)
     {
         _context = context;
         _mapper = mapper;
+        _walmartApiService = walmartApiService;
     }
 
-    public async Task<ItemResponse> Handle(ProductLookupQuery productLookupQuery, CancellationToken cancellationToken)
+    public async Task<IItemResponse> Handle(ProductLookupQuery productLookupQuery, CancellationToken cancellationToken)
     {
-        var itemRequest = new ItemRequest
-        {
-            id = productLookupQuery.Id.ToString()
-        };
-        return await itemRequest.GetResponse<ItemResponse>();
+        return _walmartApiService.GetItem(productLookupQuery.Id);
     }
 }

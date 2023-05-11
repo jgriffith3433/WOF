@@ -6,9 +6,11 @@
         <AssemblyName>WOF.Infrastructure</AssemblyName>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <UserSecretsId>4455dfa7-29d8-49d9-89c4-f1a27d1b3fd8</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Betalgo.OpenAI" Version="6.8.5" />
         <PackageReference Include="CsvHelper" Version="30.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="7.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.2" />
@@ -19,6 +21,12 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Application\Application.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Walmart\WalmartWebClient.cs">
+        <SubType>Component</SubType>
+      </Compile>
     </ItemGroup>
 
 </Project>

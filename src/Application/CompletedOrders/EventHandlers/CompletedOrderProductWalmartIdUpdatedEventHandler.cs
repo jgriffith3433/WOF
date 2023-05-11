@@ -1,8 +1,6 @@
 ﻿using WOF.Domain.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using WOF.Application.Walmart.Requests;
-using WOF.Application.Walmart.Responses;
 using WOF.Application.Common.Interfaces;
 using Newtonsoft.Json;
 using WOF.Domain.Entities;
@@ -13,11 +11,13 @@ public class CompletedOrderProductWalmartIdUpdatedEventHandler : INotificationHa
 {
     private readonly IApplicationDbContext _context;
     private readonly ILogger<CompletedOrderProductWalmartIdUpdatedEventHandler> _logger;
+    private readonly IWalmartApiService _walmartApiService;
 
-    public CompletedOrderProductWalmartIdUpdatedEventHandler(ILogger<CompletedOrderProductWalmartIdUpdatedEventHandler> logger, IApplicationDbContext context)
+    public CompletedOrderProductWalmartIdUpdatedEventHandler(ILogger<CompletedOrderProductWalmartIdUpdatedEventHandler> logger, IApplicationDbContext context, IWalmartApiService walmartApiService)
     {
         _logger = logger;
         _context = context;
+        _walmartApiService = walmartApiService;
     }
 
     public Task Handle(CompletedOrderProductWalmartIdUpdatedEvent notification, CancellationToken cancellationToken)
@@ -28,12 +28,8 @@ public class CompletedOrderProductWalmartIdUpdatedEventHandler : INotificationHa
         {
             try
             {
-                var itemRequest = new ItemRequest
-                {
-                    id = notification.CompletedOrderProduct.WalmartId.ToString()
-                };
+                var itemResponse = _walmartApiService.GetItem(notification.CompletedOrderProduct.WalmartId);
 
-                var itemResponse = itemRequest.GetResponse<ItemResponse>().Result;
                 var serializedItemResponse = JsonConvert.SerializeObject(itemResponse);
                 notification.CompletedOrderProduct.WalmartItemResponse = serializedItemResponse;
                 notification.CompletedOrderProduct.Name = itemResponse.name;

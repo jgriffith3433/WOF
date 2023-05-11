@@ -1,6 +1,8 @@
 <body>
   <app-nav-menu></app-nav-menu>
   <main class="container">
+    <chat-config [(theme)]="theme"></chat-config>
+    <chat-widget></chat-widget>
     <router-outlet></router-outlet>
   </main>
 </body>

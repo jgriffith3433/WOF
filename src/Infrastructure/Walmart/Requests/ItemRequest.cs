@@ -5,7 +5,7 @@ using WOF.Application.Common.Security;
 
 namespace WOF.Application.Walmart.Requests;
 
-public class ItemRequest : IApiRequest
+public class ItemRequest : IWalmartApiRequest
 {
     public ItemRequest()
     {

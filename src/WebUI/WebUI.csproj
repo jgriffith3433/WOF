@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Betalgo.OpenAI" Version="6.8.5" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
         <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="7.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.2" />
@@ -60,6 +61,7 @@
     <!-- Auto-generated Open API specification and Angular TypeScript clients -->
     <PropertyGroup>
         <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+        <UserSecretsId>c9c4af92-9f04-4342-b262-6453951d0b8a</UserSecretsId>
     </PropertyGroup>
     
     <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">

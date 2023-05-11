@@ -415,6 +415,76 @@ export class CalledIngredientsClient implements ICalledIngredientsClient {
     }
 }
 
+export interface IChatClient {
+    create(query: GetChatResponseQuery): Observable<GetChatResponseVm>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ChatClient implements IChatClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    create(query: GetChatResponseQuery): Observable<GetChatResponseVm> {
+        let url_ = this.baseUrl + "/api/Chat";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(query);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetChatResponseVm>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetChatResponseVm>;
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<GetChatResponseVm> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetChatResponseVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
 export interface ICompletedOrdersClient {
     get(): Observable<CompletedOrdersVm>;
     create(command: CreateCompletedOrderCommand): Observable<number>;
@@ -4066,6 +4136,142 @@ export interface IUpdateCalledIngredientDetailsCommand {
     productStockId?: number | undefined;
     name?: string | undefined;
     units?: number;
+}
+
+export class GetChatResponseVm implements IGetChatResponseVm {
+    previousMessages?: ChatMessageVm[];
+    responseMessage?: ChatMessageVm;
+
+    constructor(data?: IGetChatResponseVm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["previousMessages"])) {
+                this.previousMessages = [] as any;
+                for (let item of _data["previousMessages"])
+                    this.previousMessages!.push(ChatMessageVm.fromJS(item));
+            }
+            this.responseMessage = _data["responseMessage"] ? ChatMessageVm.fromJS(_data["responseMessage"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): GetChatResponseVm {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetChatResponseVm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.previousMessages)) {
+            data["previousMessages"] = [];
+            for (let item of this.previousMessages)
+                data["previousMessages"].push(item.toJSON());
+        }
+        data["responseMessage"] = this.responseMessage ? this.responseMessage.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IGetChatResponseVm {
+    previousMessages?: ChatMessageVm[];
+    responseMessage?: ChatMessageVm;
+}
+
+export class ChatMessageVm implements IChatMessageVm {
+    from?: number;
+    message?: string;
+
+    constructor(data?: IChatMessageVm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.from = _data["from"];
+            this.message = _data["message"];
+        }
+    }
+
+    static fromJS(data: any): ChatMessageVm {
+        data = typeof data === 'object' ? data : {};
+        let result = new ChatMessageVm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["from"] = this.from;
+        data["message"] = this.message;
+        return data;
+    }
+}
+
+export interface IChatMessageVm {
+    from?: number;
+    message?: string;
+}
+
+export class GetChatResponseQuery implements IGetChatResponseQuery {
+    previousMessages?: ChatMessageVm[];
+    chatMessage?: ChatMessageVm;
+
+    constructor(data?: IGetChatResponseQuery) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["previousMessages"])) {
+                this.previousMessages = [] as any;
+                for (let item of _data["previousMessages"])
+                    this.previousMessages!.push(ChatMessageVm.fromJS(item));
+            }
+            this.chatMessage = _data["chatMessage"] ? ChatMessageVm.fromJS(_data["chatMessage"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): GetChatResponseQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetChatResponseQuery();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.previousMessages)) {
+            data["previousMessages"] = [];
+            for (let item of this.previousMessages)
+                data["previousMessages"].push(item.toJSON());
+        }
+        data["chatMessage"] = this.chatMessage ? this.chatMessage.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IGetChatResponseQuery {
+    previousMessages?: ChatMessageVm[];
+    chatMessage?: ChatMessageVm;
 }
 
 export class CompletedOrdersVm implements ICompletedOrdersVm {

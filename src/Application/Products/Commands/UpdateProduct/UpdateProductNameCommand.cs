@@ -6,8 +6,6 @@ using WOF.Application.Products.Queries;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using WOF.Application.Walmart.Requests;
-using WOF.Application.Walmart.Responses;
 
 namespace WOF.Application.Products.Commands.UpdateProduct;
 
@@ -22,11 +20,13 @@ public class UpdateProductNameCommandHandler : IRequestHandler<UpdateProductName
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IWalmartApiService _walmartApiService;
 
-    public UpdateProductNameCommandHandler(IApplicationDbContext context, IMapper mapper)
+    public UpdateProductNameCommandHandler(IApplicationDbContext context, IMapper mapper, IWalmartApiService walmartApiService)
     {
         _context = context;
         _mapper = mapper;
+        _walmartApiService = walmartApiService;
     }
 
     public async Task<ProductDto> Handle(UpdateProductNameCommand request, CancellationToken cancellationToken)
@@ -43,12 +43,9 @@ public class UpdateProductNameCommandHandler : IRequestHandler<UpdateProductName
             //Still searching for walmart product
             entity.Name = request.Name;
             entity.ProductStock.Name = request.Name;
-            var searchRequest = new SearchRequest
-            {
-                query = request.Name
-            };
 
-            var searchResponse = searchRequest.GetResponse<SearchResponse>().Result;
+            var searchResponse = _walmartApiService.Search(request.Name);
+
             entity.WalmartSearchResponse = JsonConvert.SerializeObject(searchResponse);
         }
 

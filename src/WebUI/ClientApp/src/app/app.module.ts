@@ -23,6 +23,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CalledIngredientsComponent } from './called-ingredients/called-ingredients.component';
 import { RecipesComponent } from './recipes/recipes.component';
 import { CookedRecipesComponent } from './cooked-recipes/cooked-recipes.component';
+import { ChatModule } from 'src/chat/chat.module';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { CookedRecipesComponent } from './cooked-recipes/cooked-recipes.componen
     ApiAuthorizationModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    ChatModule,
     ModalModule.forRoot()
   ],
   providers: [
