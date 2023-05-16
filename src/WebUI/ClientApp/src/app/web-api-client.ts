@@ -4006,6 +4006,7 @@ export interface IUpdateCalledIngredientDetailsCommand {
 
 export class GetChatResponseVm implements IGetChatResponseVm {
     chatConversationId?: number;
+    createNewChat?: boolean;
     dirty?: boolean;
     previousMessages?: ChatMessageVm[];
     responseMessage?: ChatMessageVm;
@@ -4022,6 +4023,7 @@ export class GetChatResponseVm implements IGetChatResponseVm {
     init(_data?: any) {
         if (_data) {
             this.chatConversationId = _data["chatConversationId"];
+            this.createNewChat = _data["createNewChat"];
             this.dirty = _data["dirty"];
             if (Array.isArray(_data["previousMessages"])) {
                 this.previousMessages = [] as any;
@@ -4042,6 +4044,7 @@ export class GetChatResponseVm implements IGetChatResponseVm {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["chatConversationId"] = this.chatConversationId;
+        data["createNewChat"] = this.createNewChat;
         data["dirty"] = this.dirty;
         if (Array.isArray(this.previousMessages)) {
             data["previousMessages"] = [];
@@ -4055,6 +4058,7 @@ export class GetChatResponseVm implements IGetChatResponseVm {
 
 export interface IGetChatResponseVm {
     chatConversationId?: number;
+    createNewChat?: boolean;
     dirty?: boolean;
     previousMessages?: ChatMessageVm[];
     responseMessage?: ChatMessageVm;
@@ -4104,6 +4108,7 @@ export class GetChatResponseQuery implements IGetChatResponseQuery {
     previousMessages?: ChatMessageVm[];
     chatMessage?: ChatMessageVm;
     chatConversationId?: number | undefined;
+    currentUrl?: string;
 
     constructor(data?: IGetChatResponseQuery) {
         if (data) {
@@ -4123,6 +4128,7 @@ export class GetChatResponseQuery implements IGetChatResponseQuery {
             }
             this.chatMessage = _data["chatMessage"] ? ChatMessageVm.fromJS(_data["chatMessage"]) : <any>undefined;
             this.chatConversationId = _data["chatConversationId"];
+            this.currentUrl = _data["currentUrl"];
         }
     }
 
@@ -4142,6 +4148,7 @@ export class GetChatResponseQuery implements IGetChatResponseQuery {
         }
         data["chatMessage"] = this.chatMessage ? this.chatMessage.toJSON() : <any>undefined;
         data["chatConversationId"] = this.chatConversationId;
+        data["currentUrl"] = this.currentUrl;
         return data;
     }
 }
@@ -4150,6 +4157,7 @@ export interface IGetChatResponseQuery {
     previousMessages?: ChatMessageVm[];
     chatMessage?: ChatMessageVm;
     chatConversationId?: number | undefined;
+    currentUrl?: string;
 }
 
 export class CompletedOrdersVm implements ICompletedOrdersVm {

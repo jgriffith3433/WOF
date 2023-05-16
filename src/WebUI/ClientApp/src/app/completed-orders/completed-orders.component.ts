@@ -1,4 +1,5 @@
 import { Component, TemplateRef, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import {
   CompletedOrdersClient,
@@ -32,8 +33,13 @@ export class CompletedOrdersComponent implements OnInit {
 
   constructor(
     private completedOrdersClient: CompletedOrdersClient,
-    private modalService: BsModalService
-  ) { }
+    private modalService: BsModalService,
+    private router: Router
+  ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => {
+      return false;
+    };
+  }
 
   ngOnInit(): void {
     this.completedOrdersClient.get().subscribe(
@@ -162,7 +168,7 @@ export class CompletedOrdersComponent implements OnInit {
     if (this.completedOrderProductDetailsEditor.walmartSearchItems) {
       for (var walmartSearchItem of this.completedOrderProductDetailsEditor.walmartSearchItems) {
         if (walmartSearchItem.itemId == this.completedOrderProductDetailsEditor.walmartId) {
-          return "https://www.walmart.com/ip/" + walmartSearchItem.name +"/" + walmartSearchItem.itemId;
+          return "https://www.walmart.com/ip/" + walmartSearchItem.name + "/" + walmartSearchItem.itemId;
         }
       }
     }

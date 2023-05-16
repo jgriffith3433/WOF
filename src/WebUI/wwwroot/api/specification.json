@@ -2647,6 +2647,9 @@
             "type": "integer",
             "format": "int32"
           },
+          "createNewChat": {
+            "type": "boolean"
+          },
           "dirty": {
             "type": "boolean"
           },
@@ -2691,6 +2694,9 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
+          },
+          "currentUrl": {
+            "type": "string"
           }
         }
       },

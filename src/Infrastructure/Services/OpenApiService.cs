@@ -17,9 +17,9 @@ public class OpenApiService : IOpenApiService
         _openAIService = openAIService;
     }
 
-    public async Task<string> GetChatResponse(string message, List<WOF.Application.Chat.Queries.GetResponse.ChatMessageVm> previousMessages)
+    public async Task<string> GetChatResponse(string message, List<WOF.Application.Chat.Queries.GetResponse.ChatMessageVm> previousMessages, string currentUrl)
     {
-        var chatCompletionCreateRequest = CreateChatCompletionCreateRequest();
+        var chatCompletionCreateRequest = CreateChatCompletionCreateRequest(currentUrl);
         if (previousMessages == null || previousMessages.Count == 0)
         {
             chatCompletionCreateRequest.Messages.Add(ChatMessage.FromUser(message));
@@ -48,9 +48,9 @@ public class OpenApiService : IOpenApiService
         return completionResult.Choices.First().Message.Content;
     }
 
-    public async Task<string> GetChatResponseFromSystem(string message, List<WOF.Application.Chat.Queries.GetResponse.ChatMessageVm> previousMessages)
+    public async Task<string> GetChatResponseFromSystem(string message, List<WOF.Application.Chat.Queries.GetResponse.ChatMessageVm> previousMessages, string currentUrl)
     {
-        var chatCompletionCreateRequest = CreateChatCompletionCreateRequest();
+        var chatCompletionCreateRequest = CreateChatCompletionCreateRequest(currentUrl);
         if (previousMessages == null || previousMessages.Count == 0)
         {
             chatCompletionCreateRequest.Messages.Add(ChatMessage.FromSystem(message));
@@ -79,13 +79,13 @@ public class OpenApiService : IOpenApiService
         return completionResult.Choices.First().Message.Content;
     }
 
-    private ChatCompletionCreateRequest CreateChatCompletionCreateRequest()
+    private ChatCompletionCreateRequest CreateChatCompletionCreateRequest(string currentUrl)
     {
         var chatCompletionCreateRequest = new ChatCompletionCreateRequest
         {
             Messages = new List<ChatMessage>
             {
-                ChatMessage.FromSystem("You are a website assistant. You must respond only with JSON and no extra text."),
+                ChatMessage.FromSystem("You are a website assistant. You must respond only with JSON and no extra text. The user is on the " + currentUrl + " page."),
                 ChatMessage.FromAssistant(
 @"{
   ""cmd"": ""none"",

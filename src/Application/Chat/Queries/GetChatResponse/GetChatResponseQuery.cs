@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using WOF.Domain.Entities;
 using WOF.Application.Common.Exceptions;
 using WOF.Domain.Events;
+using System.Text;
 
 namespace WOF.Application.Chat.Queries.GetResponse;
 
@@ -15,6 +16,7 @@ public record GetChatResponseQuery : IRequest<GetChatResponseVm>
     public List<ChatMessageVm> PreviousMessages { get; set; } = new List<ChatMessageVm> { };
     public ChatMessageVm ChatMessage { get; set; }
     public int? ChatConversationId { get; set; }
+    public string CurrentUrl { get; set; }
 }
 
 public class GetChatResponseQueryHandler : IRequestHandler<GetChatResponseQuery, GetChatResponseVm>
@@ -32,7 +34,7 @@ public class GetChatResponseQueryHandler : IRequestHandler<GetChatResponseQuery,
 
     public async Task<GetChatResponseVm> Handle(GetChatResponseQuery request, CancellationToken cancellationToken)
     {
-        var chatResponseMessage = await _openApiService.GetChatResponse(request.ChatMessage.Message, request.PreviousMessages);
+        var chatResponseMessage = await _openApiService.GetChatResponse(request.ChatMessage.Message, request.PreviousMessages, request.CurrentUrl);
 
         request.PreviousMessages.Add(request.ChatMessage);
         request.PreviousMessages.Add(new ChatMessageVm
@@ -61,11 +63,13 @@ public class GetChatResponseQueryHandler : IRequestHandler<GetChatResponseQuery,
 
         await _context.SaveChangesAsync(cancellationToken);
         var dirty = false;
+        var error = false;
         try
         {
             var chatCommandEntity = new ChatCommand
             {
-                RawReponse = chatResponseMessage
+                RawReponse = chatResponseMessage,
+                CurrentUrl = request.CurrentUrl
             };
             var startIndex = chatResponseMessage.IndexOf('{');
             var endIndex = chatResponseMessage.LastIndexOf('}');
@@ -85,12 +89,22 @@ public class GetChatResponseQueryHandler : IRequestHandler<GetChatResponseQuery,
 
             if (!string.IsNullOrEmpty(chatCommandEntity.SystemResponse))
             {
-                var chatSystemResponseMessage = await _openApiService.GetChatResponseFromSystem(chatCommandEntity.SystemResponse, request.PreviousMessages);
+                var chatSystemResponseMessage = await _openApiService.GetChatResponseFromSystem(chatCommandEntity.SystemResponse, request.PreviousMessages, request.CurrentUrl);
                 startIndex = chatSystemResponseMessage.IndexOf('{');
                 endIndex = chatSystemResponseMessage.LastIndexOf('}');
-                if (startIndex == -1) { startIndex = 0; }
-                if (endIndex == -1) { endIndex = chatSystemResponseMessage.Length - 1; }
-                chatSystemResponseMessage = chatSystemResponseMessage.Substring(startIndex, endIndex - startIndex + 1);
+
+                if (startIndex != -1 && endIndex == -1)
+                {
+                    //partial json response
+                    chatSystemResponseMessage = "I'm sorry, I'm having trouble contacting the server.";
+                }
+                else if (startIndex != -1 && endIndex != -1)
+                {
+                    //json response
+                    chatSystemResponseMessage = chatSystemResponseMessage.Substring(startIndex, endIndex - startIndex + 1);
+                    var openApiChatSystemResponseMessageCommand = JsonConvert.DeserializeObject<OpenApiChatCommand>(chatSystemResponseMessage);
+                    chatSystemResponseMessage = openApiChatSystemResponseMessageCommand.Response;
+                }
 
                 request.PreviousMessages.Add(new ChatMessageVm
                 {
@@ -112,12 +126,14 @@ public class GetChatResponseQueryHandler : IRequestHandler<GetChatResponseQuery,
             }
         }
         catch (Exception e)
-        { 
-            Console.WriteLine(e.ToString() + e.Message.ToString());
+        {
+            chatConversationEntity.Error = FlattenException(e);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         return new GetChatResponseVm
         {
+            CreateNewChat = error,
             ChatConversationId = chatConversationEntity.Id,
             Dirty = dirty,
             ResponseMessage = new ChatMessageVm
@@ -127,5 +143,21 @@ public class GetChatResponseQueryHandler : IRequestHandler<GetChatResponseQuery,
             },
             PreviousMessages = request.PreviousMessages
         };
+    }
+
+
+    private string FlattenException(Exception exception)
+    {
+        var stringBuilder = new StringBuilder();
+
+        while (exception != null)
+        {
+            stringBuilder.AppendLine(exception.Message);
+            stringBuilder.AppendLine(exception.StackTrace);
+
+            exception = exception.InnerException;
+        }
+
+        return stringBuilder.ToString();
     }
 }

@@ -1,4 +1,5 @@
 import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import {
   ProductsClient,
@@ -27,8 +28,13 @@ export class ProductsComponent implements OnInit {
 
   constructor(
     private productsClient: ProductsClient,
-    private modalService: BsModalService
-  ) { }
+    private modalService: BsModalService,
+    private router: Router
+  ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => {
+      return false;
+    };
+  }
 
 
   ngOnInit(): void {

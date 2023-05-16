@@ -1,4 +1,5 @@
 import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import {
   ProductStockClient,
@@ -27,8 +28,13 @@ export class ProductStockComponent implements OnInit {
 
   constructor(
     private productStockClient: ProductStockClient,
-    private modalService: BsModalService
-  ) { }
+    private modalService: BsModalService,
+    private router: Router
+  ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => {
+      return false;
+    };
+  }
 
   ngOnInit(): void {
     this.productStockClient.getProductStocks().subscribe(
