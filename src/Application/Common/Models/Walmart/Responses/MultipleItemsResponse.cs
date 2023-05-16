@@ -1,4 +1,5 @@
-﻿namespace WOF.Infrastructure.Walmart.Responses;
+﻿
+namespace WOF.Application.Common.Models.Walmart.Responses;
 
 public class MultipleItemResponse
 {

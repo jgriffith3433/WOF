@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using WOF.Application.Common.Interfaces;
 using WOF.Application.Common.Security;
 
-namespace WOF.Application.Walmart.Requests;
+namespace WOF.Application.Common.Models.Walmart.Requests;
 
 public class ItemRequest : IWalmartApiRequest
 {

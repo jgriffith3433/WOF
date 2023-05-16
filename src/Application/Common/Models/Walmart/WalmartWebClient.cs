@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 
-namespace WOF.Application.Common.Security;
+namespace WOF.Application.Common.Models.Walmart;
 
 public class WalmartWebClient : WebClient
 {

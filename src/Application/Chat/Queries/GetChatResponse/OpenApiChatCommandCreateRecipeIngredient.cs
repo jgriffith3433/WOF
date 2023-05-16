@@ -3,5 +3,6 @@
 public record OpenApiChatCommandCreateRecipeIngredient : OpenApiChatCommand
 {
     public string Name { get; set; }
-    public string Units { get; set; }
+    public float? Units { get; set; }
+    public string? UnitType { get; set; }
 }

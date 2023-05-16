@@ -27,4 +27,10 @@
       <Folder Include="Products\EventHandlers\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Common\Models\Walmart\WalmartWebClient.cs">
+        <SubType>Component</SubType>
+      </Compile>
+    </ItemGroup>
+
 </Project>

@@ -130,26 +130,32 @@ public class OpenApiService : IOpenApiService
   ""cmd"": ""create-recipe"",
   ""response"": ""Created."",
   ""name"": ""Chicken Pot Pie"",
+  ""serves"": 2,
   ""ingredients"": [
     {
       ""name"": ""chicken breast"",
-      ""units"": ""2 cups cooked"",
+      ""units"": 2,
+      ""unittype"": ""cups""
     },
     {
       ""name"": ""mixed vegetables"",
-      ""units"": ""1 (15 ounce) can"",
+      ""units"": 1,
+      ""unittype"": ""can""
     },
     {
       ""name"": ""condensed cream of chicken soup"",
-      ""units"": ""1 (10.5 ounce) can"",
+      ""units"": 1,
+      ""unittype"": ""can""
     },
     {
       ""name"": ""milk"",
-      ""units"": ""0.5 cups"",
+      ""units"": 0.5,
+      ""unittype"": ""cups""
     },
     {
       ""name"": ""deep-dish frozen pie crusts"",
-      ""units"": ""2 (9 inch)"",
+      ""units"": 2,
+      ""unittype"": ""whole""
     },
   ]
 }"),

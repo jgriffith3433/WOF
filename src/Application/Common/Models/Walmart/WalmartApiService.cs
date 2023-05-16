@@ -1,12 +1,12 @@
 ﻿using WOF.Application.Common.Interfaces;
-using WOF.Application.Walmart.Requests;
-using WOF.Infrastructure.Walmart.Responses;
+using WOF.Application.Common.Models.Walmart.Requests;
+using WOF.Application.Common.Models.Walmart.Responses;
 
-namespace WOF.Infrastructure.Services;
+namespace WOF.Application.Common.Models.Walmart;
 
 public class WalmartApiService : IWalmartApiService
 {
-    public ISearchResponse Search(string query)
+    public SearchResponse Search(string query)
     {
         var searchRequest = new SearchRequest
         {
@@ -16,7 +16,7 @@ public class WalmartApiService : IWalmartApiService
         return searchRequest.GetResponse<SearchResponse>().Result;
     }
 
-    public IItemResponse GetItem(string id)
+    public ItemResponse GetItem(string id)
     {
         var itemRequest = new ItemRequest
         {
@@ -26,7 +26,7 @@ public class WalmartApiService : IWalmartApiService
         return itemRequest.GetResponse<ItemResponse>().Result;
     }
 
-    public IItemResponse GetItem(long? id)
+    public ItemResponse GetItem(long? id)
     {
         return GetItem(id.ToString());
     }

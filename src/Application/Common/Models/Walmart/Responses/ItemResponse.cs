@@ -1,9 +1,9 @@
 ﻿using WOF.Application.Common.Interfaces;
 
-namespace WOF.Infrastructure.Walmart.Responses;
+namespace WOF.Application.Common.Models.Walmart.Responses;
 
 
-public class ItemResponse : IItemResponse
+public class ItemResponse
 {
     public long itemId { get; set; }
     public long parentItemId { get; set; }

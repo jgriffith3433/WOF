@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using WOF.Application.Common.Models.Walmart;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

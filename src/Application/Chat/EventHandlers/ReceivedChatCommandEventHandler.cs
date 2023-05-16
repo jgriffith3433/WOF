@@ -10,6 +10,8 @@ using WOF.Application.Recipes.Commands.CreateRecipes;
 using Org.BouncyCastle.Asn1.Ocsp;
 using WOF.Domain.Entities;
 using WOF.Application.Common.Exceptions;
+using WOF.Domain.Enums;
+using System.Drawing;
 
 namespace WOF.Application.Products.EventHandlers;
 
@@ -110,7 +112,8 @@ public class ReceivedChatCommandEventHandler : INotificationHandler<ReceivedChat
                             Name = createRecipeIngredient.Name,
                             Recipe = recipeEntity,
                             Verified = false,
-                            SizeType = Domain.Enums.SizeType.None
+                            Units = createRecipeIngredient.Units,
+                            SizeType = SizeTypeFromString(createRecipeIngredient.UnitType)
                         };
                         recipeEntity.CalledIngredients.Add(calledIngredient);
                     }
@@ -162,5 +165,52 @@ public class ReceivedChatCommandEventHandler : INotificationHandler<ReceivedChat
         notification.ChatCommand.ChangedData = _context.ChangeTracker.HasChanges();
         notification.ChatCommand.SystemResponse = systemResponse;
         return _context.SaveChangesAsync(cancellationToken);
+    }
+
+    private SizeType SizeTypeFromString(string sizeTypeStr)
+    {
+        switch (sizeTypeStr.ToLower())
+        {
+            case "":
+            case "none":
+                return SizeType.None;
+            case "bulk":
+                return SizeType.Bulk;
+            case "ounce":
+            case "ounces":
+                return SizeType.Ounce;
+            case "teaspoon":
+            case "teaspoons":
+                return SizeType.Teaspoon;
+            case "tablespoon":
+            case "tablespoons":
+                return SizeType.Tablespoon;
+            case "pound":
+            case "pounds":
+                return SizeType.Pound;
+            case "cup":
+            case "cups":
+                return SizeType.Cup;
+            case "clove":
+            case "cloves":
+                return SizeType.Cloves;
+            case "can":
+            case "cans":
+                return SizeType.Can;
+            case "whole":
+            case "wholes":
+                return SizeType.Whole;
+            case "package":
+            case "packages":
+                return SizeType.Package;
+            case "bar":
+            case "bars":
+                return SizeType.Bar;
+            case "bun":
+            case "buns":
+                return SizeType.Bun;
+            default:
+                return SizeType.None;
+        }
     }
 }
