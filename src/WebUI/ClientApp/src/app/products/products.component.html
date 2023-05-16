@@ -14,7 +14,7 @@
       <th>Id</th>
       <th>Name</th>
       <th>Size</th>
-      <th>Size Type</th>
+      <th>Unit Type</th>
       <th>Price</th>
       <th>Walmart Size</th>
       <th>Walmart Link</th>
@@ -44,12 +44,12 @@
       </td>
       <td>
         <div class="form-group">
-          <select *ngIf="product == selectedProductSizeType" style="height: 120px;" id="{{ 'productSizeType' + i }}" class="form-control item-input-control" [(ngModel)]="product.sizeType" (change)="updateProductSizeType(product)">
-            <option [ngValue]="sizeType.value" *ngFor="let sizeType of sizeTypes">{{ sizeType.name }}</option>
+          <select *ngIf="product == selectedProductUnitType" style="height: 120px;" id="{{ 'productUnitType' + i }}" class="form-control item-input-control" [(ngModel)]="product.unitType" (change)="updateProductUnitType(product)">
+            <option [ngValue]="unitType.value" *ngFor="let unitType of unitTypes">{{ unitType.name }}</option>
           </select>
         </div>
-        <div *ngIf="product != selectedProductSizeType" (click)="editProductSizeType(product, 'productSizeType' + i)" class="item-name form-control item-input-control">
-          <span>{{ getSizeTypeNameFromSizeTypeValue(product.sizeType) }}</span>
+        <div *ngIf="product != selectedProductUnitType" (click)="editProductUnitType(product, 'productUnitType' + i)" class="item-name form-control item-input-control">
+          <span>{{ getUnitTypeNameFromUnitTypeValue(product.unitType) }}</span>
         </div>
       </td>
       <td>{{ product.price }}</td>

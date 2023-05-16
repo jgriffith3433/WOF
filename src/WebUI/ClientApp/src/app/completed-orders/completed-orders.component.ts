@@ -5,7 +5,7 @@ import {
   CompletedOrdersClient,
   CompletedOrderDto,
   CompletedOrderProductDto,
-  SizeTypeDto,
+  UnitTypeDto,
   CreateCompletedOrderCommand,
   UpdateCompletedOrderCommand,
   CreateCompletedOrderProductCommand,
@@ -20,7 +20,7 @@ import {
 export class CompletedOrdersComponent implements OnInit {
   debug = false;
   completedOrders: CompletedOrderDto[];
-  sizeTypes: SizeTypeDto[];
+  unitTypes: UnitTypeDto[];
   selectedCompletedOrder: CompletedOrderDto;
   selectedCompletedOrderProduct: CompletedOrderProductDto;
   newCompletedOrderEditor: any = {};

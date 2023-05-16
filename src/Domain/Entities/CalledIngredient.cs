@@ -8,7 +8,7 @@ public class CalledIngredient : BaseAuditableEntity
 
     public bool Verified { get; set; }
 
-    public SizeType SizeType { get; set; }
+    public UnitType UnitType { get; set; }
 
     public ProductStock? ProductStock { get; set; } = null!;
 

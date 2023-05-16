@@ -11,7 +11,7 @@ public record UpdateCalledIngredientDetailsCommand : IRequest<CalledIngredientDe
 {
     public int Id { get; init; }
 
-    public SizeType SizeType { get; init; }
+    public UnitType UnitType { get; init; }
 
     public int? ProductStockId { get; init; }
 
@@ -43,7 +43,7 @@ public class UpdateCalledIngredientDetailCommandHandler : IRequestHandler<Update
 
         entity.Name = request.Name;
         entity.Units = request.Units;
-        entity.SizeType = request.SizeType;
+        entity.UnitType = request.UnitType;
         if (request.ProductStockId != null)
         {
             entity.ProductStock = _context.ProductStocks.FirstOrDefault(ps => ps.Id == request.ProductStockId);

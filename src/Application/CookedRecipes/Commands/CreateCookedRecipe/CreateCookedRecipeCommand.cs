@@ -27,7 +27,7 @@ public class CreateCookedRecipeCommandHandler : IRequestHandler<CreateCookedReci
     public async Task<CookedRecipeDto> Handle(CreateCookedRecipeCommand request, CancellationToken cancellationToken)
     {
         var entity = new CookedRecipe();
-        var recipeEntity = await _context.Recipes.Include(p => p.CalledIngredients)
+        var recipeEntity = await _context.Recipes.Include(p => p.CalledIngredients).ThenInclude(ci => ci.ProductStock)
             .Where(r => r.Id == request.RecipeId)
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -43,7 +43,7 @@ public class CreateCookedRecipeCommandHandler : IRequestHandler<CreateCookedReci
                 CookedRecipe = entity,
                 CalledIngredient = calledIngredient,
                 Name = calledIngredient.Name,
-                SizeType = calledIngredient.SizeType,
+                UnitType = calledIngredient.UnitType,
                 Units = calledIngredient.Units.Value,
                 ProductStock = calledIngredient.ProductStock
             };

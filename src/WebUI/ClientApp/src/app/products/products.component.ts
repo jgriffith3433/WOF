@@ -6,7 +6,7 @@ import {
   ProductDto,
   CreateProductCommand,
   UpdateProductCommand,
-  SizeTypeDto
+  UnitTypeDto
 } from '../web-api-client';
 
 @Component({
@@ -16,10 +16,10 @@ import {
 export class ProductsComponent implements OnInit {
   debug: boolean = false;
   public products: ProductDto[];
-  sizeTypes: SizeTypeDto[];
+  unitTypes: UnitTypeDto[];
   selectedProductName: ProductDto;
   selectedProductSize: ProductDto;
-  selectedProductSizeType: ProductDto;
+  selectedProductUnitType: ProductDto;
   productEditor: any = {};
   newProductEditor: any = {};
   productModalRef: BsModalRef;
@@ -41,7 +41,7 @@ export class ProductsComponent implements OnInit {
     this.productsClient.getProducts().subscribe(
       result => {
         this.products = result.products;
-        this.sizeTypes = result.sizeTypes;
+        this.unitTypes = result.unitTypes;
       },
       error => console.error(error)
     );
@@ -58,10 +58,10 @@ export class ProductsComponent implements OnInit {
     this.newProductEditor = {};
   }
 
-  getSizeTypeNameFromSizeTypeValue(sizeTypeValue: number): string {
-    for (var sizeType of this.sizeTypes) {
-      if (sizeType.value == sizeTypeValue) {
-        return sizeType.name;
+  getUnitTypeNameFromUnitTypeValue(unitTypeValue: number): string {
+    for (var unitType of this.unitTypes) {
+      if (unitType.value == unitTypeValue) {
+        return unitType.name;
       }
     }
     return "Unknown";
@@ -96,8 +96,8 @@ export class ProductsComponent implements OnInit {
     setTimeout(() => document.getElementById(inputId).focus(), 100);
   }
 
-  editProductSizeType(product: ProductDto, inputId: string): void {
-    this.selectedProductSizeType = product;
+  editProductUnitType(product: ProductDto, inputId: string): void {
+    this.selectedProductUnitType = product;
     setTimeout(() => {
       document.getElementById(inputId).focus();
       (<HTMLSelectElement>document.getElementById(inputId)).size = (<HTMLSelectElement>document.getElementById(inputId)).length;
@@ -125,9 +125,9 @@ export class ProductsComponent implements OnInit {
     );
   }
 
-  updateProductSizeType(product: ProductDto, pressedEnter: boolean = false): void {
+  updateProductUnitType(product: ProductDto, pressedEnter: boolean = false): void {
     const updateProductCommand = product as UpdateProductCommand;
-    this.productsClient.updateSizeType(product.id, updateProductCommand).subscribe(
+    this.productsClient.updateUnitType(product.id, updateProductCommand).subscribe(
       result => {
         for (var i = this.products.length - 1; i >= 0; i--) {
           if (this.products[i].id == result.id) {
@@ -135,7 +135,7 @@ export class ProductsComponent implements OnInit {
             break;
           }
         }
-        this.selectedProductSizeType = null;
+        this.selectedProductUnitType = null;
       },
       error => console.error(error)
     );

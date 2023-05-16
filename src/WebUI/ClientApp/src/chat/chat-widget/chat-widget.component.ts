@@ -152,7 +152,7 @@ export class ChatWidgetComponent implements OnInit {
             }
             this.router.navigateByUrl(this.router.url);
             setTimeout(() => {
-              this.addMessage(this.operator, 'How can I help you manage your ' + this.getCurrentPageName(), 'received')
+              this.addMessage(this.operator, 'How can I help you manage your ' + this.getCurrentPageName(), 'received');
             }, 500);
           }, 2000);
         }
@@ -165,7 +165,12 @@ export class ChatWidgetComponent implements OnInit {
           this.router.navigateByUrl(this.router.url);
         }
       },
-      error => console.error(error)
+      error => {
+        console.error(error);
+        setTimeout(() => {
+          this.addMessage(this.operator, 'An error occured, are you logged in?', 'received');
+        }, 500);
+      }
     );
     this.addMessage(this.client, message, 'sent')
   }

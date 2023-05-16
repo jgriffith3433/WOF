@@ -38,8 +38,8 @@ public class ProductsController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpPut("UpdateSizeType/{id}")]
-    public async Task<ActionResult<ProductDto>> UpdateSizeType(int id, UpdateProductSizeTypeCommand command)
+    [HttpPut("UpdateUnitType/{id}")]
+    public async Task<ActionResult<ProductDto>> UpdateUnitType(int id, UpdateProductUnitTypeCommand command)
     {
         return await Mediator.Send(command);
     }

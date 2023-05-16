@@ -1,6 +1,6 @@
 ﻿namespace WOF.Application.Products;
 
-public class SizeTypeDto
+public class UnitTypeDto
 {
     public int Value { get; set; }
 

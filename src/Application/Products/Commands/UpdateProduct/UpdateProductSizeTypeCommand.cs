@@ -9,25 +9,25 @@ using WOF.Domain.Enums;
 
 namespace WOF.Application.Products.Commands.UpdateProduct;
 
-public record UpdateProductSizeTypeCommand : IRequest<ProductDto>
+public record UpdateProductUnitTypeCommand : IRequest<ProductDto>
 {
     public int Id { get; init; }
 
-    public int SizeType { get; init; }
+    public int UnitType { get; init; }
 }
 
-public class UpdateProductSizeTypeCommandHandler : IRequestHandler<UpdateProductSizeTypeCommand, ProductDto>
+public class UpdateProductUnitTypeCommandHandler : IRequestHandler<UpdateProductUnitTypeCommand, ProductDto>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public UpdateProductSizeTypeCommandHandler(IApplicationDbContext context, IMapper mapper)
+    public UpdateProductUnitTypeCommandHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
     }
 
-    public async Task<ProductDto> Handle(UpdateProductSizeTypeCommand request, CancellationToken cancellationToken)
+    public async Task<ProductDto> Handle(UpdateProductUnitTypeCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.Products.Include(p => p.ProductStock).FirstOrDefaultAsync(ps => ps.Id == request.Id, cancellationToken);
 
@@ -36,7 +36,7 @@ public class UpdateProductSizeTypeCommandHandler : IRequestHandler<UpdateProduct
             throw new NotFoundException(nameof(Product), request.Id);
         }
 
-        entity.SizeType = (SizeType)request.SizeType;
+        entity.UnitType = (UnitType)request.UnitType;
 
         await _context.SaveChangesAsync(cancellationToken);
         return _mapper.Map<ProductDto>(entity);

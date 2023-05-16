@@ -1216,12 +1216,12 @@
         ]
       }
     },
-    "/api/Products/UpdateSizeType/{id}": {
+    "/api/Products/UpdateUnitType/{id}": {
       "put": {
         "tags": [
           "Products"
         ],
-        "operationId": "Products_UpdateSizeType",
+        "operationId": "Products_UpdateUnitType",
         "parameters": [
           {
             "name": "id",
@@ -1239,7 +1239,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateProductSizeTypeCommand"
+                "$ref": "#/components/schemas/UpdateProductUnitTypeCommand"
               }
             }
           },
@@ -2286,7 +2286,7 @@
             "type": "number",
             "format": "float"
           },
-          "sizeType": {
+          "unitType": {
             "type": "integer",
             "format": "int32"
           }
@@ -2373,8 +2373,8 @@
               "verified": {
                 "type": "boolean"
               },
-              "sizeType": {
-                "$ref": "#/components/schemas/SizeType"
+              "unitType": {
+                "$ref": "#/components/schemas/UnitType"
               },
               "completedOrderProducts": {
                 "type": "array",
@@ -2389,7 +2389,7 @@
           }
         ]
       },
-      "SizeType": {
+      "UnitType": {
         "type": "integer",
         "description": "",
         "x-enumNames": [
@@ -2565,7 +2565,7 @@
             "format": "float",
             "nullable": true
           },
-          "sizeType": {
+          "unitType": {
             "type": "integer",
             "format": "int32"
           },
@@ -2621,8 +2621,8 @@
             "type": "integer",
             "format": "int32"
           },
-          "sizeType": {
-            "$ref": "#/components/schemas/SizeType"
+          "unitType": {
+            "$ref": "#/components/schemas/UnitType"
           },
           "productStockId": {
             "type": "integer",
@@ -2824,7 +2824,7 @@
           "verified": {
             "type": "boolean"
           },
-          "sizeType": {
+          "unitType": {
             "type": "integer",
             "format": "int32"
           },
@@ -2934,8 +2934,8 @@
           "name": {
             "type": "string"
           },
-          "sizeType": {
-            "$ref": "#/components/schemas/SizeType"
+          "unitType": {
+            "$ref": "#/components/schemas/UnitType"
           },
           "units": {
             "type": "number",
@@ -3025,8 +3025,8 @@
             "type": "integer",
             "format": "int32"
           },
-          "sizeType": {
-            "$ref": "#/components/schemas/SizeType"
+          "unitType": {
+            "$ref": "#/components/schemas/UnitType"
           },
           "productStockId": {
             "type": "integer",
@@ -3048,10 +3048,10 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "sizeTypes": {
+          "unitTypes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SizeTypeDto"
+              "$ref": "#/components/schemas/UnitTypeDto"
             }
           },
           "cookedRecipes": {
@@ -3068,7 +3068,7 @@
           }
         }
       },
-      "SizeTypeDto": {
+      "UnitTypeDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3162,10 +3162,10 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "sizeTypes": {
+          "unitTypes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SizeTypeDto"
+              "$ref": "#/components/schemas/UnitTypeDto"
             }
           },
           "products": {
@@ -3213,7 +3213,7 @@
           }
         }
       },
-      "UpdateProductSizeTypeCommand": {
+      "UpdateProductUnitTypeCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3221,7 +3221,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "sizeType": {
+          "unitType": {
             "type": "integer",
             "format": "int32"
           }
@@ -3245,10 +3245,10 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "sizeTypes": {
+          "unitTypes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SizeTypeDto"
+              "$ref": "#/components/schemas/UnitTypeDto"
             }
           },
           "productStocks": {
@@ -3335,10 +3335,10 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "sizeTypes": {
+          "unitTypes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SizeTypeDto"
+              "$ref": "#/components/schemas/UnitTypeDto"
             }
           },
           "recipes": {

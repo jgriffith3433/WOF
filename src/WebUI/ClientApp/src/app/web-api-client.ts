@@ -1577,7 +1577,7 @@ export interface IProductsClient {
     create(command: CreateProductCommand): Observable<ProductDto>;
     update(id: number | undefined, command: UpdateProductCommand): Observable<ProductDto>;
     updateName(id: number, command: UpdateProductNameCommand): Observable<ProductDto>;
-    updateSizeType(id: number, command: UpdateProductSizeTypeCommand): Observable<ProductDto>;
+    updateUnitType(id: number, command: UpdateProductUnitTypeCommand): Observable<ProductDto>;
     updateSize(id: number, command: UpdateProductSizeCommand): Observable<ProductDto>;
     getProductDetails(id: number | undefined): Observable<ProductDto>;
     delete(id: number): Observable<FileResponse>;
@@ -1807,8 +1807,8 @@ export class ProductsClient implements IProductsClient {
         return _observableOf(null as any);
     }
 
-    updateSizeType(id: number, command: UpdateProductSizeTypeCommand): Observable<ProductDto> {
-        let url_ = this.baseUrl + "/api/Products/UpdateSizeType/{id}";
+    updateUnitType(id: number, command: UpdateProductUnitTypeCommand): Observable<ProductDto> {
+        let url_ = this.baseUrl + "/api/Products/UpdateUnitType/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -1827,11 +1827,11 @@ export class ProductsClient implements IProductsClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateSizeType(response_);
+            return this.processUpdateUnitType(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdateSizeType(response_ as any);
+                    return this.processUpdateUnitType(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<ProductDto>;
                 }
@@ -1840,7 +1840,7 @@ export class ProductsClient implements IProductsClient {
         }));
     }
 
-    protected processUpdateSizeType(response: HttpResponseBase): Observable<ProductDto> {
+    protected processUpdateUnitType(response: HttpResponseBase): Observable<ProductDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -3380,7 +3380,7 @@ export class CalledIngredientDto implements ICalledIngredientDto {
     name?: string;
     productStock?: ProductStock;
     units?: number;
-    sizeType?: number;
+    unitType?: number;
 
     constructor(data?: ICalledIngredientDto) {
         if (data) {
@@ -3397,7 +3397,7 @@ export class CalledIngredientDto implements ICalledIngredientDto {
             this.name = _data["name"];
             this.productStock = _data["productStock"] ? ProductStock.fromJS(_data["productStock"]) : <any>undefined;
             this.units = _data["units"];
-            this.sizeType = _data["sizeType"];
+            this.unitType = _data["unitType"];
         }
     }
 
@@ -3414,7 +3414,7 @@ export class CalledIngredientDto implements ICalledIngredientDto {
         data["name"] = this.name;
         data["productStock"] = this.productStock ? this.productStock.toJSON() : <any>undefined;
         data["units"] = this.units;
-        data["sizeType"] = this.sizeType;
+        data["unitType"] = this.unitType;
         return data;
     }
 }
@@ -3424,7 +3424,7 @@ export interface ICalledIngredientDto {
     name?: string;
     productStock?: ProductStock;
     units?: number;
-    sizeType?: number;
+    unitType?: number;
 }
 
 export abstract class BaseEntity implements IBaseEntity {
@@ -3572,7 +3572,7 @@ export class Product extends BaseAuditableEntity implements IProduct {
     size?: number;
     price?: number;
     verified?: boolean;
-    sizeType?: SizeType;
+    unitType?: UnitType;
     completedOrderProducts?: CompletedOrderProduct[];
     productStock?: ProductStock;
 
@@ -3593,7 +3593,7 @@ export class Product extends BaseAuditableEntity implements IProduct {
             this.size = _data["size"];
             this.price = _data["price"];
             this.verified = _data["verified"];
-            this.sizeType = _data["sizeType"];
+            this.unitType = _data["unitType"];
             if (Array.isArray(_data["completedOrderProducts"])) {
                 this.completedOrderProducts = [] as any;
                 for (let item of _data["completedOrderProducts"])
@@ -3622,7 +3622,7 @@ export class Product extends BaseAuditableEntity implements IProduct {
         data["size"] = this.size;
         data["price"] = this.price;
         data["verified"] = this.verified;
-        data["sizeType"] = this.sizeType;
+        data["unitType"] = this.unitType;
         if (Array.isArray(this.completedOrderProducts)) {
             data["completedOrderProducts"] = [];
             for (let item of this.completedOrderProducts)
@@ -3645,12 +3645,12 @@ export interface IProduct extends IBaseAuditableEntity {
     size?: number;
     price?: number;
     verified?: boolean;
-    sizeType?: SizeType;
+    unitType?: UnitType;
     completedOrderProducts?: CompletedOrderProduct[];
     productStock?: ProductStock;
 }
 
-export enum SizeType {
+export enum UnitType {
     None = 0,
     Bulk = 1,
     Ounce = 2,
@@ -3805,7 +3805,7 @@ export class CalledIngredientDetailsVm implements ICalledIngredientDetailsVm {
     name?: string;
     productStock?: ProductStock;
     units?: number | undefined;
-    sizeType?: number;
+    unitType?: number;
     productStockId?: number;
     productStockSearchItems?: ProductStock[];
 
@@ -3824,7 +3824,7 @@ export class CalledIngredientDetailsVm implements ICalledIngredientDetailsVm {
             this.name = _data["name"];
             this.productStock = _data["productStock"] ? ProductStock.fromJS(_data["productStock"]) : <any>undefined;
             this.units = _data["units"];
-            this.sizeType = _data["sizeType"];
+            this.unitType = _data["unitType"];
             this.productStockId = _data["productStockId"];
             if (Array.isArray(_data["productStockSearchItems"])) {
                 this.productStockSearchItems = [] as any;
@@ -3847,7 +3847,7 @@ export class CalledIngredientDetailsVm implements ICalledIngredientDetailsVm {
         data["name"] = this.name;
         data["productStock"] = this.productStock ? this.productStock.toJSON() : <any>undefined;
         data["units"] = this.units;
-        data["sizeType"] = this.sizeType;
+        data["unitType"] = this.unitType;
         data["productStockId"] = this.productStockId;
         if (Array.isArray(this.productStockSearchItems)) {
             data["productStockSearchItems"] = [];
@@ -3863,7 +3863,7 @@ export interface ICalledIngredientDetailsVm {
     name?: string;
     productStock?: ProductStock;
     units?: number | undefined;
-    sizeType?: number;
+    unitType?: number;
     productStockId?: number;
     productStockSearchItems?: ProductStock[];
 }
@@ -3954,7 +3954,7 @@ export interface IUpdateCalledIngredientCommand {
 
 export class UpdateCalledIngredientDetailsCommand implements IUpdateCalledIngredientDetailsCommand {
     id?: number;
-    sizeType?: SizeType;
+    unitType?: UnitType;
     productStockId?: number | undefined;
     name?: string | undefined;
     units?: number;
@@ -3971,7 +3971,7 @@ export class UpdateCalledIngredientDetailsCommand implements IUpdateCalledIngred
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.sizeType = _data["sizeType"];
+            this.unitType = _data["unitType"];
             this.productStockId = _data["productStockId"];
             this.name = _data["name"];
             this.units = _data["units"];
@@ -3988,7 +3988,7 @@ export class UpdateCalledIngredientDetailsCommand implements IUpdateCalledIngred
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["sizeType"] = this.sizeType;
+        data["unitType"] = this.unitType;
         data["productStockId"] = this.productStockId;
         data["name"] = this.name;
         data["units"] = this.units;
@@ -3998,7 +3998,7 @@ export class UpdateCalledIngredientDetailsCommand implements IUpdateCalledIngred
 
 export interface IUpdateCalledIngredientDetailsCommand {
     id?: number;
-    sizeType?: SizeType;
+    unitType?: UnitType;
     productStockId?: number | undefined;
     name?: string | undefined;
     units?: number;
@@ -4336,7 +4336,7 @@ export class ProductDto implements IProductDto {
     size?: number;
     price?: number;
     verified?: boolean;
-    sizeType?: number;
+    unitType?: number;
     productStockId?: number | undefined;
 
     constructor(data?: IProductDto) {
@@ -4361,7 +4361,7 @@ export class ProductDto implements IProductDto {
             this.size = _data["size"];
             this.price = _data["price"];
             this.verified = _data["verified"];
-            this.sizeType = _data["sizeType"];
+            this.unitType = _data["unitType"];
             this.productStockId = _data["productStockId"];
         }
     }
@@ -4386,7 +4386,7 @@ export class ProductDto implements IProductDto {
         data["size"] = this.size;
         data["price"] = this.price;
         data["verified"] = this.verified;
-        data["sizeType"] = this.sizeType;
+        data["unitType"] = this.unitType;
         data["productStockId"] = this.productStockId;
         return data;
     }
@@ -4404,7 +4404,7 @@ export interface IProductDto {
     size?: number;
     price?: number;
     verified?: boolean;
-    sizeType?: number;
+    unitType?: number;
     productStockId?: number | undefined;
 }
 
@@ -4583,7 +4583,7 @@ export class CookedRecipeCalledIngredientDetailsVm implements ICookedRecipeCalle
     productStock?: ProductStockDto | undefined;
     productStockId?: number | undefined;
     name?: string;
-    sizeType?: SizeType;
+    unitType?: UnitType;
     units?: number;
     productStockSearchItems?: ProductStock[];
 
@@ -4604,7 +4604,7 @@ export class CookedRecipeCalledIngredientDetailsVm implements ICookedRecipeCalle
             this.productStock = _data["productStock"] ? ProductStockDto.fromJS(_data["productStock"]) : <any>undefined;
             this.productStockId = _data["productStockId"];
             this.name = _data["name"];
-            this.sizeType = _data["sizeType"];
+            this.unitType = _data["unitType"];
             this.units = _data["units"];
             if (Array.isArray(_data["productStockSearchItems"])) {
                 this.productStockSearchItems = [] as any;
@@ -4629,7 +4629,7 @@ export class CookedRecipeCalledIngredientDetailsVm implements ICookedRecipeCalle
         data["productStock"] = this.productStock ? this.productStock.toJSON() : <any>undefined;
         data["productStockId"] = this.productStockId;
         data["name"] = this.name;
-        data["sizeType"] = this.sizeType;
+        data["unitType"] = this.unitType;
         data["units"] = this.units;
         if (Array.isArray(this.productStockSearchItems)) {
             data["productStockSearchItems"] = [];
@@ -4647,7 +4647,7 @@ export interface ICookedRecipeCalledIngredientDetailsVm {
     productStock?: ProductStockDto | undefined;
     productStockId?: number | undefined;
     name?: string;
-    sizeType?: SizeType;
+    unitType?: UnitType;
     units?: number;
     productStockSearchItems?: ProductStock[];
 }
@@ -4798,7 +4798,7 @@ export interface IUpdateCookedRecipeCalledIngredientCommand {
 
 export class UpdateCookedRecipeCalledIngredientDetailsCommand implements IUpdateCookedRecipeCalledIngredientDetailsCommand {
     id?: number;
-    sizeType?: SizeType;
+    unitType?: UnitType;
     productStockId?: number | undefined;
     name?: string | undefined;
     units?: number | undefined;
@@ -4815,7 +4815,7 @@ export class UpdateCookedRecipeCalledIngredientDetailsCommand implements IUpdate
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.sizeType = _data["sizeType"];
+            this.unitType = _data["unitType"];
             this.productStockId = _data["productStockId"];
             this.name = _data["name"];
             this.units = _data["units"];
@@ -4832,7 +4832,7 @@ export class UpdateCookedRecipeCalledIngredientDetailsCommand implements IUpdate
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["sizeType"] = this.sizeType;
+        data["unitType"] = this.unitType;
         data["productStockId"] = this.productStockId;
         data["name"] = this.name;
         data["units"] = this.units;
@@ -4842,14 +4842,14 @@ export class UpdateCookedRecipeCalledIngredientDetailsCommand implements IUpdate
 
 export interface IUpdateCookedRecipeCalledIngredientDetailsCommand {
     id?: number;
-    sizeType?: SizeType;
+    unitType?: UnitType;
     productStockId?: number | undefined;
     name?: string | undefined;
     units?: number | undefined;
 }
 
 export class CookedRecipesVm implements ICookedRecipesVm {
-    sizeTypes?: SizeTypeDto[];
+    unitTypes?: UnitTypeDto[];
     cookedRecipes?: CookedRecipeDto[];
     recipesOptions?: RecipesOptionVm[];
 
@@ -4864,10 +4864,10 @@ export class CookedRecipesVm implements ICookedRecipesVm {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["sizeTypes"])) {
-                this.sizeTypes = [] as any;
-                for (let item of _data["sizeTypes"])
-                    this.sizeTypes!.push(SizeTypeDto.fromJS(item));
+            if (Array.isArray(_data["unitTypes"])) {
+                this.unitTypes = [] as any;
+                for (let item of _data["unitTypes"])
+                    this.unitTypes!.push(UnitTypeDto.fromJS(item));
             }
             if (Array.isArray(_data["cookedRecipes"])) {
                 this.cookedRecipes = [] as any;
@@ -4891,10 +4891,10 @@ export class CookedRecipesVm implements ICookedRecipesVm {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.sizeTypes)) {
-            data["sizeTypes"] = [];
-            for (let item of this.sizeTypes)
-                data["sizeTypes"].push(item.toJSON());
+        if (Array.isArray(this.unitTypes)) {
+            data["unitTypes"] = [];
+            for (let item of this.unitTypes)
+                data["unitTypes"].push(item.toJSON());
         }
         if (Array.isArray(this.cookedRecipes)) {
             data["cookedRecipes"] = [];
@@ -4911,16 +4911,16 @@ export class CookedRecipesVm implements ICookedRecipesVm {
 }
 
 export interface ICookedRecipesVm {
-    sizeTypes?: SizeTypeDto[];
+    unitTypes?: UnitTypeDto[];
     cookedRecipes?: CookedRecipeDto[];
     recipesOptions?: RecipesOptionVm[];
 }
 
-export class SizeTypeDto implements ISizeTypeDto {
+export class UnitTypeDto implements IUnitTypeDto {
     value?: number;
     name?: string | undefined;
 
-    constructor(data?: ISizeTypeDto) {
+    constructor(data?: IUnitTypeDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -4936,9 +4936,9 @@ export class SizeTypeDto implements ISizeTypeDto {
         }
     }
 
-    static fromJS(data: any): SizeTypeDto {
+    static fromJS(data: any): UnitTypeDto {
         data = typeof data === 'object' ? data : {};
-        let result = new SizeTypeDto();
+        let result = new UnitTypeDto();
         result.init(data);
         return result;
     }
@@ -4951,7 +4951,7 @@ export class SizeTypeDto implements ISizeTypeDto {
     }
 }
 
-export interface ISizeTypeDto {
+export interface IUnitTypeDto {
     value?: number;
     name?: string | undefined;
 }
@@ -5149,7 +5149,7 @@ export interface ICreateCookedRecipeCommand {
 }
 
 export class GetProductsVm implements IGetProductsVm {
-    sizeTypes?: SizeTypeDto[];
+    unitTypes?: UnitTypeDto[];
     products?: ProductDto[];
 
     constructor(data?: IGetProductsVm) {
@@ -5163,10 +5163,10 @@ export class GetProductsVm implements IGetProductsVm {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["sizeTypes"])) {
-                this.sizeTypes = [] as any;
-                for (let item of _data["sizeTypes"])
-                    this.sizeTypes!.push(SizeTypeDto.fromJS(item));
+            if (Array.isArray(_data["unitTypes"])) {
+                this.unitTypes = [] as any;
+                for (let item of _data["unitTypes"])
+                    this.unitTypes!.push(UnitTypeDto.fromJS(item));
             }
             if (Array.isArray(_data["products"])) {
                 this.products = [] as any;
@@ -5185,10 +5185,10 @@ export class GetProductsVm implements IGetProductsVm {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.sizeTypes)) {
-            data["sizeTypes"] = [];
-            for (let item of this.sizeTypes)
-                data["sizeTypes"].push(item.toJSON());
+        if (Array.isArray(this.unitTypes)) {
+            data["unitTypes"] = [];
+            for (let item of this.unitTypes)
+                data["unitTypes"].push(item.toJSON());
         }
         if (Array.isArray(this.products)) {
             data["products"] = [];
@@ -5200,7 +5200,7 @@ export class GetProductsVm implements IGetProductsVm {
 }
 
 export interface IGetProductsVm {
-    sizeTypes?: SizeTypeDto[];
+    unitTypes?: UnitTypeDto[];
     products?: ProductDto[];
 }
 
@@ -5320,11 +5320,11 @@ export interface IUpdateProductNameCommand {
     name?: string;
 }
 
-export class UpdateProductSizeTypeCommand implements IUpdateProductSizeTypeCommand {
+export class UpdateProductUnitTypeCommand implements IUpdateProductUnitTypeCommand {
     id?: number;
-    sizeType?: number;
+    unitType?: number;
 
-    constructor(data?: IUpdateProductSizeTypeCommand) {
+    constructor(data?: IUpdateProductUnitTypeCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -5336,13 +5336,13 @@ export class UpdateProductSizeTypeCommand implements IUpdateProductSizeTypeComma
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.sizeType = _data["sizeType"];
+            this.unitType = _data["unitType"];
         }
     }
 
-    static fromJS(data: any): UpdateProductSizeTypeCommand {
+    static fromJS(data: any): UpdateProductUnitTypeCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateProductSizeTypeCommand();
+        let result = new UpdateProductUnitTypeCommand();
         result.init(data);
         return result;
     }
@@ -5350,14 +5350,14 @@ export class UpdateProductSizeTypeCommand implements IUpdateProductSizeTypeComma
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["sizeType"] = this.sizeType;
+        data["unitType"] = this.unitType;
         return data;
     }
 }
 
-export interface IUpdateProductSizeTypeCommand {
+export interface IUpdateProductUnitTypeCommand {
     id?: number;
-    sizeType?: number;
+    unitType?: number;
 }
 
 export class UpdateProductSizeCommand implements IUpdateProductSizeCommand {
@@ -5401,7 +5401,7 @@ export interface IUpdateProductSizeCommand {
 }
 
 export class GetProductStocksVm implements IGetProductStocksVm {
-    sizeTypes?: SizeTypeDto[];
+    unitTypes?: UnitTypeDto[];
     productStocks?: ProductStockDto[];
 
     constructor(data?: IGetProductStocksVm) {
@@ -5415,10 +5415,10 @@ export class GetProductStocksVm implements IGetProductStocksVm {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["sizeTypes"])) {
-                this.sizeTypes = [] as any;
-                for (let item of _data["sizeTypes"])
-                    this.sizeTypes!.push(SizeTypeDto.fromJS(item));
+            if (Array.isArray(_data["unitTypes"])) {
+                this.unitTypes = [] as any;
+                for (let item of _data["unitTypes"])
+                    this.unitTypes!.push(UnitTypeDto.fromJS(item));
             }
             if (Array.isArray(_data["productStocks"])) {
                 this.productStocks = [] as any;
@@ -5437,10 +5437,10 @@ export class GetProductStocksVm implements IGetProductStocksVm {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.sizeTypes)) {
-            data["sizeTypes"] = [];
-            for (let item of this.sizeTypes)
-                data["sizeTypes"].push(item.toJSON());
+        if (Array.isArray(this.unitTypes)) {
+            data["unitTypes"] = [];
+            for (let item of this.unitTypes)
+                data["unitTypes"].push(item.toJSON());
         }
         if (Array.isArray(this.productStocks)) {
             data["productStocks"] = [];
@@ -5452,7 +5452,7 @@ export class GetProductStocksVm implements IGetProductStocksVm {
 }
 
 export interface IGetProductStocksVm {
-    sizeTypes?: SizeTypeDto[];
+    unitTypes?: UnitTypeDto[];
     productStocks?: ProductStockDto[];
 }
 
@@ -5641,7 +5641,7 @@ export interface ICreateProductStockCommand {
 }
 
 export class RecipesVm implements IRecipesVm {
-    sizeTypes?: SizeTypeDto[];
+    unitTypes?: UnitTypeDto[];
     recipes?: RecipeDto[];
 
     constructor(data?: IRecipesVm) {
@@ -5655,10 +5655,10 @@ export class RecipesVm implements IRecipesVm {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["sizeTypes"])) {
-                this.sizeTypes = [] as any;
-                for (let item of _data["sizeTypes"])
-                    this.sizeTypes!.push(SizeTypeDto.fromJS(item));
+            if (Array.isArray(_data["unitTypes"])) {
+                this.unitTypes = [] as any;
+                for (let item of _data["unitTypes"])
+                    this.unitTypes!.push(UnitTypeDto.fromJS(item));
             }
             if (Array.isArray(_data["recipes"])) {
                 this.recipes = [] as any;
@@ -5677,10 +5677,10 @@ export class RecipesVm implements IRecipesVm {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.sizeTypes)) {
-            data["sizeTypes"] = [];
-            for (let item of this.sizeTypes)
-                data["sizeTypes"].push(item.toJSON());
+        if (Array.isArray(this.unitTypes)) {
+            data["unitTypes"] = [];
+            for (let item of this.unitTypes)
+                data["unitTypes"].push(item.toJSON());
         }
         if (Array.isArray(this.recipes)) {
             data["recipes"] = [];
@@ -5692,7 +5692,7 @@ export class RecipesVm implements IRecipesVm {
 }
 
 export interface IRecipesVm {
-    sizeTypes?: SizeTypeDto[];
+    unitTypes?: UnitTypeDto[];
     recipes?: RecipeDto[];
 }
 

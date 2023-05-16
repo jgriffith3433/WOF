@@ -15,7 +15,7 @@ public class CookedRecipeCalledIngredientDetailsVm : IMapFrom<CookedRecipeCalled
     public ProductStockDto? ProductStock { get; set; }
     public int? ProductStockId { get; set; }
     public string Name { get; set; }
-    public SizeType SizeType { get; set; }
+    public UnitType UnitType { get; set; }
     public float Units { get; set; }
 
     public IList<ProductStock> ProductStockSearchItems { get; set; } = new List<ProductStock>();
@@ -23,7 +23,7 @@ public class CookedRecipeCalledIngredientDetailsVm : IMapFrom<CookedRecipeCalled
     public void Mapping(Profile profile)
     {
         profile.CreateMap<CookedRecipeCalledIngredient, CookedRecipeCalledIngredientDetailsVm>()
-            .ForMember(d => d.SizeType, opt => opt.MapFrom(s => (int)s.SizeType));
+            .ForMember(d => d.UnitType, opt => opt.MapFrom(s => (int)s.UnitType));
 
         profile.CreateMap<CookedRecipeCalledIngredient, CookedRecipeCalledIngredientDetailsVm>()
             .ForMember(d => d.CookedRecipeId, opt => opt.MapFrom(s => s.CookedRecipe.Id));

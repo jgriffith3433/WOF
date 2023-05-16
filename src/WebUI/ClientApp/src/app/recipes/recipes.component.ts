@@ -7,7 +7,7 @@ import {
   RecipeDto,
   CalledIngredientDetailsVm,
   CalledIngredientDto,
-  SizeTypeDto,
+  UnitTypeDto,
   CreateRecipeCommand,
   UpdateRecipeNameCommand,
   UpdateRecipeServesCommand,
@@ -24,7 +24,7 @@ import {
 export class RecipesComponent implements OnInit {
   debug = false;
   recipes: RecipeDto[];
-  sizeTypes: SizeTypeDto[];
+  unitTypes: UnitTypeDto[];
   selectedRecipe: RecipeDto;
   selectedCalledIngredient: CalledIngredientDto;
   selectedCalledIngredientDetails: CalledIngredientDetailsVm;
@@ -51,7 +51,7 @@ export class RecipesComponent implements OnInit {
     this.recipesClient.get().subscribe(
       result => {
         this.recipes = result.recipes;
-        this.sizeTypes = result.sizeTypes;
+        this.unitTypes = result.unitTypes;
         if (this.recipes.length) {
           this.selectedRecipe = this.recipes[0];
         }
@@ -208,7 +208,7 @@ export class RecipesComponent implements OnInit {
     const calledIngredient = {
       id: 0,
       name: '',
-      sizeType: this.sizeTypes[0].value
+      unitType: this.unitTypes[0].value
     } as CalledIngredientDto;
 
     this.selectedRecipe.calledIngredients.push(calledIngredient);

@@ -38,7 +38,7 @@
       </div>
 
       <ul id="cooked-recipe-called-ingredients" class="list-group mb-2 list-group-flush">
-        <li class="list-group-item" *ngFor="let cookedRecipeCalledIngredient of selectedCookedRecipe.cookedRecipeCalledIngredients; index as i" [ngClass]="{'list-group-item-danger': !cookedRecipeCalledIngredient.sizeType || !cookedRecipeCalledIngredient.units }">
+        <li class="list-group-item" *ngFor="let cookedRecipeCalledIngredient of selectedCookedRecipe.cookedRecipeCalledIngredients; index as i" [ngClass]="{'list-group-item-danger': !cookedRecipeCalledIngredient.unitType || !cookedRecipeCalledIngredient.units }">
           <div class="d-flex">
             <input id="{{ 'cookedRecipeCalledIngredientName' + i }}" *ngIf="cookedRecipeCalledIngredient == selectedCookedRecipeCalledIngredient" type="text"
                    class="form-control item-input-control" [(ngModel)]="cookedRecipeCalledIngredient.name" (keyup.enter)="updateCookedRecipeCalledIngredient(cookedRecipeCalledIngredient, true)"
@@ -156,9 +156,9 @@
   <div class="modal-body">
     <div class="form">
       <div class="form-group">
-        <label for="sizeType">Size Type</label>
-        <select class="form-control" [(ngModel)]="cookedRecipeCalledIngredientDetailsEditor.sizeType">
-          <option [ngValue]="sizeType.value" *ngFor="let sizeType of sizeTypes">{{ sizeType.name }}</option>
+        <label for="unitType">Unit Type</label>
+        <select class="form-control" [(ngModel)]="cookedRecipeCalledIngredientDetailsEditor.unitType">
+          <option [ngValue]="unitType.value" *ngFor="let unitType of unitTypes">{{ unitType.name }}</option>
         </select>
       </div>
       <div class="form-group">

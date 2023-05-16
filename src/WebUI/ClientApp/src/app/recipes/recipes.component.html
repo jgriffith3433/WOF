@@ -39,7 +39,7 @@
       </div>
 
       <ul id="called-ingredients" class="list-group mb-2 list-group-flush">
-        <li class="list-group-item" *ngFor="let calledIngredient of selectedRecipe.calledIngredients; index as i" [ngClass]="{'list-group-item-warning': calledIngredient.productStock != null ? calledIngredient.productStock.units < calledIngredient.units : false, 'list-group-item-danger': !calledIngredient.sizeType || !calledIngredient.units || !calledIngredient.productStock}">
+        <li class="list-group-item" *ngFor="let calledIngredient of selectedRecipe.calledIngredients; index as i" [ngClass]="{'list-group-item-warning': calledIngredient.productStock != null ? calledIngredient.productStock.units < calledIngredient.units : false, 'list-group-item-danger': !calledIngredient.unitType || !calledIngredient.units || !calledIngredient.productStock}">
           <div class="d-flex">
             <div class="flex-fill">
               <div *ngIf="calledIngredient.productStock" class="item-name form-control form-control-plaintext">
@@ -178,9 +178,9 @@
   <div class="modal-body">
     <div class="form">
       <div class="form-group">
-        <label for="sizeType">Size Type</label>
-        <select class="form-control" [(ngModel)]="calledIngredientDetailsEditor.sizeType">
-          <option [ngValue]="sizeType.value" *ngFor="let sizeType of sizeTypes">{{ sizeType.name }}</option>
+        <label for="unitType">Unit Type</label>
+        <select class="form-control" [(ngModel)]="calledIngredientDetailsEditor.unitType">
+          <option [ngValue]="unitType.value" *ngFor="let unitType of unitTypes">{{ unitType.name }}</option>
         </select>
       </div>
       <div class="form-group">

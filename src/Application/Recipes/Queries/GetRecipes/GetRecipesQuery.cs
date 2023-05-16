@@ -27,9 +27,9 @@ public class GetRecipesQueryHandler : IRequestHandler<GetRecipesQuery, RecipesVm
     {
         return new RecipesVm
         {
-            SizeTypes = Enum.GetValues(typeof(SizeType))
-                .Cast<SizeType>()
-                .Select(p => new SizeTypeDto { Value = (int)p, Name = p.ToString() })
+            UnitTypes = Enum.GetValues(typeof(UnitType))
+                .Cast<UnitType>()
+                .Select(p => new UnitTypeDto { Value = (int)p, Name = p.ToString() })
                 .ToList(),
 
             Recipes = await _context.Recipes

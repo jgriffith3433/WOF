@@ -2,6 +2,6 @@
 
 public class GetProductsVm
 {
-    public IList<SizeTypeDto> SizeTypes { get; set; } = new List<SizeTypeDto>();
+    public IList<UnitTypeDto> UnitTypes { get; set; } = new List<UnitTypeDto>();
     public IList<ProductDto> Products { get; set; } = new List<ProductDto>();
 }

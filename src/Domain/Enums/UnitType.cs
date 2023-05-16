@@ -1,6 +1,6 @@
 ﻿namespace WOF.Domain.Enums;
 
-public enum SizeType
+public enum UnitType
 {
     None = 0,
     Bulk = 1,

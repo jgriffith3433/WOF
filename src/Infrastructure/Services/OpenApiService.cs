@@ -111,6 +111,17 @@ public class OpenApiService : IOpenApiService
   ""new"": ""Gluten-free bread""
 }"
                     ),
+                ChatMessage.FromUser("I added two teaspoons of salt to the bienenstich recipe."),
+                ChatMessage.FromAssistant(
+@"{
+  ""cmd"": ""add-recipe-ingredient"",
+  ""response"": ""Okay, I have added salt to the Bienenstich recipe."",
+  ""recipe"": ""bienenstich"",
+  ""name"": ""salt"",
+  ""units"": 2,
+  ""unittype"": ""teaspoon""
+}"
+                    ),
                 ChatMessage.FromUser("Order two cans of black eyed peas"),
                 ChatMessage.FromAssistant(
 @"{

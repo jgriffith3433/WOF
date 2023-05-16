@@ -18,13 +18,13 @@ public class ProductDto : IMapFrom<Product>
     public float Size { get; set; }
     public float Price { get; set; }
     public bool Verified { get; set; }
-    public int SizeType { get; set; }
+    public int UnitType { get; set; }
     public int? ProductStockId { get; set; }
 
     public void Mapping(Profile profile)
     {
         profile.CreateMap<Product, ProductDto>()
-            .ForMember(d => d.SizeType, opt => opt.MapFrom(s => (int)s.SizeType));
+            .ForMember(d => d.UnitType, opt => opt.MapFrom(s => (int)s.UnitType));
         profile.CreateMap<Product, ProductDto>()
             .ForMember(d => d.ProductStockId, opt => opt.MapFrom(mapExpression: s => s.ProductStock != null ? s.ProductStock.Id : -1));
     }

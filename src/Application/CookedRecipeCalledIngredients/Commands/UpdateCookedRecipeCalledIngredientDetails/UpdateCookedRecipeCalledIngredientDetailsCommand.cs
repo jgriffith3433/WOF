@@ -12,7 +12,7 @@ public record UpdateCookedRecipeCalledIngredientDetailsCommand : IRequest<Cooked
 {
     public int Id { get; init; }
 
-    public SizeType SizeType { get; init; }
+    public UnitType UnitType { get; init; }
 
     public int? ProductStockId { get; init; }
 
@@ -43,7 +43,7 @@ public class UpdateCookedRecipeCalledIngredientDetailsCommandHandler : IRequestH
 
         entity.Name = request.Name;
         entity.Units = request.Units.Value;
-        entity.SizeType = request.SizeType;
+        entity.UnitType = request.UnitType;
 
         if (entity.CalledIngredient == null && entity.ProductStock == null && request.ProductStockId != null)
         {
@@ -56,7 +56,7 @@ public class UpdateCookedRecipeCalledIngredientDetailsCommandHandler : IRequestH
             entity.ProductStock = productStock;
             if (productStock.Product != null)
             {
-                entity.SizeType = productStock.Product.SizeType;
+                entity.UnitType = productStock.Product.UnitType;
             }
         }
 

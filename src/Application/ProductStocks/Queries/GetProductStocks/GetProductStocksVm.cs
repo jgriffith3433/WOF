@@ -4,6 +4,6 @@ namespace WOF.Application.ProductStocks.Queries.GetProductStocks;
 
 public class GetProductStocksVm
 {
-    public IList<SizeTypeDto> SizeTypes { get; set; } = new List<SizeTypeDto>();
+    public IList<UnitTypeDto> UnitTypes { get; set; } = new List<UnitTypeDto>();
     public IList<ProductStockDto> ProductStocks { get; set; } = new List<ProductStockDto>();
 }
