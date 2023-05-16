@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core'
 import { Subject } from 'rxjs'
 import { fadeIn, fadeInOut } from '../animations'
+import { Router } from '@angular/router';
 import {
   ChatClient,
   GetChatResponseQuery,
@@ -19,10 +20,12 @@ export class ChatWidgetComponent implements OnInit {
   @ViewChild('bottom') bottom: ElementRef;
   @Input() public theme: 'blue' | 'grey' | 'red' = 'blue';
   public _visible = false;
+  _chatConversationId = undefined;
   previousMessages: ChatMessageVm[];
 
   constructor(
     private chatClient: ChatClient,
+    private router: Router
   ) { }
 
   public get visible() {
@@ -90,10 +93,14 @@ export class ChatWidgetComponent implements OnInit {
     if (message.trim() === '') {
       return
     }
-    this.chatClient.create(new GetChatResponseQuery({ chatMessage: new ChatMessageVm({ message: message, from: 2 }), previousMessages: this.previousMessages })).subscribe(
+    this.chatClient.create(new GetChatResponseQuery({ chatMessage: new ChatMessageVm({ message: message, from: 2 }), previousMessages: this.previousMessages, chatConversationId: this._chatConversationId })).subscribe(
       result => {
+        this._chatConversationId = result.chatConversationId;
         this.previousMessages = result.previousMessages;
-        this.addMessage(this.operator, result.responseMessage.message, 'received')
+        this.addMessage(this.operator, result.responseMessage.message, 'received');
+        if (result.dirty) {
+          this.router.navigateByUrl(this.router.url);
+        }
       },
       error => console.error(error)
     );

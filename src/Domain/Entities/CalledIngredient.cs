@@ -4,7 +4,7 @@ public class CalledIngredient : BaseAuditableEntity
 {
     public string Name { get; set; }
 
-    public float Units { get; set; }
+    public float? Units { get; set; }
 
     public bool Verified { get; set; }
 

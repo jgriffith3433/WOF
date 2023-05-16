@@ -3381,7 +3381,6 @@ export class CalledIngredientDto implements ICalledIngredientDto {
     productStock?: ProductStock;
     units?: number;
     sizeType?: number;
-    recipes?: Recipe[];
 
     constructor(data?: ICalledIngredientDto) {
         if (data) {
@@ -3399,11 +3398,6 @@ export class CalledIngredientDto implements ICalledIngredientDto {
             this.productStock = _data["productStock"] ? ProductStock.fromJS(_data["productStock"]) : <any>undefined;
             this.units = _data["units"];
             this.sizeType = _data["sizeType"];
-            if (Array.isArray(_data["recipes"])) {
-                this.recipes = [] as any;
-                for (let item of _data["recipes"])
-                    this.recipes!.push(Recipe.fromJS(item));
-            }
         }
     }
 
@@ -3421,11 +3415,6 @@ export class CalledIngredientDto implements ICalledIngredientDto {
         data["productStock"] = this.productStock ? this.productStock.toJSON() : <any>undefined;
         data["units"] = this.units;
         data["sizeType"] = this.sizeType;
-        if (Array.isArray(this.recipes)) {
-            data["recipes"] = [];
-            for (let item of this.recipes)
-                data["recipes"].push(item.toJSON());
-        }
         return data;
     }
 }
@@ -3436,7 +3425,6 @@ export interface ICalledIngredientDto {
     productStock?: ProductStock;
     units?: number;
     sizeType?: number;
-    recipes?: Recipe[];
 }
 
 export abstract class BaseEntity implements IBaseEntity {
@@ -3812,125 +3800,14 @@ export abstract class BaseEvent implements IBaseEvent {
 export interface IBaseEvent {
 }
 
-export class Recipe extends BaseAuditableEntity implements IRecipe {
-    name?: string;
-    userImport?: string;
-    link?: string | undefined;
-    serves?: number;
-    calledIngredients?: CalledIngredient[];
-
-    constructor(data?: IRecipe) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.name = _data["name"];
-            this.userImport = _data["userImport"];
-            this.link = _data["link"];
-            this.serves = _data["serves"];
-            if (Array.isArray(_data["calledIngredients"])) {
-                this.calledIngredients = [] as any;
-                for (let item of _data["calledIngredients"])
-                    this.calledIngredients!.push(CalledIngredient.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): Recipe {
-        data = typeof data === 'object' ? data : {};
-        let result = new Recipe();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["userImport"] = this.userImport;
-        data["link"] = this.link;
-        data["serves"] = this.serves;
-        if (Array.isArray(this.calledIngredients)) {
-            data["calledIngredients"] = [];
-            for (let item of this.calledIngredients)
-                data["calledIngredients"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IRecipe extends IBaseAuditableEntity {
-    name?: string;
-    userImport?: string;
-    link?: string | undefined;
-    serves?: number;
-    calledIngredients?: CalledIngredient[];
-}
-
-export class CalledIngredient extends BaseAuditableEntity implements ICalledIngredient {
-    name?: string;
-    units?: number;
-    verified?: boolean;
-    sizeType?: SizeType;
-    productStock?: ProductStock | undefined;
-    recipe?: Recipe;
-
-    constructor(data?: ICalledIngredient) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.name = _data["name"];
-            this.units = _data["units"];
-            this.verified = _data["verified"];
-            this.sizeType = _data["sizeType"];
-            this.productStock = _data["productStock"] ? ProductStock.fromJS(_data["productStock"]) : <any>undefined;
-            this.recipe = _data["recipe"] ? Recipe.fromJS(_data["recipe"]) : <any>undefined;
-        }
-    }
-
-    static override fromJS(data: any): CalledIngredient {
-        data = typeof data === 'object' ? data : {};
-        let result = new CalledIngredient();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["units"] = this.units;
-        data["verified"] = this.verified;
-        data["sizeType"] = this.sizeType;
-        data["productStock"] = this.productStock ? this.productStock.toJSON() : <any>undefined;
-        data["recipe"] = this.recipe ? this.recipe.toJSON() : <any>undefined;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface ICalledIngredient extends IBaseAuditableEntity {
-    name?: string;
-    units?: number;
-    verified?: boolean;
-    sizeType?: SizeType;
-    productStock?: ProductStock | undefined;
-    recipe?: Recipe;
-}
-
 export class CalledIngredientDetailsVm implements ICalledIngredientDetailsVm {
     id?: number;
     name?: string;
     productStock?: ProductStock;
-    units?: number;
+    units?: number | undefined;
     sizeType?: number;
     productStockId?: number;
     productStockSearchItems?: ProductStock[];
-    recipes?: Recipe[];
 
     constructor(data?: ICalledIngredientDetailsVm) {
         if (data) {
@@ -3953,11 +3830,6 @@ export class CalledIngredientDetailsVm implements ICalledIngredientDetailsVm {
                 this.productStockSearchItems = [] as any;
                 for (let item of _data["productStockSearchItems"])
                     this.productStockSearchItems!.push(ProductStock.fromJS(item));
-            }
-            if (Array.isArray(_data["recipes"])) {
-                this.recipes = [] as any;
-                for (let item of _data["recipes"])
-                    this.recipes!.push(Recipe.fromJS(item));
             }
         }
     }
@@ -3982,11 +3854,6 @@ export class CalledIngredientDetailsVm implements ICalledIngredientDetailsVm {
             for (let item of this.productStockSearchItems)
                 data["productStockSearchItems"].push(item.toJSON());
         }
-        if (Array.isArray(this.recipes)) {
-            data["recipes"] = [];
-            for (let item of this.recipes)
-                data["recipes"].push(item.toJSON());
-        }
         return data;
     }
 }
@@ -3995,11 +3862,10 @@ export interface ICalledIngredientDetailsVm {
     id?: number;
     name?: string;
     productStock?: ProductStock;
-    units?: number;
+    units?: number | undefined;
     sizeType?: number;
     productStockId?: number;
     productStockSearchItems?: ProductStock[];
-    recipes?: Recipe[];
 }
 
 export class CreateCalledIngredientCommand implements ICreateCalledIngredientCommand {
@@ -4139,6 +4005,8 @@ export interface IUpdateCalledIngredientDetailsCommand {
 }
 
 export class GetChatResponseVm implements IGetChatResponseVm {
+    chatConversationId?: number;
+    dirty?: boolean;
     previousMessages?: ChatMessageVm[];
     responseMessage?: ChatMessageVm;
 
@@ -4153,6 +4021,8 @@ export class GetChatResponseVm implements IGetChatResponseVm {
 
     init(_data?: any) {
         if (_data) {
+            this.chatConversationId = _data["chatConversationId"];
+            this.dirty = _data["dirty"];
             if (Array.isArray(_data["previousMessages"])) {
                 this.previousMessages = [] as any;
                 for (let item of _data["previousMessages"])
@@ -4171,6 +4041,8 @@ export class GetChatResponseVm implements IGetChatResponseVm {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["chatConversationId"] = this.chatConversationId;
+        data["dirty"] = this.dirty;
         if (Array.isArray(this.previousMessages)) {
             data["previousMessages"] = [];
             for (let item of this.previousMessages)
@@ -4182,6 +4054,8 @@ export class GetChatResponseVm implements IGetChatResponseVm {
 }
 
 export interface IGetChatResponseVm {
+    chatConversationId?: number;
+    dirty?: boolean;
     previousMessages?: ChatMessageVm[];
     responseMessage?: ChatMessageVm;
 }
@@ -4229,6 +4103,7 @@ export interface IChatMessageVm {
 export class GetChatResponseQuery implements IGetChatResponseQuery {
     previousMessages?: ChatMessageVm[];
     chatMessage?: ChatMessageVm;
+    chatConversationId?: number | undefined;
 
     constructor(data?: IGetChatResponseQuery) {
         if (data) {
@@ -4247,6 +4122,7 @@ export class GetChatResponseQuery implements IGetChatResponseQuery {
                     this.previousMessages!.push(ChatMessageVm.fromJS(item));
             }
             this.chatMessage = _data["chatMessage"] ? ChatMessageVm.fromJS(_data["chatMessage"]) : <any>undefined;
+            this.chatConversationId = _data["chatConversationId"];
         }
     }
 
@@ -4265,6 +4141,7 @@ export class GetChatResponseQuery implements IGetChatResponseQuery {
                 data["previousMessages"].push(item.toJSON());
         }
         data["chatMessage"] = this.chatMessage ? this.chatMessage.toJSON() : <any>undefined;
+        data["chatConversationId"] = this.chatConversationId;
         return data;
     }
 }
@@ -4272,6 +4149,7 @@ export class GetChatResponseQuery implements IGetChatResponseQuery {
 export interface IGetChatResponseQuery {
     previousMessages?: ChatMessageVm[];
     chatMessage?: ChatMessageVm;
+    chatConversationId?: number | undefined;
 }
 
 export class CompletedOrdersVm implements ICompletedOrdersVm {
@@ -5129,7 +5007,7 @@ export interface ICookedRecipeDto {
 export class RecipeDto implements IRecipeDto {
     id?: number;
     name?: string;
-    serves?: number;
+    serves?: number | undefined;
     userImport?: string | undefined;
     calledIngredients?: CalledIngredientDetailsVm[];
 
@@ -5181,7 +5059,7 @@ export class RecipeDto implements IRecipeDto {
 export interface IRecipeDto {
     id?: number;
     name?: string;
-    serves?: number;
+    serves?: number | undefined;
     userImport?: string | undefined;
     calledIngredients?: CalledIngredientDetailsVm[];
 }

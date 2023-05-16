@@ -1,4 +1,5 @@
 import { Component, TemplateRef, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import {
   RecipesClient,
@@ -38,8 +39,13 @@ export class RecipesComponent implements OnInit {
   constructor(
     private recipesClient: RecipesClient,
     private calledIngredientsClient: CalledIngredientsClient,
-    private modalService: BsModalService
-  ) { }
+    private modalService: BsModalService,
+    private router: Router
+  ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => {
+      return false;
+    };
+  }
 
   ngOnInit(): void {
     this.recipesClient.get().subscribe(

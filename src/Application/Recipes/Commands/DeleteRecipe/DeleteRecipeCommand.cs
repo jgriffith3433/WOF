@@ -20,14 +20,17 @@ public class DeleteRecipeCommandHandler : IRequestHandler<DeleteRecipeCommand>
     public async Task<Unit> Handle(DeleteRecipeCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.Recipes
-            .Where(l => l.Id == request.Id)
+            .Where(l => l.Id == request.Id).Include(r => r.CalledIngredients)
             .SingleOrDefaultAsync(cancellationToken);
 
         if (entity == null)
         {
             throw new NotFoundException(nameof(Recipe), request.Id);
         }
-
+        foreach(var calledIngredient in entity.CalledIngredients)
+        {
+            _context.CalledIngredients.Remove(calledIngredient);
+        }
         _context.Recipes.Remove(entity);
 
         await _context.SaveChangesAsync(cancellationToken);

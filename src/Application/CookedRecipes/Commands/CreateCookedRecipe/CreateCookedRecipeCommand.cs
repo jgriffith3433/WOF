@@ -44,7 +44,7 @@ public class CreateCookedRecipeCommandHandler : IRequestHandler<CreateCookedReci
                 CalledIngredient = calledIngredient,
                 Name = calledIngredient.Name,
                 SizeType = calledIngredient.SizeType,
-                Units = calledIngredient.Units,
+                Units = calledIngredient.Units.Value,
                 ProductStock = calledIngredient.ProductStock
             };
             entity.CookedRecipeCalledIngredients.Add(cookedRecipeCalledIngredient);

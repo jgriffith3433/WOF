@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace WOF.Infrastructure.Persistence;
 
@@ -26,6 +27,8 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
         _mediator = mediator;
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
     }
+
+    public override ChangeTracker ChangeTracker => base.ChangeTracker;
 
     public DbSet<TodoList> TodoLists => Set<TodoList>();
 
@@ -48,6 +51,10 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public DbSet<CompletedOrder> CompletedOrders => Set<CompletedOrder>();
 
     public DbSet<CompletedOrderProduct> CompletedOrderProducts => Set<CompletedOrderProduct>();
+
+    public DbSet<ChatCommand> ChatCommands => Set<ChatCommand>();
+
+    public DbSet<ChatConversation> ChatConversations => Set<ChatConversation>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

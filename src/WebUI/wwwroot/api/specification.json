@@ -2289,12 +2289,6 @@
           "sizeType": {
             "type": "integer",
             "format": "int32"
-          },
-          "recipes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Recipe"
-            }
           }
         }
       },
@@ -2552,76 +2546,6 @@
         "x-abstract": true,
         "additionalProperties": false
       },
-      "Recipe": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "userImport": {
-                "type": "string"
-              },
-              "link": {
-                "type": "string",
-                "nullable": true
-              },
-              "serves": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "calledIngredients": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/CalledIngredient"
-                }
-              }
-            }
-          }
-        ]
-      },
-      "CalledIngredient": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "units": {
-                "type": "number",
-                "format": "float"
-              },
-              "verified": {
-                "type": "boolean"
-              },
-              "sizeType": {
-                "$ref": "#/components/schemas/SizeType"
-              },
-              "productStock": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/ProductStock"
-                  }
-                ]
-              },
-              "recipe": {
-                "$ref": "#/components/schemas/Recipe"
-              }
-            }
-          }
-        ]
-      },
       "CalledIngredientDetailsVm": {
         "type": "object",
         "additionalProperties": false,
@@ -2638,7 +2562,8 @@
           },
           "units": {
             "type": "number",
-            "format": "float"
+            "format": "float",
+            "nullable": true
           },
           "sizeType": {
             "type": "integer",
@@ -2652,12 +2577,6 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ProductStock"
-            }
-          },
-          "recipes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Recipe"
             }
           }
         }
@@ -2724,6 +2643,13 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "chatConversationId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dirty": {
+            "type": "boolean"
+          },
           "previousMessages": {
             "type": "array",
             "items": {
@@ -2760,6 +2686,11 @@
           },
           "chatMessage": {
             "$ref": "#/components/schemas/ChatMessageVm"
+          },
+          "chatConversationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         }
       },
@@ -3181,7 +3112,8 @@
           },
           "serves": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "userImport": {
             "type": "string",

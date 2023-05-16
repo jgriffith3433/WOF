@@ -10,14 +10,12 @@ public class CalledIngredientDetailsVm : IMapFrom<CalledIngredient>
     public int Id { get; set; }
     public string Name { get; set; }
     public ProductStock ProductStock { get; set; }
-    public float Units { get; set; }
+    public float? Units { get; set; }
     public int SizeType { get; set; }
     public int ProductStockId { get; set; }
     //public SizeType SizeType { get; set; }
 
     public IList<ProductStock> ProductStockSearchItems { get; set; } = new List<ProductStock>();
-
-    public IList<Recipe> Recipes { get; private set; } = new List<Recipe>();
 
     public void Mapping(Profile profile)
     {

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WOF.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using WOF.Infrastructure.Persistence;
 namespace WOF.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230515175326_ChatCommandsAndResponses")]
+    partial class ChatCommandsAndResponses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -334,7 +337,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.Property<int>("SizeType")
                         .HasColumnType("int");
 
-                    b.Property<float?>("Units")
+                    b.Property<float>("Units")
                         .HasColumnType("real");
 
                     b.Property<bool>("Verified")
@@ -356,12 +359,6 @@ namespace WOF.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("ChangedData")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ChatConversationId")
-                        .HasColumnType("int");
 
                     b.Property<string>("CommandName")
                         .IsRequired()
@@ -390,8 +387,6 @@ namespace WOF.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ChatConversationId");
 
                     b.ToTable("ChatCommands");
                 });
@@ -751,7 +746,7 @@ namespace WOF.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int?>("Serves")
+                    b.Property<int>("Serves")
                         .HasColumnType("int");
 
                     b.Property<string>("UserImport")
@@ -971,17 +966,6 @@ namespace WOF.Infrastructure.Persistence.Migrations
                     b.Navigation("ProductStock");
 
                     b.Navigation("Recipe");
-                });
-
-            modelBuilder.Entity("WOF.Domain.Entities.ChatCommand", b =>
-                {
-                    b.HasOne("WOF.Domain.Entities.ChatConversation", "ChatConversation")
-                        .WithMany()
-                        .HasForeignKey("ChatConversationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ChatConversation");
                 });
 
             modelBuilder.Entity("WOF.Domain.Entities.CompletedOrderProduct", b =>
