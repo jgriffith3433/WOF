@@ -64,6 +64,7 @@ public class GetChatResponseQueryHandler : IRequestHandler<GetChatResponseQuery,
         await _context.SaveChangesAsync(cancellationToken);
         var dirty = false;
         var error = false;
+        var navigateToPage = "";
         try
         {
             var chatCommandEntity = new ChatCommand
@@ -73,69 +74,77 @@ public class GetChatResponseQueryHandler : IRequestHandler<GetChatResponseQuery,
             };
             var startIndex = chatResponseMessage.IndexOf('{');
             var endIndex = chatResponseMessage.LastIndexOf('}');
-            chatResponseMessage = chatResponseMessage.Substring(startIndex, endIndex - startIndex + 1);
-            var openApiChatCommand = JsonConvert.DeserializeObject<OpenApiChatCommand>(chatResponseMessage);
-
-            chatCommandEntity.CommandName = openApiChatCommand.Cmd;
-            chatCommandEntity.ChatConversation = chatConversationEntity;
-            _context.ChatCommands.Add(chatCommandEntity);
-
-            //TODO: Do we need to call SaveChangesAsync before the domain event is sent so the change tracker HasChanges only if the event modified entities?
-            //calling for now
-            await _context.SaveChangesAsync(cancellationToken);
-            chatCommandEntity.AddDomainEvent(new ReceivedChatCommandEvent(chatCommandEntity));
-            await _context.SaveChangesAsync(cancellationToken);
-            dirty = chatCommandEntity.ChangedData;
-
-            if (!string.IsNullOrEmpty(chatCommandEntity.SystemResponse))
+            if (startIndex != -1 && endIndex != -1)
             {
-                var chatSystemResponseMessage = await _openApiService.GetChatResponseFromSystem(chatCommandEntity.SystemResponse, request.PreviousMessages, request.CurrentUrl);
-                startIndex = chatSystemResponseMessage.IndexOf('{');
-                endIndex = chatSystemResponseMessage.LastIndexOf('}');
+                chatResponseMessage = chatResponseMessage.Substring(startIndex, endIndex - startIndex + 1);
+                var openApiChatCommand = JsonConvert.DeserializeObject<OpenApiChatCommand>(chatResponseMessage);
 
-                if (startIndex != -1 && endIndex == -1)
+                chatCommandEntity.CommandName = openApiChatCommand.Cmd;
+                chatCommandEntity.ChatConversation = chatConversationEntity;
+                _context.ChatCommands.Add(chatCommandEntity);
+
+                //TODO: Do we need to call SaveChangesAsync before the domain event is sent so the change tracker HasChanges only if the event modified entities?
+                //calling for now
+                await _context.SaveChangesAsync(cancellationToken);
+                chatCommandEntity.AddDomainEvent(new ReceivedChatCommandEvent(chatCommandEntity));
+                await _context.SaveChangesAsync(cancellationToken);
+                dirty = chatCommandEntity.ChangedData;
+                navigateToPage = chatCommandEntity.NavigateToPage;
+
+                if (!string.IsNullOrEmpty(chatCommandEntity.SystemResponse))
                 {
-                    //partial json response
-                    chatSystemResponseMessage = "I'm sorry, I'm having trouble contacting the server.";
+                    var chatSystemResponseMessage = await _openApiService.GetChatResponseFromSystem(chatCommandEntity.SystemResponse, request.PreviousMessages, request.CurrentUrl);
+                    startIndex = chatSystemResponseMessage.IndexOf('{');
+                    endIndex = chatSystemResponseMessage.LastIndexOf('}');
+
+                    if (startIndex != -1 && endIndex == -1)
+                    {
+                        //partial json response
+                        chatSystemResponseMessage = "I'm sorry, I'm having trouble contacting the server.";
+                        error = true;
+                    }
+                    else if (startIndex != -1 && endIndex != -1)
+                    {
+                        //json response
+                        chatSystemResponseMessage = chatSystemResponseMessage.Substring(startIndex, endIndex - startIndex + 1);
+                        var openApiChatSystemResponseMessageCommand = JsonConvert.DeserializeObject<OpenApiChatCommand>(chatSystemResponseMessage);
+                        chatSystemResponseMessage = openApiChatSystemResponseMessageCommand.Response;
+                    }
+
+                    request.PreviousMessages.Add(new ChatMessageVm
+                    {
+                        From = 3,
+                        Message = chatCommandEntity.SystemResponse
+                    });
+                    request.PreviousMessages.Add(new ChatMessageVm
+                    {
+                        From = 1,
+                        Message = chatSystemResponseMessage
+                    });
+
+                    chatConversationEntity.Content = JsonConvert.SerializeObject(request);
+                    chatResponseMessage = chatSystemResponseMessage;
                 }
-                else if (startIndex != -1 && endIndex != -1)
+                else
                 {
-                    //json response
-                    chatSystemResponseMessage = chatSystemResponseMessage.Substring(startIndex, endIndex - startIndex + 1);
-                    var openApiChatSystemResponseMessageCommand = JsonConvert.DeserializeObject<OpenApiChatCommand>(chatSystemResponseMessage);
-                    chatSystemResponseMessage = openApiChatSystemResponseMessageCommand.Response;
+                    chatResponseMessage = openApiChatCommand.Response;
                 }
-
-                request.PreviousMessages.Add(new ChatMessageVm
-                {
-                    From = 3,
-                    Message = chatCommandEntity.SystemResponse
-                });
-                request.PreviousMessages.Add(new ChatMessageVm
-                {
-                    From = 1,
-                    Message = chatSystemResponseMessage
-                });
-
-                chatConversationEntity.Content = JsonConvert.SerializeObject(request);
-                chatResponseMessage = chatSystemResponseMessage;
-            }
-            else
-            {
-                chatResponseMessage = openApiChatCommand.Response;
             }
         }
         catch (Exception e)
         {
+            error = true;
             chatConversationEntity.Error = FlattenException(e);
             await _context.SaveChangesAsync(cancellationToken);
         }
 
         return new GetChatResponseVm
         {
-            CreateNewChat = error,
             ChatConversationId = chatConversationEntity.Id,
             Dirty = dirty,
+            Error = error,
+            CreateNewChat = error || !string.IsNullOrEmpty(navigateToPage),
+            NavigateToPage = navigateToPage,
             ResponseMessage = new ChatMessageVm
             {
                 From = 1,

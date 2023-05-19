@@ -9,5 +9,6 @@ public class ChatCommand : BaseAuditableEntity
     public string? CurrentUrl { get; set; }
     public bool Unknown { get; set; }
     public bool ChangedData { get; set; }
+    public string? NavigateToPage { get; set; }
     public ChatConversation ChatConversation { get; set; }
 }

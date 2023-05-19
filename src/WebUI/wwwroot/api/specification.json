@@ -2650,8 +2650,14 @@
           "createNewChat": {
             "type": "boolean"
           },
+          "error": {
+            "type": "boolean"
+          },
           "dirty": {
             "type": "boolean"
+          },
+          "navigateToPage": {
+            "type": "string"
           },
           "previousMessages": {
             "type": "array",

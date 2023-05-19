@@ -1,7 +1,9 @@
 ﻿namespace WOF.Application.Chat.Queries.GetResponse;
 
-public record OpenApiChatCommandEditIngredientUnitType : OpenApiChatCommand
+public record OpenApiChatCommandEditRecipeIngredientUnitType : OpenApiChatCommand
 {
+    public string Recipe { get; set; }
+
     public string Name { get; set; }
     public string Ingredient
     {

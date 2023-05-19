@@ -43,216 +43,210 @@ public class ReceivedChatCommandEventHandler : INotificationHandler<ReceivedChat
                         var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
                         var chatCommandOrder = JsonConvert.DeserializeObject<OpenApiChatCommandOrder>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
 
-                        break;
                     }
+                    break;
                 case "edit-recipe-name":
                     {
                         var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
                         var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
                         var editRecipeName = JsonConvert.DeserializeObject<OpenApiChatCommandEditRecipeName>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
 
-                        var recipe = _context.Recipes.FirstOrDefault(r => r.Name.ToLower() == editRecipeName.Original.ToLower());
+                        var recipe = _context.Recipes.FirstOrDefault(r => r.Name.ToLower().Contains(editRecipeName.Original.ToLower()));
                         if (recipe == null)
                         {
-                            systemResponse = "Could not find recipe by name: " + editRecipeName.Original;
+                            systemResponse = "Error: Could not find recipe by name: " + editRecipeName.Original;
                         }
                         else
                         {
                             recipe.Name = editRecipeName.New;
                         }
 
-                        break;
                     }
-                case "substitute-ingredient":
-                case "edit-recipe-ingredient":
+                    break;
+                case "substitute-recipe-ingredient":
                     {
                         var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
                         var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
-                        var substituteIngredient = JsonConvert.DeserializeObject<OpenApiChatCommandSubstituteIngredient>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
+                        var recipeSubstituteIngredient = JsonConvert.DeserializeObject<OpenApiChatCommandCookedRecipeSubstituteIngredient>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
 
-                        //ingredients can be CalledIngredients or CookedRecipeCalledIngredients in the context of substituting or changing recipe ingredients
-                        switch (notification.ChatCommand.CurrentUrl)
+
+                        var recipe = _context.Recipes.Include(r => r.CalledIngredients).ThenInclude(ci => ci.ProductStock).FirstOrDefault(r => r.Name.ToLower() == recipeSubstituteIngredient.Recipe.ToLower());
+                        if (recipe == null)
                         {
-                            case "recipes":
-                            case "called-ingredients":
-                                {
-                                    var recipe = _context.Recipes.Include(r => r.CalledIngredients).ThenInclude(ci => ci.ProductStock).FirstOrDefault(r => r.Name.ToLower() == substituteIngredient.Recipe.ToLower());
-                                    if (recipe == null)
-                                    {
-                                        systemResponse = "Could not find recipe by name: " + substituteIngredient.Recipe;
-                                    }
-                                    else
-                                    {
-                                        var calledIngredient = recipe.CalledIngredients.FirstOrDefault(ci => ci.Name.ToLower().Contains(substituteIngredient.Original.ToLower()));
-
-                                        if (calledIngredient == null)
-                                        {
-                                            systemResponse = "Could not find ingredient by name: " + substituteIngredient.Original;
-                                        }
-                                        else
-                                        {
-                                            calledIngredient.Name = substituteIngredient.New;
-                                            calledIngredient.ProductStock = null;
-                                        }
-                                    }
-
-                                    break;
-                                }
-                            case "cooked-recipes":
-                                {
-                                    var cookedRecipe = _context.CookedRecipes.Include(cr => cr.Recipe).Include(cr => cr.CookedRecipeCalledIngredients).ThenInclude(crci => crci.CalledIngredient).Include(cr => cr.CookedRecipeCalledIngredients).ThenInclude(crci => crci.ProductStock).OrderByDescending(cr => cr.Created).FirstOrDefault(cr => cr.Recipe.Name.ToLower().Contains(substituteIngredient.Recipe.ToLower()));
-                                    if (cookedRecipe == null)
-                                    {
-                                        systemResponse = "Could not find cooked recipe by name: " + substituteIngredient.Recipe;
-                                    }
-                                    else
-                                    {
-                                        if (string.IsNullOrEmpty(substituteIngredient.Original))
-                                        {
-                                            systemResponse = "original property is undefined, cannot edit cooked recipe ingredient";
-                                        }
-                                        else
-                                        {
-                                            var cookedRecipeCalledIngredient = cookedRecipe.CookedRecipeCalledIngredients.FirstOrDefault(ci => ci.Name.ToLower().Contains(substituteIngredient.Original.ToLower()));
-
-                                            if (cookedRecipeCalledIngredient == null)
-                                            {
-                                                systemResponse = "Could not find ingredient by name: " + substituteIngredient.Original;
-                                            }
-                                            else
-                                            {
-                                                cookedRecipeCalledIngredient.Name = substituteIngredient.New;
-                                                cookedRecipeCalledIngredient.CalledIngredient = null;
-                                                cookedRecipeCalledIngredient.ProductStock = null;
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-                            default:
-                                systemResponse = "Unsure if the user is changing a recipe ingredient or changing a logged recipe ingredient.";
-                                break;
+                            systemResponse = "Error: Could not find recipe by name: " + recipeSubstituteIngredient.Recipe;
                         }
-                        break;
+                        else
+                        {
+                            var calledIngredient = recipe.CalledIngredients.FirstOrDefault(ci => ci.Name.ToLower().Contains(recipeSubstituteIngredient.Original.ToLower()));
+
+                            if (calledIngredient == null)
+                            {
+                                systemResponse = "Error: Could not find ingredient by name: " + recipeSubstituteIngredient.Original;
+                            }
+                            else
+                            {
+                                calledIngredient.Name = recipeSubstituteIngredient.New;
+                                calledIngredient.ProductStock = null;
+                            }
+                        }
                     }
+                    break;
+                case "substitute-cooked-recipe-ingredient":
+                    {
+                        var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
+                        var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
+                        var cookedRecipeSubstituteIngredient = JsonConvert.DeserializeObject<OpenApiChatCommandCookedRecipeSubstituteIngredient>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
+
+
+                        var cookedRecipe = _context.CookedRecipes.Include(cr => cr.Recipe).Include(cr => cr.CookedRecipeCalledIngredients).ThenInclude(crci => crci.CalledIngredient).Include(cr => cr.CookedRecipeCalledIngredients).ThenInclude(crci => crci.ProductStock).OrderByDescending(cr => cr.Created).FirstOrDefault(cr => cr.Recipe.Name.ToLower().Contains(cookedRecipeSubstituteIngredient.Recipe.ToLower()));
+                        if (cookedRecipe == null)
+                        {
+                            systemResponse = "Error: Could not find cooked recipe by name: " + cookedRecipeSubstituteIngredient.Recipe;
+                        }
+                        else
+                        {
+                            if (string.IsNullOrEmpty(cookedRecipeSubstituteIngredient.Original))
+                            {
+                                systemResponse = "Error: Original property is undefined, cannot edit cooked recipe ingredient";
+                            }
+                            else
+                            {
+                                var cookedRecipeCalledIngredient = cookedRecipe.CookedRecipeCalledIngredients.FirstOrDefault(ci => ci.Name.ToLower().Contains(cookedRecipeSubstituteIngredient.Original.ToLower()));
+
+                                if (cookedRecipeCalledIngredient == null)
+                                {
+                                    systemResponse = "Error: Could not find ingredient by name: " + cookedRecipeSubstituteIngredient.Original;
+                                }
+                                else
+                                {
+                                    cookedRecipeCalledIngredient.Name = cookedRecipeSubstituteIngredient.New;
+                                    cookedRecipeCalledIngredient.CalledIngredient = null;
+                                    cookedRecipeCalledIngredient.ProductStock = null;
+                                }
+                            }
+                        }
+                    }
+                    break;
                 case "add-recipe-ingredient":
                     {
                         var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
                         var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
                         var addRecipeIngredient = JsonConvert.DeserializeObject<OpenApiChatCommandAddRecipeIngredient>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
 
-                        //ingredients can be CalledIngredients or CookedRecipeCalledIngredients in the context of adding recipe ingredients
-                        switch (notification.ChatCommand.CurrentUrl)
+                        var recipe = _context.Recipes.Include(r => r.CalledIngredients).FirstOrDefault(r => r.Name.ToLower() == addRecipeIngredient.Recipe.ToLower());
+                        if (recipe == null)
                         {
-                            case "recipes":
-                            case "called-ingredients":
-                                {
-                                    var recipe = _context.Recipes.Include(r => r.CalledIngredients).FirstOrDefault(r => r.Name.ToLower() == addRecipeIngredient.Recipe.ToLower());
-                                    if (recipe == null)
-                                    {
-                                        systemResponse = "Could not find recipe by name: " + addRecipeIngredient.Recipe;
-                                    }
-                                    else
-                                    {
-                                        var calledIngredient = new CalledIngredient
-                                        {
-                                            Name = addRecipeIngredient.Name,
-                                            Recipe = recipe,
-                                            Verified = false,
-                                            Units = addRecipeIngredient.Units,
-                                            UnitType = UnitTypeFromString(addRecipeIngredient.UnitType)
-                                        };
-                                        recipe.CalledIngredients.Add(calledIngredient);
-                                        _context.CalledIngredients.Add(calledIngredient);
-                                    }
-                                    break;
-                                }
-                            case "cooked-recipes":
-                                {
-                                    var cookedRecipe = _context.CookedRecipes.Include(r => r.CookedRecipeCalledIngredients).OrderByDescending(cr => cr.Created).FirstOrDefault(r => r.Recipe.Name.ToLower() == addRecipeIngredient.Recipe.ToLower());
-                                    if (cookedRecipe == null)
-                                    {
-                                        systemResponse = "Could not find cooked recipe by name: " + addRecipeIngredient.Recipe;
-                                    }
-                                    else
-                                    {
-                                        var cookedRecipeCalledIngredient = new CookedRecipeCalledIngredient
-                                        {
-                                            Name = addRecipeIngredient.Name,
-                                            CookedRecipe = cookedRecipe,
-                                            Units = addRecipeIngredient.Units,
-                                            UnitType = UnitTypeFromString(addRecipeIngredient.UnitType)
-                                        };
-                                        cookedRecipe.CookedRecipeCalledIngredients.Add(cookedRecipeCalledIngredient);
-                                        _context.CookedRecipeCalledIngredients.Add(cookedRecipeCalledIngredient);
-                                    }
-                                    break;
-                                }
-                            default:
-                                systemResponse = "Unsure if the user is adding a recipe ingredient or adding a cooked recipe ingredient.";
-                                break;
+                            systemResponse = "Error: Could not find recipe by name: " + addRecipeIngredient.Recipe;
                         }
-                        break;
+                        else
+                        {
+                            var calledIngredient = new CalledIngredient
+                            {
+                                Name = addRecipeIngredient.Name,
+                                Recipe = recipe,
+                                Verified = false,
+                                Units = addRecipeIngredient.Units,
+                                UnitType = UnitTypeFromString(addRecipeIngredient.UnitType)
+                            };
+                            recipe.CalledIngredients.Add(calledIngredient);
+                            _context.CalledIngredients.Add(calledIngredient);
+                        }
                     }
-                case "edit-recipe-ingredient-unittype":
-                case "edit-ingredient-unittype":
+                    break;
+                case "add-cooked-recipe-ingredient":
                     {
                         var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
                         var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
-                        var editIngredientUnitType = JsonConvert.DeserializeObject<OpenApiChatCommandEditIngredientUnitType>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
+                        var addCookedRecipeIngredient = JsonConvert.DeserializeObject<OpenApiChatCommandAddCookedRecipeIngredient>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
 
-                        //ingredients can be CalledIngredients, CookedRecipeCalledIngredients, and Products in the context of changing the unit type
-                        switch (notification.ChatCommand.CurrentUrl)
+                        var cookedRecipe = _context.CookedRecipes.Include(r => r.CookedRecipeCalledIngredients).OrderByDescending(cr => cr.Created).FirstOrDefault(r => r.Recipe.Name.ToLower() == addCookedRecipeIngredient.Recipe.ToLower());
+                        if (cookedRecipe == null)
                         {
-                            case "recipes":
-                            case "called-ingredients":
-                                {
-                                    var calledIngredient = _context.CalledIngredients.FirstOrDefault(ci => ci.Name.ToLower().Contains(editIngredientUnitType.Name.ToLower()));
-                                    if (calledIngredient == null)
-                                    {
-                                        systemResponse = "Could not find ingredient by name: " + editIngredientUnitType.Name;
-                                    }
-                                    else
-                                    {
-                                        calledIngredient.UnitType = UnitTypeFromString(editIngredientUnitType.UnitType);
-                                    }
-                                    break;
-                                }
-                            case "cooked-recipes":
-                                {
-                                    var cookedRecipeCalledIngredient = _context.CookedRecipeCalledIngredients.FirstOrDefault(crci => crci.Name.ToLower().Contains(editIngredientUnitType.Name.ToLower()));
-                                    if (cookedRecipeCalledIngredient == null)
-                                    {
-                                        systemResponse = "Could not find ingredient by name: " + editIngredientUnitType.Name;
-                                    }
-                                    else
-                                    {
-                                        cookedRecipeCalledIngredient.UnitType = UnitTypeFromString(editIngredientUnitType.UnitType);
-                                    }
-                                    break;
-                                }
-                            case "completedorders":
-                            case "products":
-                            case "product-stock":
-                                {
-                                    var product = _context.Products.FirstOrDefault(ci => ci.Name.ToLower().Contains(editIngredientUnitType.Name.ToLower()));
-                                    if (product == null)
-                                    {
-                                        systemResponse = "Could not find ingredient by name: " + editIngredientUnitType.Name;
-                                    }
-                                    else
-                                    {
-                                        product.UnitType = UnitTypeFromString(editIngredientUnitType.UnitType);
-                                    }
-                                    break;
-                                }
-                            default:
-                                systemResponse = "Could not find ingredient by name: " + editIngredientUnitType.Name;
-                                break;
+                            systemResponse = "Error: Could not find cooked recipe by name: " + addCookedRecipeIngredient.Recipe;
                         }
-
-                        break;
+                        else
+                        {
+                            var cookedRecipeCalledIngredient = new CookedRecipeCalledIngredient
+                            {
+                                Name = addCookedRecipeIngredient.Name,
+                                CookedRecipe = cookedRecipe,
+                                Units = addCookedRecipeIngredient.Units,
+                                UnitType = UnitTypeFromString(addCookedRecipeIngredient.UnitType)
+                            };
+                            cookedRecipe.CookedRecipeCalledIngredients.Add(cookedRecipeCalledIngredient);
+                            _context.CookedRecipeCalledIngredients.Add(cookedRecipeCalledIngredient);
+                        }
                     }
+                    break;
+                case "edit-recipe-ingredient-unittype":
+                    {
+                        var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
+                        var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
+                        var editRecipeIngredientUnitType = JsonConvert.DeserializeObject<OpenApiChatCommandEditRecipeIngredientUnitType>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
+
+                        var recipe = _context.Recipes.Include(r => r.CalledIngredients).FirstOrDefault(r => r.Name.ToLower().Contains(editRecipeIngredientUnitType.Recipe.ToLower()));
+
+                        if (recipe == null)
+                        {
+                            systemResponse = "Error: Could not find recipe by name: " + editRecipeIngredientUnitType.Recipe;
+                        }
+                        else
+                        {
+                            var calledIngredient = recipe.CalledIngredients.FirstOrDefault(ci => ci.Name.ToLower().Contains(editRecipeIngredientUnitType.Name.ToLower()));
+                            if (calledIngredient == null)
+                            {
+                                systemResponse = "Error: Could not find ingredient by name: " + editRecipeIngredientUnitType.Name;
+                            }
+                            else
+                            {
+                                calledIngredient.UnitType = UnitTypeFromString(editRecipeIngredientUnitType.UnitType);
+                            }
+                        }
+                    }
+                    break;
+                case "edit-cooked-recipe-ingredient-unittype":
+                    {
+                        var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
+                        var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
+                        var editCookedRecipeIngredientUnitType = JsonConvert.DeserializeObject<OpenApiChatCommandEditCookedRecipeIngredientUnitType>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
+
+                        var cookedRecipe = _context.CookedRecipes.Include(r => r.CookedRecipeCalledIngredients).FirstOrDefault(r => r.Recipe.Name.ToLower().Contains(editCookedRecipeIngredientUnitType.Recipe.ToLower()));
+
+                        if (cookedRecipe == null)
+                        {
+                            systemResponse = "Error: Could not find cooked recipe by name: " + editCookedRecipeIngredientUnitType.Recipe;
+                        }
+                        else
+                        {
+                            var calledIngredient = cookedRecipe.CookedRecipeCalledIngredients.FirstOrDefault(ci => ci.Name.ToLower().Contains(editCookedRecipeIngredientUnitType.Name.ToLower()));
+                            if (calledIngredient == null)
+                            {
+                                systemResponse = "Error: Could not find ingredient by name: " + editCookedRecipeIngredientUnitType.Name;
+                            }
+                            else
+                            {
+                                calledIngredient.UnitType = UnitTypeFromString(editCookedRecipeIngredientUnitType.UnitType);
+                            }
+                        }
+                    }
+                    break;
+                case "edit-product-unit-type":
+                    {
+                        var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
+                        var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
+                        var editProductUnitType = JsonConvert.DeserializeObject<OpenApiChatCommandEditProductUnitType>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
+
+                        var product = _context.Products.FirstOrDefault(p => p.Name.ToLower().Contains(editProductUnitType.Product.ToLower()));
+                        if (product == null)
+                        {
+                            systemResponse = "Error: Could not find product by name: " + editProductUnitType.Product;
+                        }
+                        else
+                        {
+                            product.UnitType = UnitTypeFromString(editProductUnitType.UnitType);
+                        }
+                    }
+                    break;
                 case "create-recipe":
                     {
                         var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
@@ -308,7 +302,7 @@ public class ReceivedChatCommandEventHandler : INotificationHandler<ReceivedChat
 
                         if (recipe == null)
                         {
-                            systemResponse = "Could not find recipe by name: " + deleteRecipe.Name;
+                            systemResponse = "Error: Could not find recipe by name: " + deleteRecipe.Name;
                         }
                         else
                         {
@@ -321,8 +315,7 @@ public class ReceivedChatCommandEventHandler : INotificationHandler<ReceivedChat
                         }
                     }
                     break;
-                case "cook-recipe":
-                case "log-cooked-recipe":
+                case "create-cooked-recipe":
                     {
                         var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
                         var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
@@ -334,7 +327,7 @@ public class ReceivedChatCommandEventHandler : INotificationHandler<ReceivedChat
 
                         if (recipe == null)
                         {
-                            systemResponse = "Could not find recipe by name: " + createCookedRecipe.Name;
+                            systemResponse = "Error: Could not find recipe by name: " + createCookedRecipe.Name;
                         }
                         else
                         {
@@ -360,6 +353,21 @@ public class ReceivedChatCommandEventHandler : INotificationHandler<ReceivedChat
 
                         break;
                     }
+                case "go-to-page":
+                    {
+                        var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
+                        var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
+                        var goToPage = JsonConvert.DeserializeObject<OpenApiChatCommandGoToPage>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
+                        notification.ChatCommand.NavigateToPage = string.Join('-', goToPage.Page.Split(' '));
+                    }
+                    break;
+                case "none":
+                    {
+                        var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
+                        var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
+                        var none = JsonConvert.DeserializeObject<OpenApiChatCommandNone>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
+                    }
+                    break;
                 default:
                     {
                         notification.ChatCommand.Unknown = true;
@@ -372,7 +380,7 @@ public class ReceivedChatCommandEventHandler : INotificationHandler<ReceivedChat
         catch (Exception ex)
         {
             notification.ChatCommand.Error = FlattenException(ex);
-            notification.ChatCommand.SystemResponse = "An error occured: " + ex.Message;
+            notification.ChatCommand.SystemResponse = "Error: " + ex.Message;
         }
         return _context.SaveChangesAsync(cancellationToken);
     }

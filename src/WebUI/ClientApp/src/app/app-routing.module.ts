@@ -15,6 +15,7 @@ import { TokenComponent } from './token/token.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
+  { path: 'home', component: HomeComponent, redirectTo: '' },
   { path: 'counter', component: CounterComponent },
   { path: 'fetch-data', component: FetchDataComponent },
   { path: 'products', component: ProductsComponent, canActivate: [AuthorizeGuard] },

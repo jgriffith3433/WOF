@@ -4007,7 +4007,9 @@ export interface IUpdateCalledIngredientDetailsCommand {
 export class GetChatResponseVm implements IGetChatResponseVm {
     chatConversationId?: number;
     createNewChat?: boolean;
+    error?: boolean;
     dirty?: boolean;
+    navigateToPage?: string;
     previousMessages?: ChatMessageVm[];
     responseMessage?: ChatMessageVm;
 
@@ -4024,7 +4026,9 @@ export class GetChatResponseVm implements IGetChatResponseVm {
         if (_data) {
             this.chatConversationId = _data["chatConversationId"];
             this.createNewChat = _data["createNewChat"];
+            this.error = _data["error"];
             this.dirty = _data["dirty"];
+            this.navigateToPage = _data["navigateToPage"];
             if (Array.isArray(_data["previousMessages"])) {
                 this.previousMessages = [] as any;
                 for (let item of _data["previousMessages"])
@@ -4045,7 +4049,9 @@ export class GetChatResponseVm implements IGetChatResponseVm {
         data = typeof data === 'object' ? data : {};
         data["chatConversationId"] = this.chatConversationId;
         data["createNewChat"] = this.createNewChat;
+        data["error"] = this.error;
         data["dirty"] = this.dirty;
+        data["navigateToPage"] = this.navigateToPage;
         if (Array.isArray(this.previousMessages)) {
             data["previousMessages"] = [];
             for (let item of this.previousMessages)
@@ -4059,7 +4065,9 @@ export class GetChatResponseVm implements IGetChatResponseVm {
 export interface IGetChatResponseVm {
     chatConversationId?: number;
     createNewChat?: boolean;
+    error?: boolean;
     dirty?: boolean;
+    navigateToPage?: string;
     previousMessages?: ChatMessageVm[];
     responseMessage?: ChatMessageVm;
 }

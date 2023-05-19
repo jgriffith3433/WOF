@@ -21,6 +21,7 @@ export class ChatWidgetComponent implements OnInit {
   @Input() public theme: 'blue' | 'grey' | 'red' = 'blue';
   public _visible = false;
   public _refreshing = false;
+  public _botNavigating = false;
   _previousScrollPosition = 0;
   _chatConversationId = undefined;
   previousMessages: ChatMessageVm[] = [];
@@ -39,7 +40,9 @@ export class ChatWidgetComponent implements OnInit {
             this.addMessage(this.operator, 'Logging in.', 'received');
           }
           else {
-            this.addMessage(this.operator, 'Navigating to the ' + (event.url.split('/').join(' ').trim() || 'home') + ' page.', 'received');
+            if (!this._botNavigating) {
+              this.addMessage(this.operator, 'Navigating to the ' + (event.url.split('/').join(' ').trim() || 'home') + ' page.', 'received');
+            }
           }
         }
       }
@@ -60,8 +63,13 @@ export class ChatWidgetComponent implements OnInit {
             while (this.previousMessages.length > 0) {
               this.previousMessages.pop();
             }
-            this.addMessage(this.operator, 'How can I help you manage your ' + this.getCurrentPageName(), 'received')
-          }, 1500);
+            if (event.url.toLowerCase().indexOf('login') == -1) {
+              this.addMessage(this.operator, 'How can I help you manage your ' + this.getCurrentPageName(), 'received');
+            }
+            if (this._botNavigating) {
+              this._botNavigating = false;
+            }
+          }, 500);
         }
       }
     });
@@ -141,28 +149,45 @@ export class ChatWidgetComponent implements OnInit {
     })).subscribe(
       result => {
         if (result.createNewChat) {
-          this.addMessage(this.operator, 'System: Something went wrong, creating new chat instance', 'received');
-          setTimeout(() => {
-            this._chatConversationId = undefined;
-            while (this.messages.length > 0) {
-              this.messages.pop();
-            }
-            while (this.previousMessages.length > 0) {
-              this.previousMessages.pop();
-            }
-            this.router.navigateByUrl(this.router.url);
+          if (result.error) {
+            this.addMessage(this.operator, 'System: Something went wrong, creating new chat instance', 'received');
             setTimeout(() => {
-              this.addMessage(this.operator, 'How can I help you manage your ' + this.getCurrentPageName(), 'received');
-            }, 500);
-          }, 2000);
+              this._chatConversationId = undefined;
+              while (this.messages.length > 0) {
+                this.messages.pop();
+              }
+              while (this.previousMessages.length > 0) {
+                this.previousMessages.pop();
+              }
+              this.router.navigateByUrl(this.router.url);
+            }, 2000);
+          }
+          else {
+            this._botNavigating = true;
+            if (result.responseMessage.message) {
+              this.addMessage(this.operator, result.responseMessage.message, 'received');
+            }
+            setTimeout(() => {
+              this._chatConversationId = undefined;
+              while (this.messages.length > 0) {
+                this.messages.pop();
+              }
+              while (this.previousMessages.length > 0) {
+                this.previousMessages.pop();
+              }
+              this.router.navigateByUrl(result.navigateToPage);
+            }, 2000);
+          }
         }
-        this._chatConversationId = result.chatConversationId;
-        this.previousMessages = result.previousMessages;
-        this.addMessage(this.operator, result.responseMessage.message, 'received');
-        if (result.dirty) {
-          this._refreshing = true;
-          this._previousScrollPosition = window.scrollY || document.getElementsByTagName("html")[0].scrollTop;
-          this.router.navigateByUrl(this.router.url);
+        else {
+          this._chatConversationId = result.chatConversationId;
+          this.previousMessages = result.previousMessages;
+          this.addMessage(this.operator, result.responseMessage.message, 'received');
+          if (result.dirty) {
+            this._refreshing = true;
+            this._previousScrollPosition = window.scrollY || document.getElementsByTagName("html")[0].scrollTop;
+            this.router.navigateByUrl(this.router.url);
+          }
         }
       },
       error => {

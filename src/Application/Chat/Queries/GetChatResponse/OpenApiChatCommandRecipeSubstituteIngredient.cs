@@ -2,7 +2,7 @@
 
 namespace WOF.Application.Chat.Queries.GetResponse;
 
-public record OpenApiChatCommandSubstituteIngredient : OpenApiChatCommand
+public record OpenApiChatCommandRecipeSubstituteIngredient : OpenApiChatCommand
 {
     public string Recipe { get; set; }
 
