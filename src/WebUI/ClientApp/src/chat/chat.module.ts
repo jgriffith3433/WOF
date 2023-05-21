@@ -4,9 +4,11 @@ import { ChatAvatarComponent } from './chat-avatar/chat-avatar.component'
 import { ChatWidgetComponent } from './chat-widget/chat-widget.component'
 import { ChatInputComponent } from './chat-input/chat-input.component'
 import { ChatConfigComponent } from './chat-config/chat-config.component'
-
+    
 @NgModule({
-  imports: [CommonModule],
+  imports: [
+    CommonModule
+  ],
   declarations: [ChatAvatarComponent, ChatWidgetComponent, ChatInputComponent, ChatConfigComponent],
   exports: [ChatWidgetComponent, ChatConfigComponent],
   entryComponents: [ChatWidgetComponent, ChatConfigComponent],

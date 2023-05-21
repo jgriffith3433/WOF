@@ -417,6 +417,7 @@ export class CalledIngredientsClient implements ICalledIngredientsClient {
 
 export interface IChatClient {
     create(query: GetChatResponseQuery): Observable<GetChatResponseVm>;
+    speech(contentType: string | null | undefined, contentDisposition: string | null | undefined, headers: IHeaderDictionary | null | undefined, length: number | undefined, name: string | null | undefined, fileName: string | null | undefined): Observable<GetChatTextFromSpeechVm>;
 }
 
 @Injectable({
@@ -474,6 +475,71 @@ export class ChatClient implements IChatClient {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = GetChatResponseVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    speech(contentType: string | null | undefined, contentDisposition: string | null | undefined, headers: IHeaderDictionary | null | undefined, length: number | undefined, name: string | null | undefined, fileName: string | null | undefined): Observable<GetChatTextFromSpeechVm> {
+        let url_ = this.baseUrl + "/api/Chat/speech";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (contentType !== null && contentType !== undefined)
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition !== null && contentDisposition !== undefined)
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers !== null && headers !== undefined)
+            content_.append("Headers", JSON.stringify(headers));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name !== null && name !== undefined)
+            content_.append("Name", name.toString());
+        if (fileName !== null && fileName !== undefined)
+            content_.append("FileName", fileName.toString());
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSpeech(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSpeech(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetChatTextFromSpeechVm>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetChatTextFromSpeechVm>;
+        }));
+    }
+
+    protected processSpeech(response: HttpResponseBase): Observable<GetChatTextFromSpeechVm> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetChatTextFromSpeechVm.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -4166,6 +4232,1156 @@ export interface IGetChatResponseQuery {
     chatMessage?: ChatMessageVm;
     chatConversationId?: number | undefined;
     currentUrl?: string;
+}
+
+export class GetChatTextFromSpeechVm implements IGetChatTextFromSpeechVm {
+    text?: string;
+
+    constructor(data?: IGetChatTextFromSpeechVm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.text = _data["text"];
+        }
+    }
+
+    static fromJS(data: any): GetChatTextFromSpeechVm {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetChatTextFromSpeechVm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["text"] = this.text;
+        return data;
+    }
+}
+
+export interface IGetChatTextFromSpeechVm {
+    text?: string;
+}
+
+export abstract class IHeaderDictionary implements IIHeaderDictionary {
+    item?: any[];
+    contentLength?: number | undefined;
+    accept?: any[];
+    acceptCharset?: any[];
+    acceptEncoding?: any[];
+    acceptLanguage?: any[];
+    acceptRanges?: any[];
+    accessControlAllowCredentials?: any[];
+    accessControlAllowHeaders?: any[];
+    accessControlAllowMethods?: any[];
+    accessControlAllowOrigin?: any[];
+    accessControlExposeHeaders?: any[];
+    accessControlMaxAge?: any[];
+    accessControlRequestHeaders?: any[];
+    accessControlRequestMethod?: any[];
+    age?: any[];
+    allow?: any[];
+    altSvc?: any[];
+    authorization?: any[];
+    baggage?: any[];
+    cacheControl?: any[];
+    connection?: any[];
+    contentDisposition?: any[];
+    contentEncoding?: any[];
+    contentLanguage?: any[];
+    contentLocation?: any[];
+    contentMD5?: any[];
+    contentRange?: any[];
+    contentSecurityPolicy?: any[];
+    contentSecurityPolicyReportOnly?: any[];
+    contentType?: any[];
+    correlationContext?: any[];
+    cookie?: any[];
+    date?: any[];
+    eTag?: any[];
+    expires?: any[];
+    expect?: any[];
+    from?: any[];
+    grpcAcceptEncoding?: any[];
+    grpcEncoding?: any[];
+    grpcMessage?: any[];
+    grpcStatus?: any[];
+    grpcTimeout?: any[];
+    host?: any[];
+    keepAlive?: any[];
+    ifMatch?: any[];
+    ifModifiedSince?: any[];
+    ifNoneMatch?: any[];
+    ifRange?: any[];
+    ifUnmodifiedSince?: any[];
+    lastModified?: any[];
+    link?: any[];
+    location?: any[];
+    maxForwards?: any[];
+    origin?: any[];
+    pragma?: any[];
+    proxyAuthenticate?: any[];
+    proxyAuthorization?: any[];
+    proxyConnection?: any[];
+    range?: any[];
+    referer?: any[];
+    retryAfter?: any[];
+    requestId?: any[];
+    secWebSocketAccept?: any[];
+    secWebSocketKey?: any[];
+    secWebSocketProtocol?: any[];
+    secWebSocketVersion?: any[];
+    secWebSocketExtensions?: any[];
+    server?: any[];
+    setCookie?: any[];
+    strictTransportSecurity?: any[];
+    tE?: any[];
+    trailer?: any[];
+    transferEncoding?: any[];
+    translate?: any[];
+    traceParent?: any[];
+    traceState?: any[];
+    upgrade?: any[];
+    upgradeInsecureRequests?: any[];
+    userAgent?: any[];
+    vary?: any[];
+    via?: any[];
+    warning?: any[];
+    webSocketSubProtocols?: any[];
+    wWWAuthenticate?: any[];
+    xContentTypeOptions?: any[];
+    xFrameOptions?: any[];
+    xPoweredBy?: any[];
+    xRequestedWith?: any[];
+    xUACompatible?: any[];
+    xXSSProtection?: any[];
+
+    constructor(data?: IIHeaderDictionary) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["Item"])) {
+                this.item = [] as any;
+                for (let item of _data["Item"])
+                    this.item!.push(item);
+            }
+            this.contentLength = _data["ContentLength"];
+            if (Array.isArray(_data["Accept"])) {
+                this.accept = [] as any;
+                for (let item of _data["Accept"])
+                    this.accept!.push(item);
+            }
+            if (Array.isArray(_data["AcceptCharset"])) {
+                this.acceptCharset = [] as any;
+                for (let item of _data["AcceptCharset"])
+                    this.acceptCharset!.push(item);
+            }
+            if (Array.isArray(_data["AcceptEncoding"])) {
+                this.acceptEncoding = [] as any;
+                for (let item of _data["AcceptEncoding"])
+                    this.acceptEncoding!.push(item);
+            }
+            if (Array.isArray(_data["AcceptLanguage"])) {
+                this.acceptLanguage = [] as any;
+                for (let item of _data["AcceptLanguage"])
+                    this.acceptLanguage!.push(item);
+            }
+            if (Array.isArray(_data["AcceptRanges"])) {
+                this.acceptRanges = [] as any;
+                for (let item of _data["AcceptRanges"])
+                    this.acceptRanges!.push(item);
+            }
+            if (Array.isArray(_data["AccessControlAllowCredentials"])) {
+                this.accessControlAllowCredentials = [] as any;
+                for (let item of _data["AccessControlAllowCredentials"])
+                    this.accessControlAllowCredentials!.push(item);
+            }
+            if (Array.isArray(_data["AccessControlAllowHeaders"])) {
+                this.accessControlAllowHeaders = [] as any;
+                for (let item of _data["AccessControlAllowHeaders"])
+                    this.accessControlAllowHeaders!.push(item);
+            }
+            if (Array.isArray(_data["AccessControlAllowMethods"])) {
+                this.accessControlAllowMethods = [] as any;
+                for (let item of _data["AccessControlAllowMethods"])
+                    this.accessControlAllowMethods!.push(item);
+            }
+            if (Array.isArray(_data["AccessControlAllowOrigin"])) {
+                this.accessControlAllowOrigin = [] as any;
+                for (let item of _data["AccessControlAllowOrigin"])
+                    this.accessControlAllowOrigin!.push(item);
+            }
+            if (Array.isArray(_data["AccessControlExposeHeaders"])) {
+                this.accessControlExposeHeaders = [] as any;
+                for (let item of _data["AccessControlExposeHeaders"])
+                    this.accessControlExposeHeaders!.push(item);
+            }
+            if (Array.isArray(_data["AccessControlMaxAge"])) {
+                this.accessControlMaxAge = [] as any;
+                for (let item of _data["AccessControlMaxAge"])
+                    this.accessControlMaxAge!.push(item);
+            }
+            if (Array.isArray(_data["AccessControlRequestHeaders"])) {
+                this.accessControlRequestHeaders = [] as any;
+                for (let item of _data["AccessControlRequestHeaders"])
+                    this.accessControlRequestHeaders!.push(item);
+            }
+            if (Array.isArray(_data["AccessControlRequestMethod"])) {
+                this.accessControlRequestMethod = [] as any;
+                for (let item of _data["AccessControlRequestMethod"])
+                    this.accessControlRequestMethod!.push(item);
+            }
+            if (Array.isArray(_data["Age"])) {
+                this.age = [] as any;
+                for (let item of _data["Age"])
+                    this.age!.push(item);
+            }
+            if (Array.isArray(_data["Allow"])) {
+                this.allow = [] as any;
+                for (let item of _data["Allow"])
+                    this.allow!.push(item);
+            }
+            if (Array.isArray(_data["AltSvc"])) {
+                this.altSvc = [] as any;
+                for (let item of _data["AltSvc"])
+                    this.altSvc!.push(item);
+            }
+            if (Array.isArray(_data["Authorization"])) {
+                this.authorization = [] as any;
+                for (let item of _data["Authorization"])
+                    this.authorization!.push(item);
+            }
+            if (Array.isArray(_data["Baggage"])) {
+                this.baggage = [] as any;
+                for (let item of _data["Baggage"])
+                    this.baggage!.push(item);
+            }
+            if (Array.isArray(_data["CacheControl"])) {
+                this.cacheControl = [] as any;
+                for (let item of _data["CacheControl"])
+                    this.cacheControl!.push(item);
+            }
+            if (Array.isArray(_data["Connection"])) {
+                this.connection = [] as any;
+                for (let item of _data["Connection"])
+                    this.connection!.push(item);
+            }
+            if (Array.isArray(_data["ContentDisposition"])) {
+                this.contentDisposition = [] as any;
+                for (let item of _data["ContentDisposition"])
+                    this.contentDisposition!.push(item);
+            }
+            if (Array.isArray(_data["ContentEncoding"])) {
+                this.contentEncoding = [] as any;
+                for (let item of _data["ContentEncoding"])
+                    this.contentEncoding!.push(item);
+            }
+            if (Array.isArray(_data["ContentLanguage"])) {
+                this.contentLanguage = [] as any;
+                for (let item of _data["ContentLanguage"])
+                    this.contentLanguage!.push(item);
+            }
+            if (Array.isArray(_data["ContentLocation"])) {
+                this.contentLocation = [] as any;
+                for (let item of _data["ContentLocation"])
+                    this.contentLocation!.push(item);
+            }
+            if (Array.isArray(_data["ContentMD5"])) {
+                this.contentMD5 = [] as any;
+                for (let item of _data["ContentMD5"])
+                    this.contentMD5!.push(item);
+            }
+            if (Array.isArray(_data["ContentRange"])) {
+                this.contentRange = [] as any;
+                for (let item of _data["ContentRange"])
+                    this.contentRange!.push(item);
+            }
+            if (Array.isArray(_data["ContentSecurityPolicy"])) {
+                this.contentSecurityPolicy = [] as any;
+                for (let item of _data["ContentSecurityPolicy"])
+                    this.contentSecurityPolicy!.push(item);
+            }
+            if (Array.isArray(_data["ContentSecurityPolicyReportOnly"])) {
+                this.contentSecurityPolicyReportOnly = [] as any;
+                for (let item of _data["ContentSecurityPolicyReportOnly"])
+                    this.contentSecurityPolicyReportOnly!.push(item);
+            }
+            if (Array.isArray(_data["ContentType"])) {
+                this.contentType = [] as any;
+                for (let item of _data["ContentType"])
+                    this.contentType!.push(item);
+            }
+            if (Array.isArray(_data["CorrelationContext"])) {
+                this.correlationContext = [] as any;
+                for (let item of _data["CorrelationContext"])
+                    this.correlationContext!.push(item);
+            }
+            if (Array.isArray(_data["Cookie"])) {
+                this.cookie = [] as any;
+                for (let item of _data["Cookie"])
+                    this.cookie!.push(item);
+            }
+            if (Array.isArray(_data["Date"])) {
+                this.date = [] as any;
+                for (let item of _data["Date"])
+                    this.date!.push(item);
+            }
+            if (Array.isArray(_data["ETag"])) {
+                this.eTag = [] as any;
+                for (let item of _data["ETag"])
+                    this.eTag!.push(item);
+            }
+            if (Array.isArray(_data["Expires"])) {
+                this.expires = [] as any;
+                for (let item of _data["Expires"])
+                    this.expires!.push(item);
+            }
+            if (Array.isArray(_data["Expect"])) {
+                this.expect = [] as any;
+                for (let item of _data["Expect"])
+                    this.expect!.push(item);
+            }
+            if (Array.isArray(_data["From"])) {
+                this.from = [] as any;
+                for (let item of _data["From"])
+                    this.from!.push(item);
+            }
+            if (Array.isArray(_data["GrpcAcceptEncoding"])) {
+                this.grpcAcceptEncoding = [] as any;
+                for (let item of _data["GrpcAcceptEncoding"])
+                    this.grpcAcceptEncoding!.push(item);
+            }
+            if (Array.isArray(_data["GrpcEncoding"])) {
+                this.grpcEncoding = [] as any;
+                for (let item of _data["GrpcEncoding"])
+                    this.grpcEncoding!.push(item);
+            }
+            if (Array.isArray(_data["GrpcMessage"])) {
+                this.grpcMessage = [] as any;
+                for (let item of _data["GrpcMessage"])
+                    this.grpcMessage!.push(item);
+            }
+            if (Array.isArray(_data["GrpcStatus"])) {
+                this.grpcStatus = [] as any;
+                for (let item of _data["GrpcStatus"])
+                    this.grpcStatus!.push(item);
+            }
+            if (Array.isArray(_data["GrpcTimeout"])) {
+                this.grpcTimeout = [] as any;
+                for (let item of _data["GrpcTimeout"])
+                    this.grpcTimeout!.push(item);
+            }
+            if (Array.isArray(_data["Host"])) {
+                this.host = [] as any;
+                for (let item of _data["Host"])
+                    this.host!.push(item);
+            }
+            if (Array.isArray(_data["KeepAlive"])) {
+                this.keepAlive = [] as any;
+                for (let item of _data["KeepAlive"])
+                    this.keepAlive!.push(item);
+            }
+            if (Array.isArray(_data["IfMatch"])) {
+                this.ifMatch = [] as any;
+                for (let item of _data["IfMatch"])
+                    this.ifMatch!.push(item);
+            }
+            if (Array.isArray(_data["IfModifiedSince"])) {
+                this.ifModifiedSince = [] as any;
+                for (let item of _data["IfModifiedSince"])
+                    this.ifModifiedSince!.push(item);
+            }
+            if (Array.isArray(_data["IfNoneMatch"])) {
+                this.ifNoneMatch = [] as any;
+                for (let item of _data["IfNoneMatch"])
+                    this.ifNoneMatch!.push(item);
+            }
+            if (Array.isArray(_data["IfRange"])) {
+                this.ifRange = [] as any;
+                for (let item of _data["IfRange"])
+                    this.ifRange!.push(item);
+            }
+            if (Array.isArray(_data["IfUnmodifiedSince"])) {
+                this.ifUnmodifiedSince = [] as any;
+                for (let item of _data["IfUnmodifiedSince"])
+                    this.ifUnmodifiedSince!.push(item);
+            }
+            if (Array.isArray(_data["LastModified"])) {
+                this.lastModified = [] as any;
+                for (let item of _data["LastModified"])
+                    this.lastModified!.push(item);
+            }
+            if (Array.isArray(_data["Link"])) {
+                this.link = [] as any;
+                for (let item of _data["Link"])
+                    this.link!.push(item);
+            }
+            if (Array.isArray(_data["Location"])) {
+                this.location = [] as any;
+                for (let item of _data["Location"])
+                    this.location!.push(item);
+            }
+            if (Array.isArray(_data["MaxForwards"])) {
+                this.maxForwards = [] as any;
+                for (let item of _data["MaxForwards"])
+                    this.maxForwards!.push(item);
+            }
+            if (Array.isArray(_data["Origin"])) {
+                this.origin = [] as any;
+                for (let item of _data["Origin"])
+                    this.origin!.push(item);
+            }
+            if (Array.isArray(_data["Pragma"])) {
+                this.pragma = [] as any;
+                for (let item of _data["Pragma"])
+                    this.pragma!.push(item);
+            }
+            if (Array.isArray(_data["ProxyAuthenticate"])) {
+                this.proxyAuthenticate = [] as any;
+                for (let item of _data["ProxyAuthenticate"])
+                    this.proxyAuthenticate!.push(item);
+            }
+            if (Array.isArray(_data["ProxyAuthorization"])) {
+                this.proxyAuthorization = [] as any;
+                for (let item of _data["ProxyAuthorization"])
+                    this.proxyAuthorization!.push(item);
+            }
+            if (Array.isArray(_data["ProxyConnection"])) {
+                this.proxyConnection = [] as any;
+                for (let item of _data["ProxyConnection"])
+                    this.proxyConnection!.push(item);
+            }
+            if (Array.isArray(_data["Range"])) {
+                this.range = [] as any;
+                for (let item of _data["Range"])
+                    this.range!.push(item);
+            }
+            if (Array.isArray(_data["Referer"])) {
+                this.referer = [] as any;
+                for (let item of _data["Referer"])
+                    this.referer!.push(item);
+            }
+            if (Array.isArray(_data["RetryAfter"])) {
+                this.retryAfter = [] as any;
+                for (let item of _data["RetryAfter"])
+                    this.retryAfter!.push(item);
+            }
+            if (Array.isArray(_data["RequestId"])) {
+                this.requestId = [] as any;
+                for (let item of _data["RequestId"])
+                    this.requestId!.push(item);
+            }
+            if (Array.isArray(_data["SecWebSocketAccept"])) {
+                this.secWebSocketAccept = [] as any;
+                for (let item of _data["SecWebSocketAccept"])
+                    this.secWebSocketAccept!.push(item);
+            }
+            if (Array.isArray(_data["SecWebSocketKey"])) {
+                this.secWebSocketKey = [] as any;
+                for (let item of _data["SecWebSocketKey"])
+                    this.secWebSocketKey!.push(item);
+            }
+            if (Array.isArray(_data["SecWebSocketProtocol"])) {
+                this.secWebSocketProtocol = [] as any;
+                for (let item of _data["SecWebSocketProtocol"])
+                    this.secWebSocketProtocol!.push(item);
+            }
+            if (Array.isArray(_data["SecWebSocketVersion"])) {
+                this.secWebSocketVersion = [] as any;
+                for (let item of _data["SecWebSocketVersion"])
+                    this.secWebSocketVersion!.push(item);
+            }
+            if (Array.isArray(_data["SecWebSocketExtensions"])) {
+                this.secWebSocketExtensions = [] as any;
+                for (let item of _data["SecWebSocketExtensions"])
+                    this.secWebSocketExtensions!.push(item);
+            }
+            if (Array.isArray(_data["Server"])) {
+                this.server = [] as any;
+                for (let item of _data["Server"])
+                    this.server!.push(item);
+            }
+            if (Array.isArray(_data["SetCookie"])) {
+                this.setCookie = [] as any;
+                for (let item of _data["SetCookie"])
+                    this.setCookie!.push(item);
+            }
+            if (Array.isArray(_data["StrictTransportSecurity"])) {
+                this.strictTransportSecurity = [] as any;
+                for (let item of _data["StrictTransportSecurity"])
+                    this.strictTransportSecurity!.push(item);
+            }
+            if (Array.isArray(_data["TE"])) {
+                this.tE = [] as any;
+                for (let item of _data["TE"])
+                    this.tE!.push(item);
+            }
+            if (Array.isArray(_data["Trailer"])) {
+                this.trailer = [] as any;
+                for (let item of _data["Trailer"])
+                    this.trailer!.push(item);
+            }
+            if (Array.isArray(_data["TransferEncoding"])) {
+                this.transferEncoding = [] as any;
+                for (let item of _data["TransferEncoding"])
+                    this.transferEncoding!.push(item);
+            }
+            if (Array.isArray(_data["Translate"])) {
+                this.translate = [] as any;
+                for (let item of _data["Translate"])
+                    this.translate!.push(item);
+            }
+            if (Array.isArray(_data["TraceParent"])) {
+                this.traceParent = [] as any;
+                for (let item of _data["TraceParent"])
+                    this.traceParent!.push(item);
+            }
+            if (Array.isArray(_data["TraceState"])) {
+                this.traceState = [] as any;
+                for (let item of _data["TraceState"])
+                    this.traceState!.push(item);
+            }
+            if (Array.isArray(_data["Upgrade"])) {
+                this.upgrade = [] as any;
+                for (let item of _data["Upgrade"])
+                    this.upgrade!.push(item);
+            }
+            if (Array.isArray(_data["UpgradeInsecureRequests"])) {
+                this.upgradeInsecureRequests = [] as any;
+                for (let item of _data["UpgradeInsecureRequests"])
+                    this.upgradeInsecureRequests!.push(item);
+            }
+            if (Array.isArray(_data["UserAgent"])) {
+                this.userAgent = [] as any;
+                for (let item of _data["UserAgent"])
+                    this.userAgent!.push(item);
+            }
+            if (Array.isArray(_data["Vary"])) {
+                this.vary = [] as any;
+                for (let item of _data["Vary"])
+                    this.vary!.push(item);
+            }
+            if (Array.isArray(_data["Via"])) {
+                this.via = [] as any;
+                for (let item of _data["Via"])
+                    this.via!.push(item);
+            }
+            if (Array.isArray(_data["Warning"])) {
+                this.warning = [] as any;
+                for (let item of _data["Warning"])
+                    this.warning!.push(item);
+            }
+            if (Array.isArray(_data["WebSocketSubProtocols"])) {
+                this.webSocketSubProtocols = [] as any;
+                for (let item of _data["WebSocketSubProtocols"])
+                    this.webSocketSubProtocols!.push(item);
+            }
+            if (Array.isArray(_data["WWWAuthenticate"])) {
+                this.wWWAuthenticate = [] as any;
+                for (let item of _data["WWWAuthenticate"])
+                    this.wWWAuthenticate!.push(item);
+            }
+            if (Array.isArray(_data["XContentTypeOptions"])) {
+                this.xContentTypeOptions = [] as any;
+                for (let item of _data["XContentTypeOptions"])
+                    this.xContentTypeOptions!.push(item);
+            }
+            if (Array.isArray(_data["XFrameOptions"])) {
+                this.xFrameOptions = [] as any;
+                for (let item of _data["XFrameOptions"])
+                    this.xFrameOptions!.push(item);
+            }
+            if (Array.isArray(_data["XPoweredBy"])) {
+                this.xPoweredBy = [] as any;
+                for (let item of _data["XPoweredBy"])
+                    this.xPoweredBy!.push(item);
+            }
+            if (Array.isArray(_data["XRequestedWith"])) {
+                this.xRequestedWith = [] as any;
+                for (let item of _data["XRequestedWith"])
+                    this.xRequestedWith!.push(item);
+            }
+            if (Array.isArray(_data["XUACompatible"])) {
+                this.xUACompatible = [] as any;
+                for (let item of _data["XUACompatible"])
+                    this.xUACompatible!.push(item);
+            }
+            if (Array.isArray(_data["XXSSProtection"])) {
+                this.xXSSProtection = [] as any;
+                for (let item of _data["XXSSProtection"])
+                    this.xXSSProtection!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): IHeaderDictionary {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'IHeaderDictionary' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.item)) {
+            data["Item"] = [];
+            for (let item of this.item)
+                data["Item"].push(item);
+        }
+        data["ContentLength"] = this.contentLength;
+        if (Array.isArray(this.accept)) {
+            data["Accept"] = [];
+            for (let item of this.accept)
+                data["Accept"].push(item);
+        }
+        if (Array.isArray(this.acceptCharset)) {
+            data["AcceptCharset"] = [];
+            for (let item of this.acceptCharset)
+                data["AcceptCharset"].push(item);
+        }
+        if (Array.isArray(this.acceptEncoding)) {
+            data["AcceptEncoding"] = [];
+            for (let item of this.acceptEncoding)
+                data["AcceptEncoding"].push(item);
+        }
+        if (Array.isArray(this.acceptLanguage)) {
+            data["AcceptLanguage"] = [];
+            for (let item of this.acceptLanguage)
+                data["AcceptLanguage"].push(item);
+        }
+        if (Array.isArray(this.acceptRanges)) {
+            data["AcceptRanges"] = [];
+            for (let item of this.acceptRanges)
+                data["AcceptRanges"].push(item);
+        }
+        if (Array.isArray(this.accessControlAllowCredentials)) {
+            data["AccessControlAllowCredentials"] = [];
+            for (let item of this.accessControlAllowCredentials)
+                data["AccessControlAllowCredentials"].push(item);
+        }
+        if (Array.isArray(this.accessControlAllowHeaders)) {
+            data["AccessControlAllowHeaders"] = [];
+            for (let item of this.accessControlAllowHeaders)
+                data["AccessControlAllowHeaders"].push(item);
+        }
+        if (Array.isArray(this.accessControlAllowMethods)) {
+            data["AccessControlAllowMethods"] = [];
+            for (let item of this.accessControlAllowMethods)
+                data["AccessControlAllowMethods"].push(item);
+        }
+        if (Array.isArray(this.accessControlAllowOrigin)) {
+            data["AccessControlAllowOrigin"] = [];
+            for (let item of this.accessControlAllowOrigin)
+                data["AccessControlAllowOrigin"].push(item);
+        }
+        if (Array.isArray(this.accessControlExposeHeaders)) {
+            data["AccessControlExposeHeaders"] = [];
+            for (let item of this.accessControlExposeHeaders)
+                data["AccessControlExposeHeaders"].push(item);
+        }
+        if (Array.isArray(this.accessControlMaxAge)) {
+            data["AccessControlMaxAge"] = [];
+            for (let item of this.accessControlMaxAge)
+                data["AccessControlMaxAge"].push(item);
+        }
+        if (Array.isArray(this.accessControlRequestHeaders)) {
+            data["AccessControlRequestHeaders"] = [];
+            for (let item of this.accessControlRequestHeaders)
+                data["AccessControlRequestHeaders"].push(item);
+        }
+        if (Array.isArray(this.accessControlRequestMethod)) {
+            data["AccessControlRequestMethod"] = [];
+            for (let item of this.accessControlRequestMethod)
+                data["AccessControlRequestMethod"].push(item);
+        }
+        if (Array.isArray(this.age)) {
+            data["Age"] = [];
+            for (let item of this.age)
+                data["Age"].push(item);
+        }
+        if (Array.isArray(this.allow)) {
+            data["Allow"] = [];
+            for (let item of this.allow)
+                data["Allow"].push(item);
+        }
+        if (Array.isArray(this.altSvc)) {
+            data["AltSvc"] = [];
+            for (let item of this.altSvc)
+                data["AltSvc"].push(item);
+        }
+        if (Array.isArray(this.authorization)) {
+            data["Authorization"] = [];
+            for (let item of this.authorization)
+                data["Authorization"].push(item);
+        }
+        if (Array.isArray(this.baggage)) {
+            data["Baggage"] = [];
+            for (let item of this.baggage)
+                data["Baggage"].push(item);
+        }
+        if (Array.isArray(this.cacheControl)) {
+            data["CacheControl"] = [];
+            for (let item of this.cacheControl)
+                data["CacheControl"].push(item);
+        }
+        if (Array.isArray(this.connection)) {
+            data["Connection"] = [];
+            for (let item of this.connection)
+                data["Connection"].push(item);
+        }
+        if (Array.isArray(this.contentDisposition)) {
+            data["ContentDisposition"] = [];
+            for (let item of this.contentDisposition)
+                data["ContentDisposition"].push(item);
+        }
+        if (Array.isArray(this.contentEncoding)) {
+            data["ContentEncoding"] = [];
+            for (let item of this.contentEncoding)
+                data["ContentEncoding"].push(item);
+        }
+        if (Array.isArray(this.contentLanguage)) {
+            data["ContentLanguage"] = [];
+            for (let item of this.contentLanguage)
+                data["ContentLanguage"].push(item);
+        }
+        if (Array.isArray(this.contentLocation)) {
+            data["ContentLocation"] = [];
+            for (let item of this.contentLocation)
+                data["ContentLocation"].push(item);
+        }
+        if (Array.isArray(this.contentMD5)) {
+            data["ContentMD5"] = [];
+            for (let item of this.contentMD5)
+                data["ContentMD5"].push(item);
+        }
+        if (Array.isArray(this.contentRange)) {
+            data["ContentRange"] = [];
+            for (let item of this.contentRange)
+                data["ContentRange"].push(item);
+        }
+        if (Array.isArray(this.contentSecurityPolicy)) {
+            data["ContentSecurityPolicy"] = [];
+            for (let item of this.contentSecurityPolicy)
+                data["ContentSecurityPolicy"].push(item);
+        }
+        if (Array.isArray(this.contentSecurityPolicyReportOnly)) {
+            data["ContentSecurityPolicyReportOnly"] = [];
+            for (let item of this.contentSecurityPolicyReportOnly)
+                data["ContentSecurityPolicyReportOnly"].push(item);
+        }
+        if (Array.isArray(this.contentType)) {
+            data["ContentType"] = [];
+            for (let item of this.contentType)
+                data["ContentType"].push(item);
+        }
+        if (Array.isArray(this.correlationContext)) {
+            data["CorrelationContext"] = [];
+            for (let item of this.correlationContext)
+                data["CorrelationContext"].push(item);
+        }
+        if (Array.isArray(this.cookie)) {
+            data["Cookie"] = [];
+            for (let item of this.cookie)
+                data["Cookie"].push(item);
+        }
+        if (Array.isArray(this.date)) {
+            data["Date"] = [];
+            for (let item of this.date)
+                data["Date"].push(item);
+        }
+        if (Array.isArray(this.eTag)) {
+            data["ETag"] = [];
+            for (let item of this.eTag)
+                data["ETag"].push(item);
+        }
+        if (Array.isArray(this.expires)) {
+            data["Expires"] = [];
+            for (let item of this.expires)
+                data["Expires"].push(item);
+        }
+        if (Array.isArray(this.expect)) {
+            data["Expect"] = [];
+            for (let item of this.expect)
+                data["Expect"].push(item);
+        }
+        if (Array.isArray(this.from)) {
+            data["From"] = [];
+            for (let item of this.from)
+                data["From"].push(item);
+        }
+        if (Array.isArray(this.grpcAcceptEncoding)) {
+            data["GrpcAcceptEncoding"] = [];
+            for (let item of this.grpcAcceptEncoding)
+                data["GrpcAcceptEncoding"].push(item);
+        }
+        if (Array.isArray(this.grpcEncoding)) {
+            data["GrpcEncoding"] = [];
+            for (let item of this.grpcEncoding)
+                data["GrpcEncoding"].push(item);
+        }
+        if (Array.isArray(this.grpcMessage)) {
+            data["GrpcMessage"] = [];
+            for (let item of this.grpcMessage)
+                data["GrpcMessage"].push(item);
+        }
+        if (Array.isArray(this.grpcStatus)) {
+            data["GrpcStatus"] = [];
+            for (let item of this.grpcStatus)
+                data["GrpcStatus"].push(item);
+        }
+        if (Array.isArray(this.grpcTimeout)) {
+            data["GrpcTimeout"] = [];
+            for (let item of this.grpcTimeout)
+                data["GrpcTimeout"].push(item);
+        }
+        if (Array.isArray(this.host)) {
+            data["Host"] = [];
+            for (let item of this.host)
+                data["Host"].push(item);
+        }
+        if (Array.isArray(this.keepAlive)) {
+            data["KeepAlive"] = [];
+            for (let item of this.keepAlive)
+                data["KeepAlive"].push(item);
+        }
+        if (Array.isArray(this.ifMatch)) {
+            data["IfMatch"] = [];
+            for (let item of this.ifMatch)
+                data["IfMatch"].push(item);
+        }
+        if (Array.isArray(this.ifModifiedSince)) {
+            data["IfModifiedSince"] = [];
+            for (let item of this.ifModifiedSince)
+                data["IfModifiedSince"].push(item);
+        }
+        if (Array.isArray(this.ifNoneMatch)) {
+            data["IfNoneMatch"] = [];
+            for (let item of this.ifNoneMatch)
+                data["IfNoneMatch"].push(item);
+        }
+        if (Array.isArray(this.ifRange)) {
+            data["IfRange"] = [];
+            for (let item of this.ifRange)
+                data["IfRange"].push(item);
+        }
+        if (Array.isArray(this.ifUnmodifiedSince)) {
+            data["IfUnmodifiedSince"] = [];
+            for (let item of this.ifUnmodifiedSince)
+                data["IfUnmodifiedSince"].push(item);
+        }
+        if (Array.isArray(this.lastModified)) {
+            data["LastModified"] = [];
+            for (let item of this.lastModified)
+                data["LastModified"].push(item);
+        }
+        if (Array.isArray(this.link)) {
+            data["Link"] = [];
+            for (let item of this.link)
+                data["Link"].push(item);
+        }
+        if (Array.isArray(this.location)) {
+            data["Location"] = [];
+            for (let item of this.location)
+                data["Location"].push(item);
+        }
+        if (Array.isArray(this.maxForwards)) {
+            data["MaxForwards"] = [];
+            for (let item of this.maxForwards)
+                data["MaxForwards"].push(item);
+        }
+        if (Array.isArray(this.origin)) {
+            data["Origin"] = [];
+            for (let item of this.origin)
+                data["Origin"].push(item);
+        }
+        if (Array.isArray(this.pragma)) {
+            data["Pragma"] = [];
+            for (let item of this.pragma)
+                data["Pragma"].push(item);
+        }
+        if (Array.isArray(this.proxyAuthenticate)) {
+            data["ProxyAuthenticate"] = [];
+            for (let item of this.proxyAuthenticate)
+                data["ProxyAuthenticate"].push(item);
+        }
+        if (Array.isArray(this.proxyAuthorization)) {
+            data["ProxyAuthorization"] = [];
+            for (let item of this.proxyAuthorization)
+                data["ProxyAuthorization"].push(item);
+        }
+        if (Array.isArray(this.proxyConnection)) {
+            data["ProxyConnection"] = [];
+            for (let item of this.proxyConnection)
+                data["ProxyConnection"].push(item);
+        }
+        if (Array.isArray(this.range)) {
+            data["Range"] = [];
+            for (let item of this.range)
+                data["Range"].push(item);
+        }
+        if (Array.isArray(this.referer)) {
+            data["Referer"] = [];
+            for (let item of this.referer)
+                data["Referer"].push(item);
+        }
+        if (Array.isArray(this.retryAfter)) {
+            data["RetryAfter"] = [];
+            for (let item of this.retryAfter)
+                data["RetryAfter"].push(item);
+        }
+        if (Array.isArray(this.requestId)) {
+            data["RequestId"] = [];
+            for (let item of this.requestId)
+                data["RequestId"].push(item);
+        }
+        if (Array.isArray(this.secWebSocketAccept)) {
+            data["SecWebSocketAccept"] = [];
+            for (let item of this.secWebSocketAccept)
+                data["SecWebSocketAccept"].push(item);
+        }
+        if (Array.isArray(this.secWebSocketKey)) {
+            data["SecWebSocketKey"] = [];
+            for (let item of this.secWebSocketKey)
+                data["SecWebSocketKey"].push(item);
+        }
+        if (Array.isArray(this.secWebSocketProtocol)) {
+            data["SecWebSocketProtocol"] = [];
+            for (let item of this.secWebSocketProtocol)
+                data["SecWebSocketProtocol"].push(item);
+        }
+        if (Array.isArray(this.secWebSocketVersion)) {
+            data["SecWebSocketVersion"] = [];
+            for (let item of this.secWebSocketVersion)
+                data["SecWebSocketVersion"].push(item);
+        }
+        if (Array.isArray(this.secWebSocketExtensions)) {
+            data["SecWebSocketExtensions"] = [];
+            for (let item of this.secWebSocketExtensions)
+                data["SecWebSocketExtensions"].push(item);
+        }
+        if (Array.isArray(this.server)) {
+            data["Server"] = [];
+            for (let item of this.server)
+                data["Server"].push(item);
+        }
+        if (Array.isArray(this.setCookie)) {
+            data["SetCookie"] = [];
+            for (let item of this.setCookie)
+                data["SetCookie"].push(item);
+        }
+        if (Array.isArray(this.strictTransportSecurity)) {
+            data["StrictTransportSecurity"] = [];
+            for (let item of this.strictTransportSecurity)
+                data["StrictTransportSecurity"].push(item);
+        }
+        if (Array.isArray(this.tE)) {
+            data["TE"] = [];
+            for (let item of this.tE)
+                data["TE"].push(item);
+        }
+        if (Array.isArray(this.trailer)) {
+            data["Trailer"] = [];
+            for (let item of this.trailer)
+                data["Trailer"].push(item);
+        }
+        if (Array.isArray(this.transferEncoding)) {
+            data["TransferEncoding"] = [];
+            for (let item of this.transferEncoding)
+                data["TransferEncoding"].push(item);
+        }
+        if (Array.isArray(this.translate)) {
+            data["Translate"] = [];
+            for (let item of this.translate)
+                data["Translate"].push(item);
+        }
+        if (Array.isArray(this.traceParent)) {
+            data["TraceParent"] = [];
+            for (let item of this.traceParent)
+                data["TraceParent"].push(item);
+        }
+        if (Array.isArray(this.traceState)) {
+            data["TraceState"] = [];
+            for (let item of this.traceState)
+                data["TraceState"].push(item);
+        }
+        if (Array.isArray(this.upgrade)) {
+            data["Upgrade"] = [];
+            for (let item of this.upgrade)
+                data["Upgrade"].push(item);
+        }
+        if (Array.isArray(this.upgradeInsecureRequests)) {
+            data["UpgradeInsecureRequests"] = [];
+            for (let item of this.upgradeInsecureRequests)
+                data["UpgradeInsecureRequests"].push(item);
+        }
+        if (Array.isArray(this.userAgent)) {
+            data["UserAgent"] = [];
+            for (let item of this.userAgent)
+                data["UserAgent"].push(item);
+        }
+        if (Array.isArray(this.vary)) {
+            data["Vary"] = [];
+            for (let item of this.vary)
+                data["Vary"].push(item);
+        }
+        if (Array.isArray(this.via)) {
+            data["Via"] = [];
+            for (let item of this.via)
+                data["Via"].push(item);
+        }
+        if (Array.isArray(this.warning)) {
+            data["Warning"] = [];
+            for (let item of this.warning)
+                data["Warning"].push(item);
+        }
+        if (Array.isArray(this.webSocketSubProtocols)) {
+            data["WebSocketSubProtocols"] = [];
+            for (let item of this.webSocketSubProtocols)
+                data["WebSocketSubProtocols"].push(item);
+        }
+        if (Array.isArray(this.wWWAuthenticate)) {
+            data["WWWAuthenticate"] = [];
+            for (let item of this.wWWAuthenticate)
+                data["WWWAuthenticate"].push(item);
+        }
+        if (Array.isArray(this.xContentTypeOptions)) {
+            data["XContentTypeOptions"] = [];
+            for (let item of this.xContentTypeOptions)
+                data["XContentTypeOptions"].push(item);
+        }
+        if (Array.isArray(this.xFrameOptions)) {
+            data["XFrameOptions"] = [];
+            for (let item of this.xFrameOptions)
+                data["XFrameOptions"].push(item);
+        }
+        if (Array.isArray(this.xPoweredBy)) {
+            data["XPoweredBy"] = [];
+            for (let item of this.xPoweredBy)
+                data["XPoweredBy"].push(item);
+        }
+        if (Array.isArray(this.xRequestedWith)) {
+            data["XRequestedWith"] = [];
+            for (let item of this.xRequestedWith)
+                data["XRequestedWith"].push(item);
+        }
+        if (Array.isArray(this.xUACompatible)) {
+            data["XUACompatible"] = [];
+            for (let item of this.xUACompatible)
+                data["XUACompatible"].push(item);
+        }
+        if (Array.isArray(this.xXSSProtection)) {
+            data["XXSSProtection"] = [];
+            for (let item of this.xXSSProtection)
+                data["XXSSProtection"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IIHeaderDictionary {
+    item?: any[];
+    contentLength?: number | undefined;
+    accept?: any[];
+    acceptCharset?: any[];
+    acceptEncoding?: any[];
+    acceptLanguage?: any[];
+    acceptRanges?: any[];
+    accessControlAllowCredentials?: any[];
+    accessControlAllowHeaders?: any[];
+    accessControlAllowMethods?: any[];
+    accessControlAllowOrigin?: any[];
+    accessControlExposeHeaders?: any[];
+    accessControlMaxAge?: any[];
+    accessControlRequestHeaders?: any[];
+    accessControlRequestMethod?: any[];
+    age?: any[];
+    allow?: any[];
+    altSvc?: any[];
+    authorization?: any[];
+    baggage?: any[];
+    cacheControl?: any[];
+    connection?: any[];
+    contentDisposition?: any[];
+    contentEncoding?: any[];
+    contentLanguage?: any[];
+    contentLocation?: any[];
+    contentMD5?: any[];
+    contentRange?: any[];
+    contentSecurityPolicy?: any[];
+    contentSecurityPolicyReportOnly?: any[];
+    contentType?: any[];
+    correlationContext?: any[];
+    cookie?: any[];
+    date?: any[];
+    eTag?: any[];
+    expires?: any[];
+    expect?: any[];
+    from?: any[];
+    grpcAcceptEncoding?: any[];
+    grpcEncoding?: any[];
+    grpcMessage?: any[];
+    grpcStatus?: any[];
+    grpcTimeout?: any[];
+    host?: any[];
+    keepAlive?: any[];
+    ifMatch?: any[];
+    ifModifiedSince?: any[];
+    ifNoneMatch?: any[];
+    ifRange?: any[];
+    ifUnmodifiedSince?: any[];
+    lastModified?: any[];
+    link?: any[];
+    location?: any[];
+    maxForwards?: any[];
+    origin?: any[];
+    pragma?: any[];
+    proxyAuthenticate?: any[];
+    proxyAuthorization?: any[];
+    proxyConnection?: any[];
+    range?: any[];
+    referer?: any[];
+    retryAfter?: any[];
+    requestId?: any[];
+    secWebSocketAccept?: any[];
+    secWebSocketKey?: any[];
+    secWebSocketProtocol?: any[];
+    secWebSocketVersion?: any[];
+    secWebSocketExtensions?: any[];
+    server?: any[];
+    setCookie?: any[];
+    strictTransportSecurity?: any[];
+    tE?: any[];
+    trailer?: any[];
+    transferEncoding?: any[];
+    translate?: any[];
+    traceParent?: any[];
+    traceState?: any[];
+    upgrade?: any[];
+    upgradeInsecureRequests?: any[];
+    userAgent?: any[];
+    vary?: any[];
+    via?: any[];
+    warning?: any[];
+    webSocketSubProtocols?: any[];
+    wWWAuthenticate?: any[];
+    xContentTypeOptions?: any[];
+    xFrameOptions?: any[];
+    xPoweredBy?: any[];
+    xRequestedWith?: any[];
+    xUACompatible?: any[];
+    xXSSProtection?: any[];
 }
 
 export class CompletedOrdersVm implements ICompletedOrdersVm {

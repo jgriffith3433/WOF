@@ -2,6 +2,7 @@
 using OpenAI.GPT3.ObjectModels;
 using WOF.Application.Common.Interfaces;
 using OpenAI.GPT3.Interfaces;
+using Newtonsoft.Json;
 
 namespace WOF.Infrastructure.Services;
 
@@ -282,6 +283,15 @@ public class OpenApiService : IOpenApiService
   ""original"": ""sesame oil"",
   ""new"": ""vegetable oil"",
 }"
+                    ),
+                    ChatMessage.FromUser("Remove the onions from the spicy chili recipe"),
+                    ChatMessage.FromAssistant(
+@"{
+  ""cmd"": ""remove-recipe-ingredient"",
+  ""response"": ""Removed."",
+  ""recipe"": ""spicy chili"",
+  ""ingredient"": ""onions"",
+}"
                     )
                 });
                 break;
@@ -326,6 +336,15 @@ public class OpenApiService : IOpenApiService
   ""ingredient"": ""butter"",
   ""unittype"": ""tablespoons"",
 }"
+                    ),
+                    ChatMessage.FromUser("Remove the onions from the spicy chili recipe"),
+                    ChatMessage.FromAssistant(
+@"{
+  ""cmd"": ""remove-cooked-recipe-ingredient"",
+  ""response"": ""Removed."",
+  ""recipe"": ""spicy chili"",
+  ""ingredient"": ""onions"",
+}"
                     )
                 });
                 break;
@@ -366,5 +385,28 @@ public class OpenApiService : IOpenApiService
                 return chatPromptList;
         }
         return chatPromptList;
+    }
+
+    public async Task<string> GetTextFromSpeech(byte[] speechBytes)
+    {
+        var response = await _openAIService.Audio.CreateTranscription(new AudioCreateTranscriptionRequest
+        {
+            FileName = "blob.webm",
+            File = speechBytes,
+            Model = Models.WhisperV1,
+            ResponseFormat = StaticValues.AudioStatics.ResponseFormat.VerboseJson
+        });
+        if (!response.Successful)
+        {
+            if (response.Error == null)
+            {
+                throw new Exception("Unknown Error");
+            }
+            else
+            {
+                throw new Exception(JsonConvert.SerializeObject(response.Error));
+            }
+        }
+        return string.Join("\n", response.Text);
     }
 }

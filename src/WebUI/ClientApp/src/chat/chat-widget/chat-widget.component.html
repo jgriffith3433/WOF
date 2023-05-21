@@ -19,7 +19,7 @@
         <div class="chat-message" [class.chat-message-received]="message.type === 'received'"
              [@fadeIn]
              [class.chat-message-sent]="message.type === 'sent'">
-          <div >
+          <div>
             <chat-avatar [image]="message.from.avatar" class="chat-message-from-avatar"></chat-avatar>
             <div class="chat-message-text">
               {{message.text}}
@@ -33,6 +33,10 @@
     </div>
     <div class="chat-box-footer">
       <chat-input (send)="sendMessage($event)" (dismiss)="toggleChat()"></chat-input>
+      <button class="chat-button" (click)="record()">
+      </button>
+      <button class="chat-button" (click)="stop()" style="right:-20px;">
+      </button>
     </div>
   </div>
   <button class="chat-button" (click)="toggleChat()">

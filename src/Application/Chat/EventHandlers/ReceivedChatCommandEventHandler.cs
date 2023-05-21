@@ -178,6 +178,58 @@ public class ReceivedChatCommandEventHandler : INotificationHandler<ReceivedChat
                         }
                     }
                     break;
+                case "remove-recipe-ingredient":
+                    {
+                        var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
+                        var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
+                        var deleteRecipeIngredient = JsonConvert.DeserializeObject<OpenApiChatCommandDeleteRecipeIngredient>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
+
+                        var recipe = _context.Recipes.Include(r => r.CalledIngredients).FirstOrDefault(r => r.Name.ToLower() == deleteRecipeIngredient.Recipe.ToLower());
+                        if (recipe == null)
+                        {
+                            systemResponse = "Error: Could not find recipe by name: " + deleteRecipeIngredient.Recipe;
+                        }
+                        else
+                        {
+                            var calledIngredient = recipe.CalledIngredients.FirstOrDefault(ci => ci.Name.ToLower().Contains(deleteRecipeIngredient.Ingredient.ToLower()));
+
+                            if (calledIngredient == null)
+                            {
+                                systemResponse = "Error: Could not find ingredient by name: " + deleteRecipeIngredient.Ingredient;
+                            }
+                            else
+                            {
+                                recipe.CalledIngredients.Remove(calledIngredient);
+                            }
+                        }
+                    }
+                    break;
+                case "remove-cooked-recipe-ingredient":
+                    {
+                        var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
+                        var endIndex = notification.ChatCommand.RawReponse.LastIndexOf('}');
+                        var deleteCookedRecipeIngredient = JsonConvert.DeserializeObject<OpenApiChatCommandDeleteCookedRecipeIngredient>(notification.ChatCommand.RawReponse.Substring(startIndex, endIndex - startIndex + 1));
+
+                        var cookedRecipe = _context.CookedRecipes.Include(r => r.CookedRecipeCalledIngredients).FirstOrDefault(r => r.Recipe.Name.ToLower() == deleteCookedRecipeIngredient.Recipe.ToLower());
+                        if (cookedRecipe == null)
+                        {
+                            systemResponse = "Error: Could not find cooked recipe by name: " + deleteCookedRecipeIngredient.Recipe;
+                        }
+                        else
+                        {
+                            var cookedRecipeCalledIngredient = cookedRecipe.CookedRecipeCalledIngredients.FirstOrDefault(ci => ci.Name.ToLower().Contains(deleteCookedRecipeIngredient.Ingredient.ToLower()));
+
+                            if (cookedRecipeCalledIngredient == null)
+                            {
+                                systemResponse = "Error: Could not find ingredient by name: " + deleteCookedRecipeIngredient.Ingredient;
+                            }
+                            else
+                            {
+                                cookedRecipe.CookedRecipeCalledIngredients.Remove(cookedRecipeCalledIngredient);
+                            }
+                        }
+                    }
+                    break;
                 case "edit-recipe-ingredient-unittype":
                     {
                         var startIndex = notification.ChatCommand.RawReponse.IndexOf('{');
